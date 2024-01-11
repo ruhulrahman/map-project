@@ -1,0 +1,284 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    input[type=radio] {
+        @apply
+        w-7
+        h-7
+        rounded-[50%]
+        appearance-none cursor-pointer flex justify-center items-center
+    }
+
+    input[type=radio]:checked {
+        box-shadow: 4px 4px 8px #b8c7dd, -4px -4px 8px #FFFFFF;
+        @apply
+        rounded-[50%]
+        bg-slate-200
+    }
+
+    input[type=radio]:checked::before {
+        box-shadow: 4px 4px 8px #b8c7dd, -4px -4px 8px #FFFFFF;
+        content: '';
+        @apply
+        rounded-[50%]
+        w-3
+        h-3
+        bg-cyan-400
+    }
+
+    input[type=checkbox] {
+        @apply
+        hidden
+    }
+
+    input[type=text] {
+        background: none;
+    }
+
+    input[type=text]:focus {
+        outline: none;
+    }
+
+    .switch {
+        @apply
+        relative
+        cursor-pointer
+    }
+
+    .switch-bg {
+        box-shadow: inset 7px 2px 2px 0px #c2cad5, inset -3px -2px 2px 0px #f7f7f7;
+        @apply
+        h-[20px]
+        w-[55px]
+        rounded-[15px]
+        bg-[#E0E4E7]
+        overflow-visible
+    }
+
+    .switch-indicator {
+        box-shadow: 4px 4px 8px #b8c7dd, -4px -4px 8px #FFFFFF;
+        top: -4px;
+        @apply
+        absolute
+        h-[30px]
+        w-[30px]
+        bg-[#E0E4E7]
+        rounded-[50px]
+    }
+    
+    input[type=checkbox]:checked~.switch-indicator {
+       transform: translateX(85%);
+       -webkit-transform: translateX(85%);
+       -moz-transform: translateX(85%);
+       -ms-transform: translateX(85%);
+       -o-transform: translateX(85%);
+    }
+    
+    input[type=checkbox]:checked~.switch-bg {
+        box-shadow: 4px 3px 3px 0px #4273ee inset;
+       @apply
+       bg-cyan-400
+    }
+}
+
+@layer utilities {
+
+}
+
+@layer components {
+
+    /* Group Utilities */
+    .btn {
+        @apply
+        px-4
+        py-1 
+        rounded-full
+        text-sm  
+        duration-300 
+        border
+        hover:border-transparent 
+        focus:outline-none
+        focus:ring-2
+        focus:ring-offset-2
+        hover:text-white
+    }
+
+    .btn-create {
+        @apply
+        flex
+        flex-row
+        w-full
+        rounded-lg
+        p-1
+        bg-zinc-700
+        hover:bg-zinc-800
+        justify-around
+        items-center
+        cursor-pointer
+    }
+
+    .btn-effect {
+        background: #f2f2f2;
+        box-shadow: 3px 3px 5px #9c9c9c, -5px -5px 4px #FFF;
+        text-shadow: 1px 1px 2px #a9a9a9;
+        @apply
+        px-4
+        py-1 
+        rounded-full
+        text-sm  
+        duration-300 
+        border
+        hover:border-transparent 
+        focus:outline-none
+        focus:ring-2
+        focus:ring-offset-2
+        hover:text-fuchsia-500
+    }
+
+    .btn-outline {
+        
+    }
+
+    .btn-purple {
+        @apply
+        border-purple-300 
+        text-purple-600 
+        hover:bg-purple-500 
+        focus:ring-purple-600 
+    }
+
+    .btn-indigo {
+        @apply
+        hover:bg-gradient-to-r hover:from-indigo-500
+        border-indigo-300 
+        text-indigo-600 
+        /* hover:bg-indigo-500  */
+        focus:ring-indigo-600 
+    }
+
+    .btn-cyan {
+        @apply
+        border-cyan-300 
+        text-cyan-600 
+        hover:bg-cyan-500 
+        focus:ring-cyan-600 
+    }
+
+    .btn-info {
+        @apply
+        border-fuchsia-300 
+        text-fuchsia-600 
+        hover:bg-fuchsia-500 
+        focus:ring-fuchsia-600
+    }
+
+    .btn-success {
+        @apply
+        border-green-300 
+        text-green-600 
+        hover:bg-green-500 
+        focus:ring-green-600
+    }
+
+    .btn-danger {
+        @apply
+        border-red-300 
+        text-red-600 
+        hover:bg-red-500 
+        focus:ring-red-600
+    }
+
+    .btn-warning {
+        @apply
+        border-orange-300 
+        text-orange-600 
+        hover:bg-orange-500 
+        focus:ring-orange-600
+    }
+
+    .btn-primary {
+        @apply
+        border-teal-300 
+        text-teal-600 
+        hover:bg-teal-500 
+        focus:ring-teal-600
+    }
+
+    .btn-secondary {
+        @apply
+        border-gray-300 
+        text-gray-600 
+        hover:bg-gray-500 
+        focus:ring-gray-600
+    }
+
+    .app-container {
+        @apply
+        w-[800px]
+        h-[600px]
+        /* bg-[#f4f4f4] */
+        bg-[#e6e6e6]
+        lg:w-[1060px] sm:w-[650px]
+    }
+
+    .effect {
+        background: #f2f2f2;
+        box-shadow:  5px 5px 4px #aeaeae,
+                    -5px -5px 4px #ffffff;
+    }
+
+    .effect2 {
+        box-shadow: 4px 3px 3px 0px #b8c7dd, -2px -4px 4px 0px #fff;
+        --tw-bg-opacity: 1;
+        background-color: rgb(224 228 231 / var(--tw-bg-opacity));
+    }
+
+    .effect3 {
+        background: #f2f2f2;
+        box-shadow:  1px 2px 1px #e8e8e8, -2px -4px 8px #fcfcfc;
+    }
+    .effect4 {
+        background: #e0e5ec;
+        box-shadow: 5px 5px 10px rgba(163, 177, 198, 0.6), -5px -5px 10px rgba(255, 255, 255, 0.5);
+    }
+
+    .effect-inner {
+        box-shadow: inset 4px 3px 3px 0px #b8c7dd, inset -2px -4px 4px 0px #fff;
+        @apply
+        bg-[#E0E4E7]
+    }
+
+    .element {
+        background: linear-gradient(-45deg, rgba(0,0,0,0.22), rgba(255,255,255,0.25));
+        box-shadow: 12px 12px 16px 0 rgba(0, 0, 0, 0.25),
+         -8px -8px 12px 0 rgba(255, 255, 255, 0.3);
+        @apply
+        h-[100px]
+        w-[100px]
+        flex
+        justify-center
+        items-center
+        rounded-[50px]
+      }
+      
+      .element-1 {
+        /* background: #afd275; */
+      }
+      
+      .element-2 {
+        background: linear-gradient(-45deg, rgba(0,0,0,0.22), rgba(255,255,255,0.25));
+      }
+      
+      .element-3 {
+        background: linear-gradient(135deg, rgba(0,0,0,0.22), rgba(255,255,255,0.25));
+      }
+
+    .title {
+        text-shadow: 1px 1px 2px rgba(118,118,118,0.9);
+        @apply
+        text-fuchsia-400
+    }
+
+}
