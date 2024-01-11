@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue'
+import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
+import NavBar from '../components/NavBar.vue';
 </script>
 
 <template>
-  <main>
+  
+  <NavBar/>
+  <main class="flex">
+
     <LeftSideBar/>
-    <div class="felx flex-row w-[500px] h-svh bg-white z-[11]">
-      <p>Hello world</p>
+
+    <div class="felx flex-row w-full bg-black">
+      <Map/>
     </div>
   </main>
 </template>
