@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import TheWelcome from '../components/TheWelcome.vue'
+import LeftSideBar from '../components/LeftSideBar.vue'
 </script>
 
 <template>
-  <main class="bg-white">
-    <h1 class="text-yellow-400">Hello world</h1>
+  <main>
+    <LeftSideBar/>
+    <div class="felx flex-row w-[500px] h-svh bg-white z-[11]">
+      <p>Hello world</p>
+    </div>
   </main>
 </template>
 
