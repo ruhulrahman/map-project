@@ -30,16 +30,8 @@ const toggleLeftSidebar = () => {
             <div class="flex flex-row">
               <!-- <button class="w-full btn btn-primary bg-green-700 border-none">+ Add New </button> -->
 
-              <!-- <button class="btn w-full bg-gradient-to-r from-red-400 to-yellow-500 text-white">
-                Button
-              </button>
-
-              <button class="btn w-full bg-gradient-to-r from-blue-400 to-indigo-500 text-white">
-                Button
-              </button> -->
-
               <button class="btn w-full bg-gradient-to-r from-gray-600 to-gray-900 hover:from-gray-900 hover:to-gray-700 text-gray-300 hover:-translate-y-[1px] duration-300">
-                Button
+                + Add New
               </button>
             </div>
 
