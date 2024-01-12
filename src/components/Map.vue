@@ -39,14 +39,14 @@ function getLocation() {
 <template>
   <div class="bg-black">
     <div class="flex flex-col">
-      <div class="flex flex-col">
-        <div class="py-2">
+      <!-- <div class="flex flex-col">
+        <div class="py-2 text-right">
           <button class="btn" @click="getLocation()">
             Show Location
           </button>
           <span v-if="lat && long" class="pl-3">{{ lat }}, {{ long }}</span>
         </div>
-      </div>
+      </div> -->
       <div class="flex flex-col">
         <div class="z-[1] w-full h-screen" ref="mapContainer" />
       </div>
