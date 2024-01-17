@@ -8,6 +8,10 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 import { fab } from '@fortawesome/free-brands-svg-icons'
 import VueTippy from 'vue-tippy'
 
+import Toast from 'vue-toastification'
+// import the CSS or use your own!
+import 'vue-toastification/dist/index.css'
+
 library.add(fas, far, fab)
 
 import { createApp } from 'vue'
@@ -27,6 +31,8 @@ app.use(
         component: 'tippy', // => <tippy/>
     }
 )
+
+app.use(Toast);
 
 app.use(createPinia())
 app.use(router)
