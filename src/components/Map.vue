@@ -131,7 +131,7 @@ function getLocation() {
 }
 
 
-const isOpen = ref(true)
+const isOpen = ref(false)
 
 const isModalVisible = computed(() => {
   return isOpen.value
