@@ -1,7 +1,8 @@
 
-<script setup lang="ts">
+<script setup>
 
 </script>
+
 <template>
   <header class="z-[7]">
     <div class="flex flex-row p-2">

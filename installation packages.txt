@@ -1,0 +1,5 @@
+1. npm install -D tailwindcss postcss autoprefixer
+2. npx tailwindcss init -p
+
+3. npm i @fortawesome/vue-fontawesome @fortawesome/fontawesome-svg-core @fortawesome/free-solid-svg-icons @fortawesome/free-regular-svg-icons @fortawesome/free-brands-svg-icons
+4. npm i vue-tippy

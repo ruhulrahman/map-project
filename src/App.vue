@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 
@@ -7,5 +7,5 @@ import { RouterLink, RouterView } from 'vue-router'
 </template>
 
 <style scoped>
-@import '@/style.css';
+
 </style>

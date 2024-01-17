@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';

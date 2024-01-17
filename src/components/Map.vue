@@ -1,9 +1,5 @@
-<script setup lang="ts">
-import { defineProps, ref, onMounted } from "vue";
-
-// import L from 'leaflet'
-// import leafletDraw from 'leaflet-draw'
-// var leafletDraw = require('leaflet-draw');
+<script setup>
+import { ref, onMounted } from "vue";
 
 const lat = ref(0)
 const long = ref(0)
@@ -11,65 +7,77 @@ const map = ref()
 const mapContainer = ref()
 
 onMounted(() => {
-  map.value = L.map(mapContainer.value).setView([51.505, -0.09], 13);
-  // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  //   maxZoom: 19,
-  //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  // }).addTo(map.value);
 
-  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-     }).addTo(map.value);
+  // Initialize the map
+  map.value = L.map(mapContainer.value, {drawControl: true}).setView([28.2096, 83.9856], 13);
 
-  // Leaflet draw
-  // FeatureGroup is to store editable layers
-  var drawnItems = new L.FeatureGroup();
-  map.value.addLayer(drawnItems);
+  // Add the OpenStreetMap tiles
+  var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  })
+  osm.addTo(map.value);
+
+  // leaflet draw 
+  var drawnFeatures = new L.FeatureGroup();
+  map.value.addLayer(drawnFeatures);
 
   var drawControl = new L.Control.Draw({
+    // position: "topright",
     edit: {
-      featureGroup: drawnItems,
-      // show or hide delete icon
-      // remove: false
-    }
+      featureGroup: drawnFeatures,
+      remove: true,
+    },
+    draw: {
+      polygon: {
+        shapeOptions: {
+          color: 'purple'
+        },
+        //  allowIntersection: false,
+        //  drawError: {
+        //   color: 'orange',
+        //   timeout: 1000
+        //  },
+      },
+      polyline: {
+        shapeOptions: {
+          color: 'red'
+        },
+      },
+      rect: {
+        shapeOptions: {
+          color: 'green'
+        },
+      },
+      circle: {
+        shapeOptions: {
+          color: 'steelblue'
+        },
+      },
+    },
+
   });
   map.value.addControl(drawControl);
 
-  map.value.on('draw:created', function (e: any) {
-    console.log('e == ', e)
-    var type = e.layerType,
-      layer = e.layer;
-    drawnItems.addLayer(layer)
+  map.value.on("draw:created", function (e) {
+    var type = e.layerType;
+    var layer = e.layer;
+    console.log(layer.toGeoJSON())
+
+    layer.bindPopup(`<p>${JSON.stringify(layer.toGeoJSON())}</p>`)
+    drawnFeatures.addLayer(layer);
   });
 
-  map.value.on('draw:edited', function (e: any) {
-    console.log('e == ', e)
-    var type = e.layerType,
-      layer = e.layer;
-    drawnItems.addLayer(layer)
+  map.value.on("draw:edited", function (e) {
+    var layers = e.layers;
+    var type = e.layerType;
+
+    layers.eachLayer(function (layer) {
+      console.log(layer)
+    });
+
   });
 
-})
-
-function getLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition((position) => {
-      lat.value = position.coords.latitude
-      long.value = position.coords.longitude
-      map.value.setView([lat.value, long.value], 15);
-
-      L.marker([lat.value, long.value], { draggable: true }).addTo(map.value).on('dragend', (event: any) => {
-        console.log('event', event)
-        lat.value = event.target._latlng.lat
-        long.value = event.target._latlng.lng
-        // map.value.setView([lat.value, long.value], 15);
-      })
-        .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`);
-
-    })
-  }
-}
-
+});
 
 </script>
 
@@ -78,9 +86,9 @@ function getLocation() {
     <div class="flex flex-col">
       <div class="flex flex-col">
         <div class="py-2 text-right">
-          <button class="btn" @click="getLocation()">
+          <!-- <button class="btn" @click="getLocation()">
             Show Location
-          </button>
+          </button> -->
           <span v-if="lat && long" class="pl-3">{{ lat }}, {{ long }}</span>
         </div>
       </div>
@@ -90,7 +98,3 @@ function getLocation() {
     </div>
   </div>
 </template>
-
-<style>
-@import '@/style.css';
-</style>
