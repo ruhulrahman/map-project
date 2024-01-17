@@ -37,8 +37,10 @@ const submitData = async () => {
 
 onMounted(() => {
 
+  getLocation()
+
   // Initialize the map
-  map.value = L.map(mapContainer.value, { drawControl: true }).setView([28.2096, 83.9856], 13);
+  map.value = L.map(mapContainer.value, { drawControl: true }).setView([lat.value, long.value], 13);
 
   // Add the OpenStreetMap tiles
   var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -109,6 +111,26 @@ onMounted(() => {
 });
 
 
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.watchPosition((position) => {
+      lat.value = position.coords.latitude
+      long.value = position.coords.longitude
+      map.value.setView([lat.value, long.value], 15);
+
+      L.marker([lat.value, long.value], { draggable: true }).addTo(map.value).on('dragend', (event) => {
+        console.log('event', event)
+        lat.value = event.target._latlng.lat
+        long.value = event.target._latlng.lng
+        // map.value.setView([lat.value, long.value], 15);
+      })
+        .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`);
+
+    })
+  }
+}
+
+
 const isOpen = ref(true)
 
 const isModalVisible = computed(() => {
@@ -126,15 +148,14 @@ const onToggle = () => {
     <div class="flex flex-col">
       <div class="flex flex-col">
         <div class="py-2 text-right">
-          <!-- <button class="btn" @click="getLocation()">
-            Show Location
-          </button> -->
-
-          <button @click="onToggle"
-            class="bg-purple-500 border border-purple-500 px-5 py-2 text-sm shadow-sm font-medium tracking-wider text-white rounded-md hover:shadow-lg hover:bg-purple-600">
-            Open
+          <button @click="getLocation()" class="btn bg-gray-700 hover:bg-gray-600 text-gray-300">
+            Set Current Location
           </button>
-          <span v-if="lat && long" class="pl-3">{{ lat }}, {{ long }}</span>
+
+          <button @click="onToggle" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
+            Open Modal
+          </button>
+          <!--<span v-if="lat && long" class="pl-3">{{ lat }}, {{ long }}</span>-->
         </div>
       </div>
       <div class="flex flex-col">
