@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import RestApi, { baseURL } from '@/libs/config'
 import { useToast } from 'vue-toastification'
+import ModalT from '../components/ModalT.vue'
 
 const toast = useToast()
 
@@ -132,13 +133,15 @@ function getLocation() {
 
 
 const isOpen = ref(false)
+const createModal = ref(false)
 
 const isModalVisible = computed(() => {
   return isOpen.value
 })
 
 const onToggle = () => {
-  isOpen.value = !isOpen.value
+  // isOpen.value = !isOpen.value
+  createModal.value.toggleRightSidebar()
 }
 
 </script>
@@ -164,10 +167,10 @@ const onToggle = () => {
 
 
     <!---Modal -->
-    <transition name="fade">
-      <div class="z-[9999999] absolute top-auto right-auto w-full h-screen" v-if="isModalVisible">
+    <transition v-if="isModalVisible" name="fade">
+      <div class="z-[9999999] absolute w-full h-screen" v-if="isModalVisible">
         <div @click="onToggle" class="absolute bg-black opacity-70 inset-0 z-0"></div>
-        <div class="w-full max-w-lg p-3 relative mx-auto my-auto rounded-xl shadow-lg bg-white">
+        <div :class="isModalVisible ? 'max-w-lg transition-all duration-200' : 'w-0 transition-all duration-200'" class="p-3 relative mx-auto my-auto rounded-xl shadow-lg bg-neutral-900 bg-opacity-[0.6]">
           <div>
             <div class="text-center p-3 flex-auto justify-center leading-6">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 flex items-center text-purple-500 mx-auto"
@@ -199,6 +202,8 @@ const onToggle = () => {
       </div>
     </div>
 
+
+    <ModalT ref="createModal"/>
 
   </div>
 </template>
