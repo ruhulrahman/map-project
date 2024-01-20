@@ -65,12 +65,12 @@ export default {
       url: uri,
       data,
       params: params,
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
-        accessMenuName: window.location.href,
-        'Content-Type': 'multipart/form-data'
-      }
+      // headers: {
+      //   Authorization: `Bearer ${accessToken}`,
+      //   Accept: 'application/json',
+      //   accessMenuName: window.location.href,
+      //   'Content-Type': 'multipart/form-data'
+      // }
       // headers: {
       //   authorization: accessToken ? `Bearer ${accessToken}` : '',
       //   'user-detail': userDetail ? `${userDetail}` : '',

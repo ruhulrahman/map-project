@@ -14,27 +14,16 @@ const mapContainer = ref()
 
 let form = ref({
   id: '',
-  lat: '',
-  long: '',
+  map_type: '',
+  fibercorep: '',
+  user: 20,
+  fibername: '',
+  fiber_code: '',
+  color_code: '',
+  width_height: '',
+  note: '',
+  coordinates: '',
 })
-
-const submitData = async () => {
-  loading.value = true
-  let result = ''
-  if (form.value.id) {
-    result = await RestApi.postData(baseURL, 'api/v1/sg-3/fibercreate_map', form.value)
-  } else {
-    result = await RestApi.postData(baseURL, 'api/v1/sg-3/fibercreate_map', form.value)
-  }
-  loading.value = false
-
-  if (result.success) {
-    toast.success(result.message)
-    // this.$bvModal.hide('modal-1')
-  } else {
-    // this.$refs.form.setErrors(result.errors)
-  }
-}
 
 onMounted(() => {
 
@@ -95,6 +84,9 @@ onMounted(() => {
     var layer = e.layer;
     console.log(layer.toGeoJSON())
 
+    form.value.coordinates = layer.toGeoJSON()
+    onToggle()
+
     layer.bindPopup(`<p>${JSON.stringify(layer.toGeoJSON())}</p>`)
     drawnFeatures.addLayer(layer);
   });
@@ -108,6 +100,8 @@ onMounted(() => {
     });
 
   });
+
+  getMapTypes()
 
 });
 
@@ -128,6 +122,36 @@ function getLocation() {
         .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`);
 
     })
+  }
+}
+
+const mapTypes = ref('')
+
+const getMapTypes = async () => {
+  loading.value = true
+  let result = await RestApi.getData(baseURL, '/api/v1/sg-5/map_types/')
+  loading.value = false
+  
+  mapTypes.value = result
+}
+
+const submitData = async () => {
+  loading.value = true
+  let result = ''
+  if (form.value.id) {
+    result = await RestApi.postData(baseURL, 'api/v1/sg-5/createfiber/', form.value)
+  } else {
+    result = await RestApi.postData(baseURL, 'api/v1/sg-5/createfiber/', form.value)
+  }
+  loading.value = false
+  
+  onToggle()
+
+  if (result.success) {
+    toast.success(result.message)
+    // this.$bvModal.hide('modal-1')
+  } else {
+    // this.$refs.form.setErrors(result.errors)
   }
 }
 
@@ -213,35 +237,42 @@ const onToggle = () => {
       <div class="flex-1 bg-black bg-opacity-[0.4] rounded-lg p-2 shadow-cyan-sm shadow-sm shadow-purple-300">
 
         <div class="mb-2 pb-5">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Cable ID</label>
-          <input type="text" id="success"
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fibername</label>
+          <input type="text" v-model="form.fibername" id="success"
             class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
-            placeholder="Enter Cable ID" />
+            placeholder="Enter fibername" />
         </div>
 
-        <div class="mb-2 pb-5 ">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Length (meter)</label>
-          <input type="text" id="success"
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="success"
             class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
-            placeholder="Enter Length (meter)" />
+            placeholder="Enter fiber code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Color code</label>
+          <input type="text" v-model="form.color_code" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter color code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter width height" />
         </div>
 
         <div class="mb-2 pb-5 ">
           <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Note</label>
-          <input type="text" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
-            placeholder="Enter Note" />
-        </div>
-
-        <div class="mb-2 pb-5 ">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Description</label>
-          <input type="text" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
-            placeholder="Enter Description" />
+          <textarea v-model="form.note" type="text" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 bg-black bg-opacity-[0.1] shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter Note"></textarea>
         </div>
 
         <div class="mb-2 pb-4 text-right">
-          <button @click="onToggle" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
+          <button @click="submitData" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
             Submit
           </button>
         </div>
