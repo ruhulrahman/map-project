@@ -129,7 +129,7 @@ const mapTypes = ref('')
 
 const getMapTypes = async () => {
   loading.value = true
-  let result = await RestApi.getData(baseURL, '/api/v1/sg-5/map_types/')
+  let result = await RestApi.getData(baseURL, '/api/v1/sg-5/selete/')
   loading.value = false
   
   mapTypes.value = result

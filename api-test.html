@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+    <script>
+
+fetch("https://mapproject.nvs.la/api/v1/sg-5/selete/") // Replace URL with your endpoint
+    .then(function(response) {
+        console.log('response', response)
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error("Network response was not ok.");
+    })
+    .then(function(data) {
+        console.log('api response data', data); // Process the response data here
+    })
+    .catch(function(error) {
+        console.log("Error:", error);
+    });
+    </script>
+</body>
+</html>
