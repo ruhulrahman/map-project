@@ -3,8 +3,8 @@ import axios from 'axios'
 // import CxltToastr from 'cxlt-vue2-toastr'
 // import 'cxlt-vue2-toastr/dist/css/cxlt-vue2-toastr.css'
 
-// export const baseURL = 'http://mapproject.nvs.la/'
-export const baseURL = 'https://mapproject.nvs.la/'
+// export const baseURL = 'https://mapproject.nvs.la/'
+export const baseURL = 'https://opentv.ncare.io/'
 
 // var toastrConfigs = {
 //   position: 'top right',
@@ -69,8 +69,8 @@ export default {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         Accept: 'application/json',
-        accessMenuName: window.location.href,
-        'Access-Control-Allow-Origin': '*',
+        // accessMenuName: window.location.href,
+        // 'Access-Control-Allow-Origin': '*',
         'Content-Type': 'multipart/form-data'
       }
       // headers: {

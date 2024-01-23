@@ -101,6 +101,7 @@ onMounted(() => {
 
   });
 
+  getMapConnection()
   getMapTypes()
 
 });
@@ -126,6 +127,16 @@ function getLocation() {
 }
 
 const mapTypes = ref('')
+
+const getMapConnection = async () => {
+  loading.value = true
+  let result = await RestApi.getData(baseURL, '/api/new-connections/')
+  loading.value = false
+  var drawnFeatures = new L.FeatureGroup();
+  drawnFeatures.addLayer(result);
+
+  // mapTypes.value = result
+}
 
 const getMapTypes = async () => {
   loading.value = true
