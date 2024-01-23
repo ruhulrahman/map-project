@@ -3,8 +3,8 @@ import axios from 'axios'
 // import CxltToastr from 'cxlt-vue2-toastr'
 // import 'cxlt-vue2-toastr/dist/css/cxlt-vue2-toastr.css'
 
-// export const baseURL = 'https://mapproject.nvs.la/'
-export const baseURL = 'https://opentv.ncare.io/'
+export const baseURL = 'https://mapproject.nvs.la/'
+// export const baseURL = 'https://opentv.ncare.io/'
 
 // var toastrConfigs = {
 //   position: 'top right',
