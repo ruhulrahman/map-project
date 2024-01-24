@@ -67,11 +67,11 @@ export default {
       data,
       params: params,
       headers: {
-        Authorization: `Bearer ${accessToken}`,
-        Accept: 'application/json',
+        // Authorization: `Bearer ${accessToken}`,
+        // Accept: 'application/json',
         // accessMenuName: window.location.href,
         // 'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'multipart/form-data'
+        // 'Content-Type': 'multipart/form-data'
       }
       // headers: {
       //   authorization: accessToken ? `Bearer ${accessToken}` : '',

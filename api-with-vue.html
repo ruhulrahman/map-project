@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiber List</title>
+</head>
+<body>
+
+<div id="app">
+  <h1>Fiber List</h1>
+  <div v-if="fibers.length > 0">
+    <ul>
+      <li v-for="fiber in fibers" :key="fiber.id">
+        <p><strong>Fiber Name:</strong> {{ fiber.fibername }}</p>
+        <p><strong>Fiber Code:</strong> {{ fiber.fiber_code }}</p>
+        <p><strong>Color Code:</strong> {{ fiber.color_code }}</p>
+        <p><strong>Width/Height:</strong> {{ fiber.width_height }}</p>
+        <p><strong>Note:</strong> {{ fiber.note }}</p>
+        <!-- Add more details as needed -->
+        <hr>
+      </li>
+    </ul>
+  </div>
+  <div v-else>
+    <p>Loading fiber list...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      fibers: [],
+    },
+    created() {
+      this.fetchFiberList();
+    },
+    methods: {
+      fetchFiberList() {
+        const apiUrl = 'https://mapproject.nvs.la/api/new-connections/';
+        axios.get(apiUrl)
+          .then(response => {
+            this.fibers = response.data;
+          })
+          .catch(error => {
+            console.error('Error fetching fiber list:', error);
+          });
+      },
+    },
+  });
+</script>
+
+</body>
+</html>
