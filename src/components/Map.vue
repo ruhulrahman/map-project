@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
-import RestApi, { baseURL } from '@/libs/config'
+// import RestApi, { baseURL } from '@/libs/config'
+import RestApi from '@/libs/config'
 import { useToast } from 'vue-toastification'
 import ModalT from '../components/ModalT.vue'
 
@@ -27,7 +28,7 @@ let form = ref({
 
 onMounted(() => {
 
-  getLocation()
+  // getLocation()
 
   // Initialize the map
   map.value = L.map(mapContainer.value, { drawControl: true }).setView([lat.value, long.value], 13);
@@ -43,7 +44,7 @@ onMounted(() => {
   map.value.addLayer(drawnFeatures);
 
   var drawControl = new L.Control.Draw({
-    // position: "topright",
+    position: "topright",
     edit: {
       featureGroup: drawnFeatures,
       remove: true,
@@ -53,11 +54,11 @@ onMounted(() => {
         shapeOptions: {
           color: 'purple'
         },
-        //  allowIntersection: false,
-        //  drawError: {
-        //   color: 'orange',
-        //   timeout: 1000
-        //  },
+        allowIntersection: false,
+        drawError: {
+          color: 'orange',
+          timeout: 1000
+        },
       },
       polyline: {
         shapeOptions: {
@@ -113,14 +114,14 @@ function getLocation() {
       lat.value = position.coords.latitude
       long.value = position.coords.longitude
       map.value.setView([lat.value, long.value], 15);
-
+;
       L.marker([lat.value, long.value], { draggable: true }).addTo(map.value).on('dragend', (event) => {
         console.log('event', event)
         lat.value = event.target._latlng.lat
         long.value = event.target._latlng.lng
         // map.value.setView([lat.value, long.value], 15);
       })
-        .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`);
+        .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`)
 
     })
   }
@@ -130,17 +131,49 @@ const mapTypes = ref('')
 
 const getMapConnection = async () => {
   loading.value = true
-  let result = await RestApi.getData(baseURL, '/api/new-connections/')
+  let result = await RestApi.get('/api/new-connections/')
   loading.value = false
-  var drawnFeatures = new L.FeatureGroup();
-  drawnFeatures.addLayer(result);
+  console.log('result', result.data)
+  if (result.data.length) {
+    result.data.forEach(item => {
+
+      let intLatLong = item.user_longlate.split(',')
+      lat.value = intLatLong[0]
+      long.value = intLatLong[1]
+
+      console.log('intLatLong', intLatLong)
+    
+      map.value.setView([lat.value, long.value], 15);
+      L.marker([lat.value, long.value]).addTo(map.value)
+        .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+
+    })
+//     result.forEach(item => {
+//       // marker = new L.marker([item.user_longlate])
+//       //   .bindPopup(item.pppoe_id)
+//       //   .addTo(map);
+
+//         map.value.setView([item.user_longlate], 15);
+// ;
+//         L.marker([item.user_longlate])
+//         .addTo(map.value)
+//         // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`)
+//     })
+    map.value = L.map(mapContainer.value).setView([22.946198, 91.1066334], 13);
+    // map.value.setView([22.946198, 91.1066334], 15);
+;
+    L.marker([22.946198, 91.1066334])
+    .addTo(map.value)
+  }
+  // var drawnFeatures = new L.FeatureGroup();
+  // drawnFeatures.addLayer(result);
 
   // mapTypes.value = result
 }
 
 const getMapTypes = async () => {
   loading.value = true
-  let result = await RestApi.getData(baseURL, '/api/v1/sg-5/selete/')
+  let result = await RestApi.get('/api/v1/sg-5/selete/')
   loading.value = false
   
   mapTypes.value = result
@@ -150,9 +183,9 @@ const submitData = async () => {
   loading.value = true
   let result = ''
   if (form.value.id) {
-    result = await RestApi.postData(baseURL, 'api/v1/sg-5/createfiber/', form.value)
+    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
   } else {
-    result = await RestApi.postData(baseURL, 'api/v1/sg-5/createfiber/', form.value)
+    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
   }
   loading.value = false
   
