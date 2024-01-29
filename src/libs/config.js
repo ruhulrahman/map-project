@@ -10,7 +10,7 @@ const RestApi = axios.create({
   headers: {
     // Authorization: `Bearer ${accessToken}`,
     Accept: 'application/json',
-    'Content-Type': 'multipart/form-data'
+    // 'Content-Type': 'multipart/form-data'
     // accessMenuName: window.location.href,
   }
 });
