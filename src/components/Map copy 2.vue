@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from "vue";
 // import RestApi, { baseURL } from '@/libs/config'
 import RestApi from '@/libs/config'
 import { useToast } from 'vue-toastification'
-import Modal from '../components/Modal.vue'
+import ModalT from '../components/ModalT.vue'
 
 const toast = useToast()
 
@@ -141,7 +141,7 @@ const getMapConnection = async () => {
       lat.value = intLatLong[0]
       long.value = intLatLong[1]
 
-      console.log('intLatLong=', intLatLong, '  index=', index, 'id=', item.id)
+      console.log('intLatLong=', intLatLong, '  index=', index)
     
       map.value.setView([lat.value, long.value], 15);
       L.marker([lat.value, long.value]).addTo(map.value)
@@ -208,8 +208,8 @@ const isModalVisible = computed(() => {
 })
 
 const onToggle = () => {
-  isOpen.value = !isOpen.value
-  // createModal.value.onToggle()
+  // isOpen.value = !isOpen.value
+  createModal.value.toggleRightSidebar()
 }
 
 </script>
@@ -272,6 +272,59 @@ const onToggle = () => {
     </div>
 
 
+    <ModalT ref="createModal">
+
+      <template #header>
+        <h6>Add New Fiber Area</h6>
+      </template>
+
+      <div class="flex-1 bg-black bg-opacity-[0.4] rounded-lg p-2 shadow-cyan-sm shadow-sm shadow-purple-300">
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fibername</label>
+          <input type="text" v-model="form.fibername" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter fibername" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter fiber code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Color code</label>
+          <input type="text" v-model="form.color_code" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter color code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter width height" />
+        </div>
+
+        <div class="mb-2 pb-5 ">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Note</label>
+          <textarea v-model="form.note" type="text" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 bg-black bg-opacity-[0.1] shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter Note"></textarea>
+        </div>
+
+        <div class="mb-2 pb-4 text-right">
+          <button @click="submitData" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
+            Submit
+          </button>
+        </div>
+
+      </div>
+
+
+    </ModalT>
 
   </div>
 </template>
