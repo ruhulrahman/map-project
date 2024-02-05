@@ -41,6 +41,10 @@
     outline: none;
   }
 
+  textarea:focus {
+    outline: none;
+  }
+
   .switch {
     @apply relative
         cursor-pointer;
@@ -96,10 +100,18 @@
         duration-300 
         /* border */
         hover:border-transparent 
-        focus:outline-none
+        /* focus:outline-none
         focus:ring-2
-        focus:ring-offset-2
-        hover:text-white;
+        focus:ring-offset-2 */
+        hover:text-white
+        hover:bg-zinc-600
+  }
+
+  .btn-ring {
+    @apply
+    focus:outline-none
+    focus:ring-2
+    focus:ring-offset-2
   }
 
   .btn-gradient-warning {
@@ -314,9 +326,53 @@
     bg-black bg-opacity-[0.4] */
   }
 
-  .shadow-down {
+  .shadow-gray-inset2 {
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 1), 0px 0px 4px rgba(255, 255, 255, 0.4), inset 2px 2px 4px rgba(0, 0, 0, 1), inset 1px 1px 4px rgba(255, 255, 255, 0.4)
+  }
+
+
+  .input-label {
     @apply
-    shadow-[0px_0px_0px_1px_rgba(0,0,0,0.06),0px_1px_1px_-0.5px_rgba(0,0,0,0.06),0px_3px_3px_-1.5px_rgba(0,0,0,0.06),_0px_6px_6px_-3px_rgba(0,0,0,0.06),0px_12px_12px_-6px_rgba(0,0,0,0.06),0px_24px_24px_-12px_rgba(0,0,0,0.06)]
+    block 
+    mb-2 
+    text-sm 
+    font-medium 
+    text-gray-100
+  }
+  
+  .input-control {
+    @apply
+    text-gray-100 
+    placeholder-zinc-500 
+    text-sm 
+    rounded-lg 
+    block 
+    w-full 
+    p-2.5 
+    bg-[#1F1F1F]
+    focus:ring-1
+    border border-zinc-600 
+    focus:shadow-gray-inset2
+  }
+
+
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .input-label-purple {
+    @apply
+    block mb-2 text-sm font-medium text-purple-300
+  }
+
+  .input-control-purple {
+    @apply
+    text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset
+  }
+
+  .shadow-down {
+    box-shadow: 0px 1px 1px 0px #000;
   }
 
   .shadow-gray-outset {

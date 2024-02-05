@@ -195,7 +195,26 @@ const onToggle = () => {
   // createModal.value.onToggle()
 }
 
-const array = [1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2]
+
+const submitData = async () => {
+  loading.value = true
+  let result = ''
+  if (form.value.id) {
+    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+  } else {
+    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+  }
+  loading.value = false
+  
+  onToggle()
+
+  if (result.success) {
+    toast.success(result.message)
+    // this.$bvModal.hide('modal-1')
+  } else {
+    // this.$refs.form.setErrors(result.errors)
+  }
+}
 
 </script>
 
@@ -233,7 +252,8 @@ const array = [1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2]
                       <!-- <button class="w-full btn btn-primary bg-green-700 border-none">+ Add New </button> -->
 
                       <button
-                        class="btn w-full bg-gradient-to-r from-gray-600 to-gray-900 hover:from-gray-900 hover:to-gray-700 text-gray-300 hover:-translate-y-[1px] duration-300">
+                      data-ripple-light="true"
+                        class="btn w-full p-[10px] bg-[#304059] hover:bg-[#344560] text-gray-300 hover:-translate-y-[1px] duration-300">
                         + Add New
                       </button>
                     </div>
@@ -306,45 +326,41 @@ const array = [1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2]
         <h6>Add New Fiber Area</h6>
       </template>
 
-      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm shadow-purple-300">
+      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
-        <div class="mb-2 pb-5">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fibername</label>
-          <input type="text" v-model="form.fibername" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+        <div class="mb-2 pb-4">
+          <label for="fibername" class="input-label">Fibername</label>
+          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
             placeholder="Enter fibername" />
         </div>
 
-        <div class="mb-2 pb-5">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fiber code</label>
-          <input type="text" v-model="form.fiber_code" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+        <div class="mb-2 pb-4">
+          <label for="fiber_code" class="input-label">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
             placeholder="Enter fiber code" />
         </div>
 
-        <div class="mb-2 pb-5">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Color code</label>
-          <input type="text" v-model="form.color_code" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+        <div class="mb-2 pb-4">
+          <label for="color_code" class="input-label">Color code</label>
+          <input type="text" v-model="form.color_code" id="color_code" class="input-control"
             placeholder="Enter color code" />
         </div>
 
-        <div class="mb-2 pb-5">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Width and Height</label>
-          <input type="text" v-model="form.width_height" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+        <div class="mb-2 pb-4">
+          <label for="width_height" class="input-label">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
             placeholder="Enter width height" />
         </div>
 
-        <div class="mb-2 pb-5 ">
-          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Note</label>
-          <textarea v-model="form.note" type="text" id="success"
-            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 bg-black bg-opacity-[0.1] shadow-gray-outset focus:shadow-gray-inset"
+        <div class="mb-2 pb-4 ">
+          <label for="note" class="input-label">Note</label>
+          <textarea v-model="form.note" id="note"
+            class="input-control"
             placeholder="Enter Note"></textarea>
         </div>
 
-        <div class="mb-2 pb-4 text-right">
-          <button @click="submitData" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
+        <div class="text-right">
+          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
             Submit
           </button>
         </div>

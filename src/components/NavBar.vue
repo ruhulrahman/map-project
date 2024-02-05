@@ -11,7 +11,7 @@ const toggleMenubar = () => {
 </script>
 
 <template>
-  <header class="z-[7] shadow-3">
+  <header class="z-[7] shadow-down">
     <div v-if="showMenubar" class="flex flex-row px-2 py-1">
       <nav class="text-white flex flex-row gap-8 text-[13px] px-2">
         <RouterLink to="/" class="text-green-500">File</RouterLink>
