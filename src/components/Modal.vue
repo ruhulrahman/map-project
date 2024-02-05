@@ -16,9 +16,9 @@ defineExpose({
 <template>
   
   <transition v-if="isModalVisible" name="fade">
-    <div class="z-[9999999] absolute top-auto right-auto w-full" v-if="isModalVisible">
+    <div class="z-[9999999] absolute right-auto h-screen w-full" v-if="isModalVisible">
       <div @click="onToggle" class="absolute bg-black opacity-70 inset-0 z-0"></div>
-      <div class="w-full max-w-lg p-3 relative mx-auto my-auto rounded-xl shadow-lg bg-white">
+      <div class="w-full m-h-[150px] max-w-lg p-3 relative mx-auto my-auto rounded-xl shadow-lg bg-white">
         <slot></slot>
       </div>
     </div>

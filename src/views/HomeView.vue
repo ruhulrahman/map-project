@@ -5,10 +5,11 @@ import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
+import Modal from "@/components/Modal.vue";
 
 const toast = useToast()
 
-const hideLeftSidebar = ref(false)
+const hideLeftSidebar = ref(true)
 
 const loading = ref(false)
 const lat = ref(0)
@@ -194,6 +195,8 @@ const onToggle = () => {
   // createModal.value.onToggle()
 }
 
+const array = [1, 2, 2, 2, 2, 1, 2, 2, 2, 2, 1, 2, 2, 2, 2]
+
 </script>
 
 <template>
@@ -202,17 +205,152 @@ const onToggle = () => {
 
     <div class="flex flex-row w-full absolute top-0 left-0 z-[2]">
       <div class="flex-row relative w-full h-full z-[4]">
-        <div class="flex-1 bg-[#1F1F1F] bg-opacity-[0.9] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
+        <div
+          class="flex-1 bg-[#1F1F1F] bg-opacity-[0.9] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
           <!-- Navbar content -->
-          <NavBar/>
+          <NavBar />
         </div>
+        
         <div class="flex-col absolute top-0 left-0 text-white h-full z-[-1]">
           <!-- Sidebar content -->
-          <LeftSideBar/>
+          <div class="absolute left-0 bg-[#1F1F1F] h-screen"
+            :class="hideLeftSidebar ? 'w-0 transition-all duration-200' : 'w-[300px] transition-all duration-200'">
+            <div class="flex flex-row">
+              <div v-if="hideLeftSidebar" @click="toggleLeftSidebar"
+                class="absolute top-1/2 hover:scale-110 duration-300 right-[-23px] bg-[#1F1F1F] bg-opacity-[0.7] hover:bg-neutral-800 cursor-pointer z-[5] py-3 px-2 rounded-r-lg">
+                <font-awesome-icon :icon="['fas', 'caret-right']" />
+              </div>
+
+              <div v-if="!hideLeftSidebar" class="flex flex-row w-full  h-screen px-2 overflow-y-auto">
+
+                <div @click="toggleLeftSidebar"
+                class="absolute top-1/2 right-[-23px] hover:scale-110 duration-300  bg-neutral-900 bg-opacity-[0.7] hover:bg-neutral-800 cursor-pointer z-[5] py-3 px-2 rounded-r-lg">
+                <font-awesome-icon :icon="['fas', 'caret-left']" />
+              </div>
+                <div class="flex flex-row w-full h-full">
+                  <div class="flex flex-col w-full h-full gap-3">
+                    <div class="flex flex-row mt-[78px]">
+                      <!-- <button class="w-full btn btn-primary bg-green-700 border-none">+ Add New </button> -->
+
+                      <button
+                        class="btn w-full bg-gradient-to-r from-gray-600 to-gray-900 hover:from-gray-900 hover:to-gray-700 text-gray-300 hover:-translate-y-[1px] duration-300">
+                        + Add New
+                      </button>
+                    </div>
+
+                    <div class="flex flex-row justify-start items-center pt-3 text-white"
+                      style="border-top: 1px solid rgb(60, 60, 60);">
+                      <div class="flex flex-col">
+                        <font-awesome-icon :icon="['fas', 'angle-up']" />
+                      </div>
+                      <div class="flex flex-col ml-4">
+                        <p>Drive Projects</p>
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col gap-3 pb-[85px]">
+
+                      <div class="btn-create">
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                        </div>
+                        <div class="flex-1">
+                          <h6>Untitled</h6>
+                          <p>Dec 16, 2023</p>
+                        </div>
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
+                        </div>
+                      </div>
+
+                      <div class="btn-create">
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                        </div>
+                        <div class="flex-1">
+                          <h6>Untitled</h6>
+                          <p>Dec 16, 2023</p>
+                        </div>
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
+                        </div>
+                      </div>
+
+                      <div class="btn-create" v-for="(item, index) in array" :key="index">
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                        </div>
+                        <div class="flex-1">
+                          <h6>Untitled</h6>
+                          <p>Dec 16, 2023</p>
+                        </div>
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
     </div>
+
+    <Modal>
+      <template #header>
+        <h6>Add New Fiber Area</h6>
+      </template>
+
+      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm shadow-purple-300">
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fibername</label>
+          <input type="text" v-model="form.fibername" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter fibername" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter fiber code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Color code</label>
+          <input type="text" v-model="form.color_code" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter color code" />
+        </div>
+
+        <div class="mb-2 pb-5">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter width height" />
+        </div>
+
+        <div class="mb-2 pb-5 ">
+          <label for="success" class="block mb-2 text-sm font-medium text-purple-300">Note</label>
+          <textarea v-model="form.note" type="text" id="success"
+            class=" text-purple-300 placeholder-purple-500 text-sm rounded-lg block w-full p-2.5 bg-black bg-opacity-[0.1] shadow-gray-outset focus:shadow-gray-inset"
+            placeholder="Enter Note"></textarea>
+        </div>
+
+        <div class="mb-2 pb-4 text-right">
+          <button @click="submitData" class="btn bg-purple-700 hover:bg-purple-600 text-gray-300 ml-3">
+            Submit
+          </button>
+        </div>
+
+      </div>
+    </Modal>
   </div>
 </template>
 
