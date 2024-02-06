@@ -5,7 +5,7 @@ import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/ModalR.vue";
 
 const toast = useToast()
 
@@ -361,7 +361,7 @@ const submitData = async () => {
 
         <div class="text-right">
           <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-            Submit
+            Save to Project
           </button>
         </div>
 
