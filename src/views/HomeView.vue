@@ -16,6 +16,7 @@ const lat = ref(0)
 const long = ref(0)
 const map = ref()
 const mapContainer = ref()
+const modalR = ref()
 const mapTypes = ref('')
 
 
@@ -53,7 +54,7 @@ onMounted(() => {
   // getLocation()
 
   // Initialize the map
-  map.value = L.map(mapContainer.value, { drawControl: true }).setView([lat.value, long.value], 13);
+  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
 
   // Add the OpenStreetMap tiles
   var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -65,42 +66,14 @@ onMounted(() => {
   var drawnFeatures = new L.FeatureGroup();
   map.value.addLayer(drawnFeatures);
 
-  var drawControl = new L.Control.Draw({
-    position: "topright",
-    edit: {
-      featureGroup: drawnFeatures,
-      remove: true,
-    },
-    draw: {
-      polygon: {
-        shapeOptions: {
-          color: 'purple'
-        },
-        allowIntersection: false,
-        drawError: {
-          color: 'orange',
-          timeout: 1000
-        },
-      },
-      polyline: {
-        shapeOptions: {
-          color: 'red'
-        },
-      },
-      rect: {
-        shapeOptions: {
-          color: 'green'
-        },
-      },
-      circle: {
-        shapeOptions: {
-          color: 'steelblue'
-        },
-      },
-    },
+  // var drawControl = new L.Control.Draw({
+  //   position: "topright",
+  //   edit: {
+  //     featureGroup: drawnFeatures,
+  //   }
+  // });
 
-  });
-  map.value.addControl(drawControl);
+  // map.value.addControl(drawControl);
 
   map.value.on("draw:created", function (e) {
     var type = e.layerType;
@@ -108,7 +81,10 @@ onMounted(() => {
     console.log(layer.toGeoJSON())
 
     form.value.coordinates = layer.toGeoJSON()
-    onToggle()
+    // onToggle()
+
+    modalR.value.onToggle()
+
 
     layer.bindPopup(`<p>${JSON.stringify(layer.toGeoJSON())}</p>`)
     drawnFeatures.addLayer(layer);
@@ -128,6 +104,28 @@ onMounted(() => {
   getMapTypes()
 
 });
+
+const activePolyLineDraw = (params) => {
+  console.log('clicked here', params)
+  
+  if (params == 'polyline') {
+    var drawnFeatures = new L.FeatureGroup();
+    map.value.addLayer(drawnFeatures);
+
+    var drawControl = new L.Control.Draw({
+      position: "topright",
+      edit: {
+        featureGroup: drawnFeatures,
+      },
+    });
+
+    map.value.addControl(drawControl);
+    drawControl.setDrawingOptions({ polyline: {} });
+    drawControl.handler.enable();
+  }
+  // drawControl.setDrawingOptions({ polyline: {} });
+  //           drawControl.handler.enable();
+}
 
 
 const getMapConnection = async () => {
@@ -163,11 +161,10 @@ const getMapConnection = async () => {
     //         .addTo(map.value)
     //         // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`)
     //     })
-    map.value = L.map(mapContainer.value).setView([22.946198, 91.1066334], 13);
-    // map.value.setView([22.946198, 91.1066334], 15);
-    ;
-    L.marker([22.946198, 91.1066334])
-      .addTo(map.value)
+    // map.value = L.map(mapContainer.value).setView([22.946198, 91.1066334], 13);
+    // map.value.setView([22.946198, 91.1066334], 13);
+    // L.marker([22.946198, 91.1066334])
+    //   .addTo(map.value)
   }
   // var drawnFeatures = new L.FeatureGroup();
   // drawnFeatures.addLayer(result);
@@ -205,7 +202,7 @@ const submitData = async () => {
     result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
   }
   loading.value = false
-  
+
   onToggle()
 
   if (result.success) {
@@ -227,9 +224,9 @@ const submitData = async () => {
         <div
           class="flex-1 bg-[#1F1F1F] bg-opacity-[0.9] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
           <!-- Navbar content -->
-          <NavBar />
+          <NavBar @activedMapDraw="activePolyLineDraw" />
         </div>
-        
+
         <div class="flex-col absolute top-0 left-0 text-white h-full z-[-1]">
           <!-- Sidebar content -->
           <div class="absolute left-0 bg-[#1F1F1F] h-screen"
@@ -243,16 +240,15 @@ const submitData = async () => {
               <div v-if="!hideLeftSidebar" class="flex flex-row w-full  h-screen px-2 overflow-y-auto">
 
                 <div @click="toggleLeftSidebar"
-                class="absolute top-1/2 right-[-23px] hover:scale-110 duration-300  bg-neutral-900 bg-opacity-[0.7] hover:bg-neutral-800 cursor-pointer z-[5] py-3 px-2 rounded-r-lg">
-                <font-awesome-icon :icon="['fas', 'caret-left']" />
-              </div>
+                  class="absolute top-1/2 right-[-23px] hover:scale-110 duration-300  bg-neutral-900 bg-opacity-[0.7] hover:bg-neutral-800 cursor-pointer z-[5] py-3 px-2 rounded-r-lg">
+                  <font-awesome-icon :icon="['fas', 'caret-left']" />
+                </div>
                 <div class="flex flex-row w-full h-full">
                   <div class="flex flex-col w-full h-full gap-3">
                     <div class="flex flex-row mt-[78px]">
                       <!-- <button class="w-full btn btn-primary bg-green-700 border-none">+ Add New </button> -->
 
-                      <button
-                      data-ripple-light="true"
+                      <button data-ripple-light="true"
                         class="btn w-full p-[10px] bg-[#304059] hover:bg-[#344560] text-gray-300 hover:-translate-y-[1px] duration-300">
                         + Add New
                       </button>
@@ -321,7 +317,7 @@ const submitData = async () => {
 
     </div>
 
-    <Modal>
+    <Modal ref="modalR">
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
@@ -354,9 +350,7 @@ const submitData = async () => {
 
         <div class="mb-2 pb-4 ">
           <label for="note" class="input-label">Note</label>
-          <textarea v-model="form.note" id="note"
-            class="input-control"
-            placeholder="Enter Note"></textarea>
+          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
         </div>
 
         <div class="text-right">

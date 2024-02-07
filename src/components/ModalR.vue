@@ -15,9 +15,9 @@ defineExpose({
 <template>
   
   <transition v-if="isModalVisible" name="fade">
-    <div class="z-[9999999] absolute right-[15px] top-[90px] h-auto w-[350px]" v-if="isModalVisible">
-      <div class="flex justify-center items-center h-auto relative">
-        <div class="w-full max-w-lg h-auto p-3 rounded-xl shadow-lg bg-[#1F1F1F] z-[6]">
+    <div class="z-[9999999] absolute right-[15px] top-[90px] h-auto w-[350px] transition-all duration-200" v-if="isModalVisible">
+      <div class="flex justify-center items-center h-auto relative transition-all duration-200">
+        <div class="w-full max-w-lg h-auto p-3 rounded-xl shadow-lg bg-[#1F1F1F] z-[6] transition-all duration-200">
           <div class="flex justify-between border-b border-neutral-800 ">
             <div class="flex flex-col">
               <slot name="header"></slot>
