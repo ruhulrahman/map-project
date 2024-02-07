@@ -1,6 +1,9 @@
 import './assets/main.css'
 import './style.css'
 
+import Modal from "@/components/Modal.vue";
+import ModalR from "@/components/ModalR.vue";
+
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -23,6 +26,9 @@ import router from './router'
 const app = createApp(App)
 
 app.component("font-awesome-icon", FontAwesomeIcon)
+app.component("ModalC", Modal)
+app.component("ModalR", ModalR)
+
 app.use(
     VueTippy,
     // optional

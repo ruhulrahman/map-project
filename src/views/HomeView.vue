@@ -5,7 +5,7 @@ import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
-import Modal from "@/components/ModalR.vue";
+// import Modal from "@/components/ModalR.vue";
 
 const toast = useToast()
 
@@ -18,6 +18,8 @@ const map = ref()
 const mapContainer = ref()
 const modalR = ref()
 const mapTypes = ref('')
+const mapDrawEnable = ref(false)
+let drawControl = ref({})
 
 
 let form = ref({
@@ -51,6 +53,7 @@ const toggleLeftSidebar = () => {
 
 onMounted(() => {
 
+
   // getLocation()
 
   // Initialize the map
@@ -65,6 +68,21 @@ onMounted(() => {
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
   map.value.addLayer(drawnFeatures);
+
+
+  drawControl.value = new L.Control.Draw({
+    draw: {
+      position: 'topleft',
+      polygon: false,
+      polyline: false,
+      rectangle: false,
+      circle: false,
+      marker: false,
+    },
+    edit: false
+  });
+
+  map.value.addControl(drawControl.value);
 
   // var drawControl = new L.Control.Draw({
   //   position: "topright",
@@ -107,24 +125,123 @@ onMounted(() => {
 
 const activePolyLineDraw = (params) => {
   console.log('clicked here', params)
-  
-  if (params == 'polyline') {
-    var drawnFeatures = new L.FeatureGroup();
-    map.value.addLayer(drawnFeatures);
 
-    var drawControl = new L.Control.Draw({
-      position: "topright",
+  map.value.removeControl(drawControl.value);
+
+  // let drawnFeatures = new L.FeatureGroup();
+  // map.value.addLayer(drawnFeatures);
+
+  if (params == 'polygon') {
+
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: {
+          title: 'Draw a sexy polygon!',
+          allowIntersection: false,
+          drawError: {
+            color: '#b00b00',
+            timeout: 1000
+          },
+          shapeOptions: {
+            color: '#bada55'
+          },
+          showArea: true
+        },
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+    
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-polygon").click();
+
+  } else if (params == 'polyline') {
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: false,
+        polyline: {
+          metric: false
+        },
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-polyline").click();
+
+  } else if (params == 'marker') {
+
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: false,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-marker").click();
+
+  }
+}
+
+const activePolyLineDraw2 = (params) => {
+  console.log('clicked here', params)
+
+  let drawnFeatures = new L.FeatureGroup();
+  map.value.addLayer(drawnFeatures);
+
+  if (params == 'polyline') {
+    let drawControl = new L.Control.Draw({
+      position: "topleft",
       edit: {
         featureGroup: drawnFeatures,
       },
+      draw: {
+        polyline: true,
+        polygon: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+      }
     });
 
     map.value.addControl(drawControl);
-    drawControl.setDrawingOptions({ polyline: {} });
-    drawControl.handler.enable();
+    document.querySelector(".leaflet-draw-draw-polyline").click();
   }
-  // drawControl.setDrawingOptions({ polyline: {} });
-  //           drawControl.handler.enable();
+
+  if (params == 'marker') {
+    let drawControl = new L.Control.Draw({
+      position: "topleft",
+      edit: {
+        featureGroup: drawnFeatures,
+      },
+      draw: {
+        polyline: false,
+        polygon: false,
+        rectangle: false,
+        circle: false,
+        marker: true,
+      }
+    });
+
+    map.value.addControl(drawControl);
+    document.querySelector(".leaflet-draw-draw-marker").click();
+  }
 }
 
 
@@ -317,7 +434,7 @@ const submitData = async () => {
 
     </div>
 
-    <Modal ref="modalR">
+    <ModalR ref="modalR">
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
@@ -360,7 +477,7 @@ const submitData = async () => {
         </div>
 
       </div>
-    </Modal>
+    </ModalR>
   </div>
 </template>
 
