@@ -18,6 +18,11 @@ const map = ref()
 const mapContainer = ref()
 const modalR = ref()
 const mapTypes = ref('')
+const dropdownList = ref({
+  fibercores: [],
+  map_types: [],
+})
+
 const mapDrawEnable = ref(false)
 let drawControl = ref({})
 
@@ -78,6 +83,7 @@ onMounted(() => {
       rectangle: false,
       circle: false,
       marker: false,
+      circlemarker: false,
     },
     edit: false
   });
@@ -119,7 +125,7 @@ onMounted(() => {
   });
 
   getMapConnection()
-  getMapTypes()
+  getInitData()
 
 });
 
@@ -249,7 +255,7 @@ const getMapConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/new-connections/')
   loading.value = false
-  console.log('result', result.data)
+  // console.log('result', result.data)
   if (result.data.length) {
     result.data.forEach((item, index) => {
 
@@ -289,12 +295,30 @@ const getMapConnection = async () => {
   // mapTypes.value = result
 }
 
-const getMapTypes = async () => {
+const getInitData = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/selete/')
   loading.value = false
+  console.log('result', result.data)
+  if (result.data.fibercores) {
+    dropdownList.value.fibercores = result.data.fibercores.map(item => {
+      return {
+        value: item.id,
+        label: item.fibercoredata,
+      }
+    })
+  }
+  if (result.data.fibercores) {
+    dropdownList.value.map_types = result.data.map_types.map(item => {
+      return {
+        value: item.id,
+        label: item.mapcat,
+      }
+    })
+  }
 
-  mapTypes.value = result
+  console.log('dropdownList.value', dropdownList.value)
+  // dropdownList.value = result
 }
 
 const isOpen = ref(false)
@@ -442,6 +466,16 @@ const submitData = async () => {
       <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
         <div class="mb-2 pb-4">
+          <label for="fibercored" class="input-label">Fibercores</label>
+          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="map_type" class="input-label">Map Type</label>
+          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
+        </div>
+
+        <div class="mb-2 pb-4">
           <label for="fibername" class="input-label">Fibername</label>
           <input type="text" v-model="form.fibername" id="fibername" class="input-control"
             placeholder="Enter fibername" />
@@ -483,4 +517,8 @@ const submitData = async () => {
 
 <style scoped>
 @import '@/style.css';
+
+.vs__search, .vs__search:focus {
+  font-size: 13px !important;
+}
 </style>

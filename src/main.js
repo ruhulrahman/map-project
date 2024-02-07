@@ -19,6 +19,8 @@ library.add(fas, far, fab)
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css';
 
 import App from './App.vue'
 import router from './router'
@@ -28,6 +30,7 @@ const app = createApp(App)
 app.component("font-awesome-icon", FontAwesomeIcon)
 app.component("ModalC", Modal)
 app.component("ModalR", ModalR)
+app.component('v-select', vSelect)
 
 app.use(
     VueTippy,
