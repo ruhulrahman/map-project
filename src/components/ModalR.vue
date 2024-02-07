@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-const isModalVisible = ref(true)
+const isModalVisible = ref(false)
 
 const onToggle = () => {
   isModalVisible.value = !isModalVisible.value

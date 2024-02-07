@@ -136,7 +136,6 @@ const getMapConnection = async () => {
   if (result.data.length) {
     result.data.forEach((item, index) => {
 
-      if (index <= 20) {
         let intLatLong = item.user_longlate.split(',')
         lat.value = intLatLong[0]
         long.value = intLatLong[1]
@@ -146,8 +145,6 @@ const getMapConnection = async () => {
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-
-      }
 
     })
     //     result.forEach(item => {
