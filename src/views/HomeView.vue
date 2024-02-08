@@ -337,20 +337,22 @@ const onToggle = () => {
 const submitData = async () => {
   loading.value = true
   let result = ''
-  if (form.value.id) {
-    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-  } else {
-    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-  }
-  loading.value = false
+  try {
+    if (form.value.id) {
+      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+    } else {
+      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+    }
+    loading.value = false
 
-  onToggle()
-
-  if (result.success) {
-    toast.success(result.message)
-    // this.$bvModal.hide('modal-1')
-  } else {
-    // this.$refs.form.setErrors(result.errors)
+    console.log('create result == ', result)
+    
+    if (result.success) {
+      toast.success(result.message)
+      onToggle()
+    }
+  } catch (error) {
+    toast.danger(error)
   }
 }
 
