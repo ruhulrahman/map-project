@@ -5,7 +5,7 @@ import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
-import Modal from "@/components/ModalR.vue";
+// import Modal from "@/components/ModalR.vue";
 
 const toast = useToast()
 
@@ -18,6 +18,13 @@ const map = ref()
 const mapContainer = ref()
 const modalR = ref()
 const mapTypes = ref('')
+const dropdownList = ref({
+  fibercores: [],
+  map_types: [],
+})
+
+const mapDrawEnable = ref(false)
+let drawControl = ref({})
 
 
 let form = ref({
@@ -51,6 +58,7 @@ const toggleLeftSidebar = () => {
 
 onMounted(() => {
 
+
   // getLocation()
 
   // Initialize the map
@@ -65,6 +73,22 @@ onMounted(() => {
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
   map.value.addLayer(drawnFeatures);
+
+
+  drawControl.value = new L.Control.Draw({
+    draw: {
+      position: 'topleft',
+      polygon: false,
+      polyline: false,
+      rectangle: false,
+      circle: false,
+      marker: false,
+      circlemarker: false,
+    },
+    edit: false
+  });
+
+  map.value.addControl(drawControl.value);
 
   // var drawControl = new L.Control.Draw({
   //   position: "topright",
@@ -101,30 +125,129 @@ onMounted(() => {
   });
 
   getMapConnection()
-  getMapTypes()
+  getInitData()
 
 });
 
 const activePolyLineDraw = (params) => {
   console.log('clicked here', params)
-  
-  if (params == 'polyline') {
-    var drawnFeatures = new L.FeatureGroup();
-    map.value.addLayer(drawnFeatures);
 
-    var drawControl = new L.Control.Draw({
-      position: "topright",
+  map.value.removeControl(drawControl.value);
+
+  // let drawnFeatures = new L.FeatureGroup();
+  // map.value.addLayer(drawnFeatures);
+
+  if (params == 'polygon') {
+
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: {
+          title: 'Draw a sexy polygon!',
+          allowIntersection: false,
+          drawError: {
+            color: '#b00b00',
+            timeout: 1000
+          },
+          shapeOptions: {
+            color: '#bada55'
+          },
+          showArea: true
+        },
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+    
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-polygon").click();
+
+  } else if (params == 'polyline') {
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: false,
+        polyline: {
+          metric: false
+        },
+        rectangle: false,
+        circle: false,
+        marker: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-polyline").click();
+
+  } else if (params == 'marker') {
+
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: false,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+
+    map.value.addControl(drawControl.value);
+    document.querySelector(".leaflet-draw-draw-marker").click();
+
+  }
+}
+
+const activePolyLineDraw2 = (params) => {
+  console.log('clicked here', params)
+
+  let drawnFeatures = new L.FeatureGroup();
+  map.value.addLayer(drawnFeatures);
+
+  if (params == 'polyline') {
+    let drawControl = new L.Control.Draw({
+      position: "topleft",
       edit: {
         featureGroup: drawnFeatures,
       },
+      draw: {
+        polyline: true,
+        polygon: false,
+        rectangle: false,
+        circle: false,
+        marker: false,
+      }
     });
 
     map.value.addControl(drawControl);
-    drawControl.setDrawingOptions({ polyline: {} });
-    drawControl.handler.enable();
+    document.querySelector(".leaflet-draw-draw-polyline").click();
   }
-  // drawControl.setDrawingOptions({ polyline: {} });
-  //           drawControl.handler.enable();
+
+  if (params == 'marker') {
+    let drawControl = new L.Control.Draw({
+      position: "topleft",
+      edit: {
+        featureGroup: drawnFeatures,
+      },
+      draw: {
+        polyline: false,
+        polygon: false,
+        rectangle: false,
+        circle: false,
+        marker: true,
+      }
+    });
+
+    map.value.addControl(drawControl);
+    document.querySelector(".leaflet-draw-draw-marker").click();
+  }
 }
 
 
@@ -132,7 +255,7 @@ const getMapConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/new-connections/')
   loading.value = false
-  console.log('result', result.data)
+  // console.log('result', result.data)
   if (result.data.length) {
     result.data.forEach((item, index) => {
 
@@ -169,12 +292,30 @@ const getMapConnection = async () => {
   // mapTypes.value = result
 }
 
-const getMapTypes = async () => {
+const getInitData = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/selete/')
   loading.value = false
+  console.log('result', result.data)
+  if (result.data.fibercores) {
+    dropdownList.value.fibercores = result.data.fibercores.map(item => {
+      return {
+        value: item.id,
+        label: item.fibercoredata,
+      }
+    })
+  }
+  if (result.data.fibercores) {
+    dropdownList.value.map_types = result.data.map_types.map(item => {
+      return {
+        value: item.id,
+        label: item.mapcat,
+      }
+    })
+  }
 
-  mapTypes.value = result
+  console.log('dropdownList.value', dropdownList.value)
+  // dropdownList.value = result
 }
 
 const isOpen = ref(false)
@@ -193,20 +334,22 @@ const onToggle = () => {
 const submitData = async () => {
   loading.value = true
   let result = ''
-  if (form.value.id) {
-    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-  } else {
-    result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-  }
-  loading.value = false
+  try {
+    if (form.value.id) {
+      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+    } else {
+      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+    }
+    loading.value = false
 
-  onToggle()
-
-  if (result.success) {
-    toast.success(result.message)
-    // this.$bvModal.hide('modal-1')
-  } else {
-    // this.$refs.form.setErrors(result.errors)
+    console.log('create result == ', result)
+    
+    if (result.success) {
+      toast.success(result.message)
+      onToggle()
+    }
+  } catch (error) {
+    toast.danger(error)
   }
 }
 
@@ -314,12 +457,22 @@ const submitData = async () => {
 
     </div>
 
-    <Modal ref="modalR">
+    <ModalR ref="modalR">
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
 
       <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+
+        <div class="mb-2 pb-4">
+          <label for="fibercored" class="input-label">Fibercores</label>
+          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="map_type" class="input-label">Map Type</label>
+          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
+        </div>
 
         <div class="mb-2 pb-4">
           <label for="fibername" class="input-label">Fibername</label>
@@ -357,10 +510,14 @@ const submitData = async () => {
         </div>
 
       </div>
-    </Modal>
+    </ModalR>
   </div>
 </template>
 
 <style scoped>
 @import '@/style.css';
+
+.vs__search, .vs__search:focus {
+  font-size: 13px !important;
+}
 </style>

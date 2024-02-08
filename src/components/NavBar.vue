@@ -45,7 +45,7 @@ const activateMapDraw = (drawTool) => {
           </div>
 
           <div class="flex-initial pl-5">
-            <button @click="activateMapDraw('measurement')" v-tippy="'Map Measurement'" class="btn border-none bg-[#80808033]"><font-awesome-icon
+            <button @click="activateMapDraw('polygon')" v-tippy="'Map Measurement'" class="btn border-none bg-[#80808033]"><font-awesome-icon
                 :icon="['fas', 'ruler-horizontal']" /></button>
             <button v-if="showMenubar" @click="toggleMenubar()" v-tippy="'Hide the menubar'" class="btn border-none hover:bg-[#80808033] ml-2 text-cyan-200 hover:text-cyan-400">
               <font-awesome-icon :icon="['fas', 'angle-up']" />

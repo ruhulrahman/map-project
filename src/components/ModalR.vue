@@ -38,4 +38,30 @@ defineExpose({
 
 <style scoped>
 @import '@/style.css';
+
+:deep() {
+  --vs-controls-color: #F3F4F6;
+  --vs-border-color: #52525B;
+
+  --vs-dropdown-bg: #282c34;
+  --vs-dropdown-color: #F3F4F6;
+  --vs-dropdown-option-color: #F3F4F6;
+
+  --vs-selected-bg: #344560;
+  --vs-selected-color: #F3F4F6;
+
+  --vs-search-input-color: #F3F4F6;
+
+  --vs-dropdown-option--active-bg: #344560;
+  --vs-dropdown-option--active-color: #F3F4F6;
+
+  --vs-search-input-placeholder-color: #71717A;
+  --vs-font-size: 13px;
+  --vs-line-height: 2;
+}
+
+.style-chooser .vs__search::placeholder {
+  color: #394066 !important;
+  font-size: 12px !important;
+}
 </style>

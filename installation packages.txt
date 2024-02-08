@@ -5,3 +5,4 @@
 4. npm i vue-tippy
 5. npm install --save vue-toastification@next
 6. npm install --save axios
+7. npm i --save vue-select@beta
