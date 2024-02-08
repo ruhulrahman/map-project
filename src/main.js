@@ -22,8 +22,6 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
-import VueProgressBar from 'vue-progressbar'
-
 import App from './App.vue'
 import router from './router'
 
@@ -34,12 +32,6 @@ app.component("ModalC", Modal)
 app.component("ModalR", ModalR)
 app.component('v-select', vSelect)
 app.component("ProgressBar", Progressbar)
-
-app.component(VueProgressBar, {
-  color: 'rgb(143, 255, 199)',
-  failedColor: 'red',
-  height: '2px'
-})
 
 app.use(
     VueTippy,
