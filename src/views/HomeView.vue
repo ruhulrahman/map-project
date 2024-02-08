@@ -362,7 +362,7 @@ const submitData = async () => {
     <div class="flex flex-row w-full absolute top-0 left-0 z-[2]">
       <div class="flex-row relative w-full h-full z-[4]">
         <div
-          class="flex-1 bg-[#1F1F1F] bg-opacity-[0.9] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
+          class="flex-1 bg-[#1F1F1F] bg-opacity-[0.8] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
           <!-- Navbar content -->
           <NavBar @activedMapDraw="activePolyLineDraw" />
         </div>
