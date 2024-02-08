@@ -256,10 +256,9 @@ const activePolyLineDraw2 = (params) => {
 const getMapConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/new-connections/')
-  loading.value = false
   // console.log('result', result.data)
   if (result.data.length) {
-    result.data.forEach((item, index) => {
+    await result.data.forEach((item, index) => {
 
         let intLatLong = item.user_longlate.split(',')
         lat.value = intLatLong[0]
@@ -270,8 +269,10 @@ const getMapConnection = async () => {
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-
     })
+
+    loading.value = false
+
     //     result.forEach(item => {
     //       // marker = new L.marker([item.user_longlate])
     //       //   .bindPopup(item.pppoe_id)
@@ -358,6 +359,9 @@ const submitData = async () => {
 </script>
 
 <template>
+  
+  <ProgressBar v-if="loading"/>
+
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
 
