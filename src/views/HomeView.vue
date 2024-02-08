@@ -104,7 +104,9 @@ onMounted(() => {
     var layer = e.layer;
     console.log(layer.toGeoJSON())
 
-    form.value.coordinates = layer.toGeoJSON()
+    const geoJson = layer.toGeoJSON()
+
+    form.value.coordinates = geoJson.geometry.coordinates
     // onToggle()
 
     modalR.value.onToggle()
