@@ -43,7 +43,24 @@ let form = ref({
   width_height: '',
   note: '',
   coordinates: '',
+  drawType: '',
 })
+
+const resetFormData = () => {
+  form.value = {
+    id: '',
+    map_type: '',
+    fibercorep: '',
+    user: 20,
+    fibername: '',
+    fiber_code: '',
+    color_code: '',
+    width_height: '',
+    note: '',
+    coordinates: '',
+    drawType: '',
+  }
+}
 
 
 let validationErrors = ref({
@@ -145,21 +162,31 @@ onMounted(async () => {
     var layer = e.layer;
     console.log(layer.toGeoJSON())
 
+    console.log('e.layerType', e.layerType)
+
+    form.value.drawType = ''
+
     const geoJson = layer.toGeoJSON()
+    form.value.drawType = e.layerType
 
     let geoJsonArray = []
 
-    if (geoJson.geometry.coordinates.length) {
-      geoJsonArray = geoJson.geometry.coordinates.map(item => {
-        const newObject = item.reverse()
-        return Object.assign(newObject)
-      })
+    if (e.layerType == 'polyline' || e.layerType == 'polygon') {
+      if (geoJson.geometry.coordinates.length) {
+        geoJsonArray = geoJson.geometry.coordinates.map(item => {
+          const newObject = item.reverse()
+          return Object.assign(newObject)
+        })
+      }
     }
 
-    console.log('geoJsonArray', geoJsonArray)
+    if (e.layerType == 'marker') {
+      if (geoJson.geometry.coordinates.length) {
+        geoJsonArray = geoJson.geometry.coordinates.reverse()
+      }
+    }
 
     form.value.coordinates = geoJsonArray
-    // onToggle()
 
     modalR.value.onToggle()
 
@@ -383,7 +410,8 @@ const getMapLineConnection = async () => {
       const fiberCoreName = fiberCore ? fiberCore.label : ''
 
       // map.value.setView(item.coordinates, 15);
-      var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+      // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+      var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
         .bindPopup(`
                         <div class="p-1">
                           <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
@@ -469,7 +497,7 @@ const isModalVisible = computed(() => {
 
 const onToggle = () => {
   isOpen.value = !isOpen.value
-  // createModal.value.onToggle()
+  resetFormData()
 }
 
 
@@ -495,23 +523,54 @@ const submitData = async () => {
   loading.value = true
   let result = ''
   try {
-    if (form.value.id) {
-      result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-    } else {
-      result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+    console.log('form.value', form.value)
+    if (form.value.drawType == 'polyline') {
+      if (form.value.id) {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      } else {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      }
+
+      if (result.status == 201) {
+        toast.success('Polyline has been created!')
+        onToggle()
+        getMapLineConnection()
+      }
+
     }
 
-    console.log('create result == ', result)
+    if (form.value.drawType == 'polygon') {
+      if (form.value.id) {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      } else {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      }
 
-    // if (result.success) {
-    //   toast.success(result.message)
-    //   onToggle()
-    // }
+      if (result.status == 201) {
+        toast.success('Polyline has been created!')
+        onToggle()
+        getMapLineConnection()
+      }
+    }
+
+    if (form.value.drawType == 'marker') {
+      if (form.value.id) {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      } else {
+        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
+      }
+
+      if (result.status == 201) {
+        toast.success('Polyline has been created!')
+        onToggle()
+        getMapLineConnection()
+      }
+    }
+
+    // console.log('create result == ', result)
+
   } catch (error) {
-    console.log('error', error)
     validationErrors.value = mixin.cn(error, 'response.data', null)
-    console.log('validationErrors.value', validationErrors.value)
-    // toast.danger(error)
   } finally {
     loading.value = false
   }
