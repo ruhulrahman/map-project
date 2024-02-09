@@ -80,18 +80,16 @@ const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
 
-// const getMapMarkerConnection = async () => {
-
-//   try {
-//         const data = await RestApi.get(`api/new-connections/`)
-//         console.log('data====>', data)
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
 
 
-// let controlLoader = ref()
+var greenIcon = new L.Icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
 
 onMounted(async () => {
   // Initialize the map
@@ -120,7 +118,7 @@ onMounted(async () => {
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
   });
 
-  googleSat.addTo(map.value);
+  googleHybrid.addTo(map.value);
 
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
@@ -274,7 +272,10 @@ const activePolyLineDraw = (params) => {
       edit: false
     });
 
+    
+
     map.value.addControl(drawControl.value);
+    // L.marker({ icon: greenIcon });
     document.querySelector(".leaflet-draw-draw-marker").click();
 
   }
@@ -298,8 +299,22 @@ const getMapMarkerConnection = async () => {
 
         latLong.push(newArray)
 
+        var greenIcon = new L.Icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+
+        var myIcon = L.divIcon({className: 'w-[100px] h-[100px] bg-orange-500 marker-tag'});
+        // var myIcon = L.divIcon({className: 'w-[50px] h-[50px] bg-orange-500 pin2'});
+        // var myIcon = L.divIcon({ className: '<div class="pin2"></div>'});
+
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
+        L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
 
       }
@@ -324,9 +339,7 @@ const getMapLineConnection = async () => {
       const mapTypeName = mapType ? mapType.label : ''
       const fiberCoreName = fiberCore ? fiberCore.label : ''
 
-      // map.value.setView(item.coordinates, 15);
       // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
-      // map.value.setView([lat.value, long.value], 15);
       var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
         .bindPopup(`
                         <div class="p-1">
@@ -345,37 +358,9 @@ const getMapLineConnection = async () => {
       // zoom the map to the polyline
       // map.value.fitBounds(polyline.getBounds());
     })
-
-    // const routeCoordinates = [
-    //   [22.879185737638235, 91.0967612200917],
-    //   [22.88022610768699, 91.09651396232842],
-    //   [22.882881755452775, 91.0971076415118],
-    //   [22.88543809769136, 91.09682293340168],
-    //   [22.886352003220935, 91.09687193349109],
-    //   [22.889411696113097, 91.0973342868249],
-    //   [22.89400000262578, 91.0982615140238],
-    //   [22.900154337430404, 91.09930245952859],
-    //   [22.90748151564617, 91.10084052595468],
-    //   [22.91057038886258, 91.10193995274975],
-    //   [22.917524184245455, 91.1022301093132],
-    //   [22.921140238369677, 91.10211204395046],
-    //   [22.93158581228992, 91.10409208481813],
-    //   [22.940809651845445, 91.104311012451],
-    //   [22.94479786433639, 91.10473377221744],
-    //   [22.944999183808765, 91.1114277678007],
-    //   [22.94587122452493, 91.12052715128002],
-    //   [22.94599221918687, 91.12406369077175]
-    // ];
-
-    // var polyline = L.polyline(routeCoordinates, {color: 'red'}).addTo(map.value);
   }
 
   loading.value = false
-
-  // var drawnFeatures = new L.FeatureGroup();
-  // drawnFeatures.addLayer(result);
-
-  // mapTypes.value = result
 }
 
 const getInitData = async () => {
@@ -706,8 +691,87 @@ watchEffect(() => {
 <style scoped>
 @import '@/style.css';
 
+img.leaflet-marker-icon {
+  filter: hue-rotate(244deg) !important;
+  filter: hue-rotate(90deg);
+}
+
 .vs__search,
 .vs__search:focus {
   font-size: 13px !important;
+}
+
+.marker-tag {
+  background-color: #4285F4;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 14px;
+  padding: 10px 15px;
+  position: relative;
+}
+
+.marker-tag::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translate(-50%, 0);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #4285F4;
+}
+
+
+.pin1 {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-left: -115px;
+  
+  border-radius: 50% 50% 50% 0;
+  border: 4px solid #fff;
+  width: 20px;
+  height: 20px;
+  transform: rotate(-45deg);
+}
+
+.pin1::after {
+  position: absolute;
+  content: '';
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  margin-left: -5px;
+  margin-top: -5px;
+  background-color: #fff;
+}
+
+
+
+.pin2 {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-left: 115px;
+  
+  border-radius: 50%;
+  border: 8px solid #fff;
+  width: 8px;
+  height: 8px;
+}
+
+.pin2::after {
+  position: absolute;
+  content: '';
+  width: 0px;
+  height: 0px;
+  bottom: -30px;
+  left: -6px;
+  border: 10px solid transparent;
+  border-top: 17px solid #fff;
 }
 </style>
