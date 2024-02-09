@@ -94,12 +94,6 @@ const toggleLeftSidebar = () => {
 // let controlLoader = ref()
 
 onMounted(async () => {
-
-  // controlLoader.value = L.control.loader().addTo(map);
-
-
-  // getLocation()
-
   // Initialize the map
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
 
@@ -212,7 +206,6 @@ onMounted(async () => {
 });
 
 const activePolyLineDraw = (params) => {
-  console.log('clicked here', params)
 
   map.value.removeControl(drawControl.value);
 
@@ -287,58 +280,9 @@ const activePolyLineDraw = (params) => {
   }
 }
 
-const activePolyLineDraw2 = (params) => {
-  console.log('clicked here', params)
-
-  let drawnFeatures = new L.FeatureGroup();
-  map.value.addLayer(drawnFeatures);
-
-  if (params == 'polyline') {
-    let drawControl = new L.Control.Draw({
-      position: "topleft",
-      edit: {
-        featureGroup: drawnFeatures,
-      },
-      draw: {
-        polyline: true,
-        polygon: false,
-        rectangle: false,
-        circle: false,
-        marker: false,
-      }
-    });
-
-    map.value.addControl(drawControl);
-    document.querySelector(".leaflet-draw-draw-polyline").click();
-  }
-
-  if (params == 'marker') {
-    let drawControl = new L.Control.Draw({
-      position: "topleft",
-      edit: {
-        featureGroup: drawnFeatures,
-      },
-      draw: {
-        polyline: false,
-        polygon: false,
-        rectangle: false,
-        circle: false,
-        marker: true,
-      }
-    });
-
-    map.value.addControl(drawControl);
-    document.querySelector(".leaflet-draw-draw-marker").click();
-  }
-}
-
-
 const getMapMarkerConnection = async () => {
   loading.value = true
-  // controlLoader.value.show();
   let result = await RestApi.get('/api/new-connections/')
-  // let result = await RestApi.get('/api/v1/sg-5/getmapdemo/')
-  // console.log('result', result.data)
   if (result.data.length) {
     const latLong = []
     await result.data.forEach((item, index) => {
@@ -354,46 +298,17 @@ const getMapMarkerConnection = async () => {
 
         latLong.push(newArray)
 
-        // console.log('intLatLong=', intLatLong, '  index=', index, 'id=', item.id)
-
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
 
-
       }
-
-
-      // map.value.setView(latLong, 15);
-      // L.marker(latLong).addTo(map.value);
 
       loading.value = false
     })
 
-    // controlLoader.value.hide();
-
     loading.value = false
-
-    //     result.forEach(item => {
-    //       // marker = new L.marker([item.user_longlate])
-    //       //   .bindPopup(item.pppoe_id)
-    //       //   .addTo(map);
-
-    //         map.value.setView([item.user_longlate], 15);
-    // ;
-    //         L.marker([item.user_longlate])
-    //         .addTo(map.value)
-    //         // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`)
-    //     })
-    // map.value = L.map(mapContainer.value).setView([22.946198, 91.1066334], 13);
-    // map.value.setView([22.946198, 91.1066334], 13);
-    // L.marker([22.946198, 91.1066334])
-    //   .addTo(map.value)
   }
-  // var drawnFeatures = new L.FeatureGroup();
-  // drawnFeatures.addLayer(result);
-
-  // mapTypes.value = result
 }
 
 const getMapLineConnection = async () => {
@@ -411,6 +326,7 @@ const getMapLineConnection = async () => {
 
       // map.value.setView(item.coordinates, 15);
       // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+      // map.value.setView([lat.value, long.value], 15);
       var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
         .bindPopup(`
                         <div class="p-1">
@@ -427,7 +343,7 @@ const getMapLineConnection = async () => {
 
 
       // zoom the map to the polyline
-      map.value.fitBounds(polyline.getBounds());
+      // map.value.fitBounds(polyline.getBounds());
     })
 
     // const routeCoordinates = [
@@ -496,8 +412,7 @@ const isModalVisible = computed(() => {
 })
 
 const onToggle = () => {
-  isOpen.value = !isOpen.value
-  resetFormData()
+  modalR.value.onToggle()
 }
 
 
@@ -534,6 +449,7 @@ const submitData = async () => {
       if (result.status == 201) {
         toast.success('Polyline has been created!')
         onToggle()
+        resetFormData()
         getMapLineConnection()
       }
 
@@ -549,6 +465,7 @@ const submitData = async () => {
       if (result.status == 201) {
         toast.success('Polyline has been created!')
         onToggle()
+        resetFormData()
         getMapLineConnection()
       }
     }
@@ -563,6 +480,7 @@ const submitData = async () => {
       if (result.status == 201) {
         toast.success('Polyline has been created!')
         onToggle()
+        resetFormData()
         getMapLineConnection()
       }
     }
