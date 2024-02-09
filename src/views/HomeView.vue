@@ -592,7 +592,7 @@ watchEffect(() => {
           </div>
 
           <div class="text-right">
-            <button type="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+            <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
               Save to Project
             </button>
           </div>
