@@ -76,7 +76,7 @@ const toggleLeftSidebar = () => {
 
 // let controlLoader = ref()
 
-onMounted(() => {
+ onMounted( async () => {
 
   // controlLoader.value = L.control.loader().addTo(map);
 
@@ -159,9 +159,9 @@ onMounted(() => {
 
   });
 
+  getInitData()
   getMapMarkerConnection()
   getMapLineConnection()
-  getInitData()
 
 });
 
@@ -357,14 +357,32 @@ const getMapLineConnection = async () => {
   if (result.data.length) {
     await result.data.forEach((item, index) => {
 
-      console.log('item.coordinates', item.coordinates)
+      const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
+      const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
+
+      const mapTypeName = mapType ? mapType.label : ''
+      const fiberCoreName = fiberCore ? fiberCore.label : ''
 
       // map.value.setView(item.coordinates, 15);
-      var polyline = L.polyline(item.coordinates, {color: '#34FF0F'}).addTo(map.value);
+      var polyline = L.polyline(item.coordinates, {color: item.color_code}).addTo(map.value)
+                      .bindPopup(`
+                        <div class="p-1">
+                          <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
+                          ${
+                            mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
+                          }
+                          ${
+                            fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
+                          }
+                          <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
+                          <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
+                          <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
+                        </div>
+                      `)
 
 
       // zoom the map to the polyline
-      // map.value.fitBounds(polyline.getBounds());
+      map.value.fitBounds(polyline.getBounds());
     })
 
     // const routeCoordinates = [
