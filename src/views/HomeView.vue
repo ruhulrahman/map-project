@@ -1,10 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watchEffect } from "vue";
 import RestApi from '@/libs/config'
+import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
+import { useForm } from 'vee-validate';
+import * as yup from 'yup';
+import InputText from '@/components/InputText.vue';
+
 // import Modal from "@/components/ModalR.vue";
 
 const toast = useToast()
@@ -41,6 +46,19 @@ let form = ref({
 })
 
 
+let validationErrors = ref({
+  map_type: [],
+  fibercorep: [],
+  fibername: [],
+  fiber_code: [],
+  color_code: [],
+  width_height: [],
+  note: [],
+  coordinates: [],
+})
+
+
+
 const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
@@ -56,7 +74,11 @@ const toggleLeftSidebar = () => {
 // }
 
 
+// let controlLoader = ref()
+
 onMounted(() => {
+
+  // controlLoader.value = L.control.loader().addTo(map);
 
 
   // getLocation()
@@ -255,21 +277,41 @@ const activePolyLineDraw2 = (params) => {
 
 const getMapConnection = async () => {
   loading.value = true
+  // controlLoader.value.show();
   let result = await RestApi.get('/api/new-connections/')
   // console.log('result', result.data)
   if (result.data.length) {
+    const latLong = []
     await result.data.forEach((item, index) => {
-
+      
+      loading.value = true
+      if (index < 50) {
+      
         let intLatLong = item.user_longlate.split(',')
         lat.value = intLatLong[0]
         long.value = intLatLong[1]
+
+        const newArray = [lat.value, long.value]
+
+        latLong.push(newArray)
 
         console.log('intLatLong=', intLatLong, '  index=', index, 'id=', item.id)
 
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+
+        
+      }
+      
+
+        // map.value.setView(latLong, 15);
+        // L.marker(latLong).addTo(map.value);
+
+        loading.value = false
     })
+
+    // controlLoader.value.hide();
 
     loading.value = false
 
@@ -334,6 +376,24 @@ const onToggle = () => {
 }
 
 
+// const submitData = async () => {
+//   loading.value = true
+//   let result = ''
+  
+//   if (form.value.id) {
+//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+//     } else {
+//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+//     }
+//     loading.value = false
+
+//     console.log('create result == ', result)
+//     if (result.error) {
+//       validationErrors.value = mixin.cn(result.error, 'data.errors', null)
+//     }
+
+// }
+
 const submitData = async () => {
   loading.value = true
   let result = ''
@@ -343,18 +403,49 @@ const submitData = async () => {
     } else {
       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
     }
-    loading.value = false
 
     console.log('create result == ', result)
     
-    if (result.success) {
-      toast.success(result.message)
-      onToggle()
-    }
+    // if (result.success) {
+    //   toast.success(result.message)
+    //   onToggle()
+    // }
   } catch (error) {
-    toast.danger(error)
+    console.log('error', error)
+    validationErrors.value = mixin.cn(error, 'response.data', null)
+    console.log('validationErrors.value', validationErrors.value)
+    // toast.danger(error)
+  } finally {
+    loading.value = false
   }
 }
+
+
+// watcher
+watchEffect(() => {
+  console.log('watchEffect')
+  if (form.value.color_code) {
+    validationErrors.value.color_code = []
+  }
+  if (form.value.coordinates) {
+    validationErrors.value.coordinates = []
+  }
+  if (form.value.fiber_code) {
+    validationErrors.value.fiber_code = []
+  }
+  if (form.value.fibercorep) {
+    validationErrors.value.fibercorep = []
+  }
+  if (form.value.map_type) {
+    validationErrors.value.map_type = []
+  }
+  if (form.value.note) {
+    validationErrors.value.note = []
+  }
+  if (form.value.width_height) {
+    validationErrors.value.width_height = []
+  }
+})
 
 </script>
 
@@ -467,55 +558,78 @@ const submitData = async () => {
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
+      <form @submit="onSubmit">
+        <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
-      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+          <div class="mb-2 pb-4">
+            <label for="fibercored" class="input-label">Fibercores</label>
+            <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
+            <p class="error-text" v-if="validationErrors.fibercorep.length">
+              {{  validationErrors.fibercorep[0]  }}
+            </p>
+          </div>
 
-        <div class="mb-2 pb-4">
-          <label for="fibercored" class="input-label">Fibercores</label>
-          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
+          <div class="mb-2 pb-4">
+            <label for="map_type" class="input-label">Map Type</label>
+            <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
+            <p class="error-text" v-if="validationErrors.map_type.length">
+              {{  validationErrors.map_type[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fibername" class="input-label">Fibername</label>
+            <InputText name="form.fibername" placeholder="Enter fibername"/>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fibername" class="input-label">Fibername</label>
+            <input type="text" v-model="form.fibername" id="fibername" class="input-control" placeholder="Enter fibername" />
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fiber_code" class="input-label">Fiber code</label>
+            <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
+              placeholder="Enter fiber code" />
+              <p class="error-text" v-if="validationErrors.fiber_code.length">
+                {{  validationErrors.fiber_code[0]  }}
+              </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="color_code" class="input-label">Color code</label>
+            <input type="text" v-model="form.color_code" id="color_code" class="input-control"
+              placeholder="Enter color code" />
+            <p class="error-text" v-if="validationErrors.color_code.length">
+              {{  validationErrors.color_code[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="width_height" class="input-label">Width and Height</label>
+            <input type="text" v-model="form.width_height" id="width_height" class="input-control"
+              placeholder="Enter width height" />
+            <p class="error-text" v-if="validationErrors.width_height.length">
+              {{  validationErrors.width_height[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4 ">
+            <label for="note" class="input-label">Note</label>
+            <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
+            <p class="error-text" v-if="validationErrors.note.length">
+              {{  validationErrors.note[0]  }}
+            </p>
+          </div>
+
+          <div class="text-right">
+            <button type="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+              Save to Project
+            </button>
+          </div>
+
         </div>
-
-        <div class="mb-2 pb-4">
-          <label for="map_type" class="input-label">Map Type</label>
-          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fibername" class="input-label">Fibername</label>
-          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
-            placeholder="Enter fibername" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fiber_code" class="input-label">Fiber code</label>
-          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-            placeholder="Enter fiber code" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="color_code" class="input-label">Color code</label>
-          <input type="text" v-model="form.color_code" id="color_code" class="input-control"
-            placeholder="Enter color code" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="width_height" class="input-label">Width and Height</label>
-          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-            placeholder="Enter width height" />
-        </div>
-
-        <div class="mb-2 pb-4 ">
-          <label for="note" class="input-label">Note</label>
-          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-        </div>
-
-        <div class="text-right">
-          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-            Save to Project
-          </button>
-        </div>
-
-      </div>
+      </form>
     </ModalR>
   </div>
 </template>

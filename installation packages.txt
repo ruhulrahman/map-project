@@ -6,3 +6,5 @@
 5. npm install --save vue-toastification@next
 6. npm install --save axios
 7. npm i --save vue-select@beta
+8. npm i notyf hashids moment
+9. npm i vee-validate yup --save

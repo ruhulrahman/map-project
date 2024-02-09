@@ -355,6 +355,11 @@
     focus:shadow-gray-inset2
   }
 
+  .error-text {
+    @apply
+    text-red-500 mt-1 text-[13px]
+  }
+
 
   .no-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */
