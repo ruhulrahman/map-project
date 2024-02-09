@@ -63,7 +63,7 @@ const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
 
-// const getMapConnection = async () => {
+// const getMapMarkerConnection = async () => {
 
 //   try {
 //         const data = await RestApi.get(`api/new-connections/`)
@@ -128,7 +128,18 @@ onMounted(() => {
 
     const geoJson = layer.toGeoJSON()
 
-    form.value.coordinates = geoJson.geometry.coordinates
+    let geoJsonArray = []
+
+    if (geoJson.geometry.coordinates.length) {
+      geoJsonArray = geoJson.geometry.coordinates.map(item => {
+        const newObject = item.reverse()
+        return Object.assign(newObject)
+      })
+    }
+
+    console.log('geoJsonArray', geoJsonArray)
+
+    form.value.coordinates = geoJsonArray
     // onToggle()
 
     modalR.value.onToggle()
@@ -148,7 +159,8 @@ onMounted(() => {
 
   });
 
-  getMapConnection()
+  getMapMarkerConnection()
+  getMapLineConnection()
   getInitData()
 
 });
@@ -275,10 +287,11 @@ const activePolyLineDraw2 = (params) => {
 }
 
 
-const getMapConnection = async () => {
+const getMapMarkerConnection = async () => {
   loading.value = true
   // controlLoader.value.show();
   let result = await RestApi.get('/api/new-connections/')
+  // let result = await RestApi.get('/api/v1/sg-5/getmapdemo/')
   // console.log('result', result.data)
   if (result.data.length) {
     const latLong = []
@@ -295,7 +308,7 @@ const getMapConnection = async () => {
 
         latLong.push(newArray)
 
-        console.log('intLatLong=', intLatLong, '  index=', index, 'id=', item.id)
+        // console.log('intLatLong=', intLatLong, '  index=', index, 'id=', item.id)
 
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
@@ -331,6 +344,55 @@ const getMapConnection = async () => {
     // L.marker([22.946198, 91.1066334])
     //   .addTo(map.value)
   }
+  // var drawnFeatures = new L.FeatureGroup();
+  // drawnFeatures.addLayer(result);
+
+  // mapTypes.value = result
+}
+
+const getMapLineConnection = async () => {
+  loading.value = true
+  let result = await RestApi.get('/api/v1/sg-5/getmapdemo/')
+  // console.log('result', result.data)
+  if (result.data.length) {
+    await result.data.forEach((item, index) => {
+
+      console.log('item.coordinates', item.coordinates)
+
+      // map.value.setView(item.coordinates, 15);
+      var polyline = L.polyline(item.coordinates, {color: '#34FF0F'}).addTo(map.value);
+
+
+      // zoom the map to the polyline
+      // map.value.fitBounds(polyline.getBounds());
+    })
+
+    // const routeCoordinates = [
+    //   [22.879185737638235, 91.0967612200917],
+    //   [22.88022610768699, 91.09651396232842],
+    //   [22.882881755452775, 91.0971076415118],
+    //   [22.88543809769136, 91.09682293340168],
+    //   [22.886352003220935, 91.09687193349109],
+    //   [22.889411696113097, 91.0973342868249],
+    //   [22.89400000262578, 91.0982615140238],
+    //   [22.900154337430404, 91.09930245952859],
+    //   [22.90748151564617, 91.10084052595468],
+    //   [22.91057038886258, 91.10193995274975],
+    //   [22.917524184245455, 91.1022301093132],
+    //   [22.921140238369677, 91.10211204395046],
+    //   [22.93158581228992, 91.10409208481813],
+    //   [22.940809651845445, 91.104311012451],
+    //   [22.94479786433639, 91.10473377221744],
+    //   [22.944999183808765, 91.1114277678007],
+    //   [22.94587122452493, 91.12052715128002],
+    //   [22.94599221918687, 91.12406369077175]
+    // ];
+
+    // var polyline = L.polyline(routeCoordinates, {color: 'red'}).addTo(map.value);
+  }
+
+  loading.value = false
+
   // var drawnFeatures = new L.FeatureGroup();
   // drawnFeatures.addLayer(result);
 
@@ -399,9 +461,9 @@ const submitData = async () => {
   let result = ''
   try {
     if (form.value.id) {
-      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+      result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
     } else {
-      result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
+      result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
     }
 
     console.log('create result == ', result)
