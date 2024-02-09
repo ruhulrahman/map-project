@@ -558,7 +558,6 @@ watchEffect(() => {
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
-      <form @submit="onSubmit">
         <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
           <div class="mb-2 pb-4">
@@ -575,11 +574,6 @@ watchEffect(() => {
             <p class="error-text" v-if="validationErrors.map_type.length">
               {{  validationErrors.map_type[0]  }}
             </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="fibername" class="input-label">Fibername</label>
-            <InputText name="form.fibername" placeholder="Enter fibername"/>
           </div>
 
           <div class="mb-2 pb-4">
@@ -623,13 +617,12 @@ watchEffect(() => {
           </div>
 
           <div class="text-right">
-            <button type="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+            <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
               Save to Project
             </button>
           </div>
 
         </div>
-      </form>
     </ModalR>
   </div>
 </template>
