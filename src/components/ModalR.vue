@@ -26,7 +26,7 @@ defineExpose({
                 <font-awesome-icon @click="onToggle" class=" hover:bg-[#2A2A2A] w-[20px] h-[20px] p-2 rounded-full cursor-pointer" :icon="['fas', 'xmark']" />
             </div>
           </div>
-          <div class="max-h-[550px] overflow-y-auto no-scrollbar">
+          <div class="h-auto max-h-[520px] overflow-y-auto no-scrollbar">
             <slot></slot>  
           </div>
         </div>
