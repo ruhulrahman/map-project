@@ -76,7 +76,7 @@ const toggleLeftSidebar = () => {
 
 // let controlLoader = ref()
 
- onMounted( async () => {
+onMounted(async () => {
 
   // controlLoader.value = L.control.loader().addTo(map);
 
@@ -87,10 +87,29 @@ const toggleLeftSidebar = () => {
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
 
   // Add the OpenStreetMap tiles
-  var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  })
-  osm.addTo(map.value);
+  // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  // })
+
+  const googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+  });
+  const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+  });
+  const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+  });
+
+  const googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+    maxZoom: 20,
+    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+  });
+
+  googleSat.addTo(map.value);
 
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
@@ -198,7 +217,7 @@ const activePolyLineDraw = (params) => {
       },
       edit: false
     });
-    
+
     map.value.addControl(drawControl.value);
     document.querySelector(".leaflet-draw-draw-polygon").click();
 
@@ -296,10 +315,10 @@ const getMapMarkerConnection = async () => {
   if (result.data.length) {
     const latLong = []
     await result.data.forEach((item, index) => {
-      
+
       loading.value = true
       if (index < 50) {
-      
+
         let intLatLong = item.user_longlate.split(',')
         lat.value = intLatLong[0]
         long.value = intLatLong[1]
@@ -314,14 +333,14 @@ const getMapMarkerConnection = async () => {
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
 
-        
+
       }
-      
 
-        // map.value.setView(latLong, 15);
-        // L.marker(latLong).addTo(map.value);
 
-        loading.value = false
+      // map.value.setView(latLong, 15);
+      // L.marker(latLong).addTo(map.value);
+
+      loading.value = false
     })
 
     // controlLoader.value.hide();
@@ -364,16 +383,14 @@ const getMapLineConnection = async () => {
       const fiberCoreName = fiberCore ? fiberCore.label : ''
 
       // map.value.setView(item.coordinates, 15);
-      var polyline = L.polyline(item.coordinates, {color: item.color_code}).addTo(map.value)
-                      .bindPopup(`
+      var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+        .bindPopup(`
                         <div class="p-1">
                           <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
-                          ${
-                            mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
-                          }
-                          ${
-                            fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
-                          }
+                          ${mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
+          }
+                          ${fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
+          }
                           <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
                           <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
                           <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
@@ -459,7 +476,7 @@ const onToggle = () => {
 // const submitData = async () => {
 //   loading.value = true
 //   let result = ''
-  
+
 //   if (form.value.id) {
 //       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
 //     } else {
@@ -485,7 +502,7 @@ const submitData = async () => {
     }
 
     console.log('create result == ', result)
-    
+
     // if (result.success) {
     //   toast.success(result.message)
     //   onToggle()
@@ -530,8 +547,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  
-  <ProgressBar v-if="loading"/>
+  <ProgressBar v-if="loading" />
 
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
@@ -638,71 +654,74 @@ watchEffect(() => {
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
-        <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
-          <div class="mb-2 pb-4">
-            <label for="fibercored" class="input-label">Fibercores</label>
-            <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
-            <p class="error-text" v-if="validationErrors.fibercorep.length">
-              {{  validationErrors.fibercorep[0]  }}
-            </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="map_type" class="input-label">Map Type</label>
-            <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
-            <p class="error-text" v-if="validationErrors.map_type.length">
-              {{  validationErrors.map_type[0]  }}
-            </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="fibername" class="input-label">Fibername</label>
-            <input type="text" v-model="form.fibername" id="fibername" class="input-control" placeholder="Enter fibername" />
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="fiber_code" class="input-label">Fiber code</label>
-            <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-              placeholder="Enter fiber code" />
-              <p class="error-text" v-if="validationErrors.fiber_code.length">
-                {{  validationErrors.fiber_code[0]  }}
-              </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="color_code" class="input-label">Color code</label>
-            <input type="text" v-model="form.color_code" id="color_code" class="input-control"
-              placeholder="Enter color code" />
-            <p class="error-text" v-if="validationErrors.color_code.length">
-              {{  validationErrors.color_code[0]  }}
-            </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="width_height" class="input-label">Width and Height</label>
-            <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-              placeholder="Enter width height" />
-            <p class="error-text" v-if="validationErrors.width_height.length">
-              {{  validationErrors.width_height[0]  }}
-            </p>
-          </div>
-
-          <div class="mb-2 pb-4 ">
-            <label for="note" class="input-label">Note</label>
-            <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-            <p class="error-text" v-if="validationErrors.note.length">
-              {{  validationErrors.note[0]  }}
-            </p>
-          </div>
-
-          <div class="text-right">
-            <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-              Save to Project
-            </button>
-          </div>
-
+        <div class="mb-2 pb-4">
+          <label for="fibercored" class="input-label">Fibercores</label>
+          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
+            id="fibercored" placeholder="Select Fiber Cores" />
+          <p class="error-text" v-if="validationErrors.fibercorep.length">
+            {{ validationErrors.fibercorep[0] }}
+          </p>
         </div>
+
+        <div class="mb-2 pb-4">
+          <label for="map_type" class="input-label">Map Type</label>
+          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
+            placeholder="Select map type" />
+          <p class="error-text" v-if="validationErrors.map_type.length">
+            {{ validationErrors.map_type[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="fibername" class="input-label">Fibername</label>
+          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
+            placeholder="Enter fibername" />
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="fiber_code" class="input-label">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
+            placeholder="Enter fiber code" />
+          <p class="error-text" v-if="validationErrors.fiber_code.length">
+            {{ validationErrors.fiber_code[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="color_code" class="input-label">Color code</label>
+          <input type="text" v-model="form.color_code" id="color_code" class="input-control"
+            placeholder="Enter color code" />
+          <p class="error-text" v-if="validationErrors.color_code.length">
+            {{ validationErrors.color_code[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="width_height" class="input-label">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
+            placeholder="Enter width height" />
+          <p class="error-text" v-if="validationErrors.width_height.length">
+            {{ validationErrors.width_height[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4 ">
+          <label for="note" class="input-label">Note</label>
+          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
+          <p class="error-text" v-if="validationErrors.note.length">
+            {{ validationErrors.note[0] }}
+          </p>
+        </div>
+
+        <div class="text-right">
+          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+            Save to Project
+          </button>
+        </div>
+
+      </div>
     </ModalR>
   </div>
 </template>
@@ -710,7 +729,8 @@ watchEffect(() => {
 <style scoped>
 @import '@/style.css';
 
-.vs__search, .vs__search:focus {
+.vs__search,
+.vs__search:focus {
   font-size: 13px !important;
 }
 </style>
