@@ -45,16 +45,6 @@ let form = ref({
   coordinates: '',
 })
 
-const schema = yup.object({
-  form: yup.object({
-    fibercorep: yup.string().required(),
-    fiber_code: yup.string().required(),
-  }),
-});
-
-function onSubmit(values) {
-  console.log(values);
-}
 
 let validationErrors = ref({
   map_type: [],
@@ -568,18 +558,33 @@ watchEffect(() => {
       <template #header>
         <h6>Add New Fiber Area</h6>
       </template>
-
-      <Form v-slot="{ errors }" :validation-schema="schema" @submit="onSubmit">
+      <form @submit="onSubmit">
         <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
           <div class="mb-2 pb-4">
             <label for="fibercored" class="input-label">Fibercores</label>
-            <Field name="form.fibercores" v-slot="{ field  }">
-              <v-select v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
-            </Field>
-            <p class="error-text">
-              {{ errors['form.fibercores'] }}
+            <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
+            <p class="error-text" v-if="validationErrors.fibercorep.length">
+              {{  validationErrors.fibercorep[0]  }}
             </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="map_type" class="input-label">Map Type</label>
+            <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select map type" />
+            <p class="error-text" v-if="validationErrors.map_type.length">
+              {{  validationErrors.map_type[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fibername" class="input-label">Fibername</label>
+            <InputText name="form.fibername" placeholder="Enter fibername"/>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fibername" class="input-label">Fibername</label>
+            <input type="text" v-model="form.fibername" id="fibername" class="input-control" placeholder="Enter fibername" />
           </div>
 
           <div class="mb-2 pb-4">
@@ -591,6 +596,32 @@ watchEffect(() => {
               </p>
           </div>
 
+          <div class="mb-2 pb-4">
+            <label for="color_code" class="input-label">Color code</label>
+            <input type="text" v-model="form.color_code" id="color_code" class="input-control"
+              placeholder="Enter color code" />
+            <p class="error-text" v-if="validationErrors.color_code.length">
+              {{  validationErrors.color_code[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="width_height" class="input-label">Width and Height</label>
+            <input type="text" v-model="form.width_height" id="width_height" class="input-control"
+              placeholder="Enter width height" />
+            <p class="error-text" v-if="validationErrors.width_height.length">
+              {{  validationErrors.width_height[0]  }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4 ">
+            <label for="note" class="input-label">Note</label>
+            <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
+            <p class="error-text" v-if="validationErrors.note.length">
+              {{  validationErrors.note[0]  }}
+            </p>
+          </div>
+
           <div class="text-right">
             <button type="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
               Save to Project
@@ -598,7 +629,7 @@ watchEffect(() => {
           </div>
 
         </div>
-      </Form>
+      </form>
     </ModalR>
   </div>
 </template>
