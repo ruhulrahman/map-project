@@ -301,9 +301,8 @@ watchEffect(() => {
             <Field name="form.fibercorep" v-slot="{ field  }">
               <v-select v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercorep" placeholder="Select Fiber Cores" />
             </Field>
-            <p class="error-text">
-              {{ errors['form.fibercorep'] }}
-            </p>
+            <ErrorMessage class="error-text" name="form.fibercorep" />
+            <p class="error-text">{{ errors['form.fibercorep'] }}</p>
           </div>
 
           <div class="mb-2 pb-4">
@@ -311,9 +310,8 @@ watchEffect(() => {
             <Field name="form.fiber_code" v-slot="{ field  }">
                 <input type="text" v-bind="field" id="fiber_code" class="input-control" placeholder="Enter fiber code" />
             </Field>
-            <p class="error-text">
-              {{ errors['form.fiber_code'] }}
-            </p>
+            <ErrorMessage class="error-text" name="form.fiber_code" />
+            <p class="error-text">{{ errors['form.fiber_code'] }}</p>
           </div>
 
           <div class="text-right">
