@@ -6,7 +6,7 @@ import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
-import { useForm } from 'vee-validate';
+import { Form, Field, ErrorMessage, useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
 
@@ -47,53 +47,19 @@ let form = ref({
 
 const schema = yup.object({
   form: yup.object({
-    fibercorep: yup.string().required(),
-    fiber_code: yup.string().required(),
+    fibercorep: yup.string().required().label('Fibercorep'),
+    fiber_code: yup.string().required().label('Fiber Code'),
   }),
 });
 
 function onSubmit(values) {
-  console.log(values);
+  console.log('values ===', values);
 }
-
-let validationErrors = ref({
-  map_type: [],
-  fibercorep: [],
-  fibername: [],
-  fiber_code: [],
-  color_code: [],
-  width_height: [],
-  note: [],
-  coordinates: [],
-})
-
-
 
 const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
-
-// const getMapConnection = async () => {
-
-//   try {
-//         const data = await RestApi.get(`api/new-connections/`)
-//         console.log('data====>', data)
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
-
-
-// let controlLoader = ref()
-
 onMounted(() => {
-
-  // controlLoader.value = L.control.loader().addTo(map);
-
-
-  // getLocation()
-
-  // Initialize the map
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
 
   // Add the OpenStreetMap tiles
@@ -121,15 +87,6 @@ onMounted(() => {
   });
 
   map.value.addControl(drawControl.value);
-
-  // var drawControl = new L.Control.Draw({
-  //   position: "topright",
-  //   edit: {
-  //     featureGroup: drawnFeatures,
-  //   }
-  // });
-
-  // map.value.addControl(drawControl);
 
   map.value.on("draw:created", function (e) {
     var type = e.layerType;
@@ -167,9 +124,6 @@ const activePolyLineDraw = (params) => {
   console.log('clicked here', params)
 
   map.value.removeControl(drawControl.value);
-
-  // let drawnFeatures = new L.FeatureGroup();
-  // map.value.addLayer(drawnFeatures);
 
   if (params == 'polygon') {
 
@@ -239,52 +193,6 @@ const activePolyLineDraw = (params) => {
   }
 }
 
-const activePolyLineDraw2 = (params) => {
-  console.log('clicked here', params)
-
-  let drawnFeatures = new L.FeatureGroup();
-  map.value.addLayer(drawnFeatures);
-
-  if (params == 'polyline') {
-    let drawControl = new L.Control.Draw({
-      position: "topleft",
-      edit: {
-        featureGroup: drawnFeatures,
-      },
-      draw: {
-        polyline: true,
-        polygon: false,
-        rectangle: false,
-        circle: false,
-        marker: false,
-      }
-    });
-
-    map.value.addControl(drawControl);
-    document.querySelector(".leaflet-draw-draw-polyline").click();
-  }
-
-  if (params == 'marker') {
-    let drawControl = new L.Control.Draw({
-      position: "topleft",
-      edit: {
-        featureGroup: drawnFeatures,
-      },
-      draw: {
-        polyline: false,
-        polygon: false,
-        rectangle: false,
-        circle: false,
-        marker: true,
-      }
-    });
-
-    map.value.addControl(drawControl);
-    document.querySelector(".leaflet-draw-draw-marker").click();
-  }
-}
-
-
 const getMapConnection = async () => {
   loading.value = true
   // controlLoader.value.show();
@@ -310,41 +218,14 @@ const getMapConnection = async () => {
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
           .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-
         
       }
-      
 
-        // map.value.setView(latLong, 15);
-        // L.marker(latLong).addTo(map.value);
-
-        loading.value = false
+      loading.value = false
     })
 
-    // controlLoader.value.hide();
-
     loading.value = false
-
-    //     result.forEach(item => {
-    //       // marker = new L.marker([item.user_longlate])
-    //       //   .bindPopup(item.pppoe_id)
-    //       //   .addTo(map);
-
-    //         map.value.setView([item.user_longlate], 15);
-    // ;
-    //         L.marker([item.user_longlate])
-    //         .addTo(map.value)
-    //         // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}`)
-    //     })
-    // map.value = L.map(mapContainer.value).setView([22.946198, 91.1066334], 13);
-    // map.value.setView([22.946198, 91.1066334], 13);
-    // L.marker([22.946198, 91.1066334])
-    //   .addTo(map.value)
   }
-  // var drawnFeatures = new L.FeatureGroup();
-  // drawnFeatures.addLayer(result);
-
-  // mapTypes.value = result
 }
 
 const getInitData = async () => {
@@ -368,41 +249,11 @@ const getInitData = async () => {
       }
     })
   }
-
-  console.log('dropdownList.value', dropdownList.value)
-  // dropdownList.value = result
 }
-
-const isOpen = ref(false)
-const createModal = ref(false)
-
-const isModalVisible = computed(() => {
-  return isOpen.value
-})
 
 const onToggle = () => {
-  isOpen.value = !isOpen.value
-  // createModal.value.onToggle()
+  modalR.value.onToggle()
 }
-
-
-// const submitData = async () => {
-//   loading.value = true
-//   let result = ''
-  
-//   if (form.value.id) {
-//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-//     } else {
-//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-//     }
-//     loading.value = false
-
-//     console.log('create result == ', result)
-//     if (result.error) {
-//       validationErrors.value = mixin.cn(result.error, 'data.errors', null)
-//     }
-
-// }
 
 const submitData = async () => {
   loading.value = true
@@ -415,16 +266,8 @@ const submitData = async () => {
     }
 
     console.log('create result == ', result)
-    
-    // if (result.success) {
-    //   toast.success(result.message)
-    //   onToggle()
-    // }
   } catch (error) {
     console.log('error', error)
-    validationErrors.value = mixin.cn(error, 'response.data', null)
-    console.log('validationErrors.value', validationErrors.value)
-    // toast.danger(error)
   } finally {
     loading.value = false
   }
@@ -434,27 +277,6 @@ const submitData = async () => {
 // watcher
 watchEffect(() => {
   console.log('watchEffect')
-  if (form.value.color_code) {
-    validationErrors.value.color_code = []
-  }
-  if (form.value.coordinates) {
-    validationErrors.value.coordinates = []
-  }
-  if (form.value.fiber_code) {
-    validationErrors.value.fiber_code = []
-  }
-  if (form.value.fibercorep) {
-    validationErrors.value.fibercorep = []
-  }
-  if (form.value.map_type) {
-    validationErrors.value.map_type = []
-  }
-  if (form.value.note) {
-    validationErrors.value.note = []
-  }
-  if (form.value.width_height) {
-    validationErrors.value.width_height = []
-  }
 })
 
 </script>
@@ -465,6 +287,44 @@ watchEffect(() => {
 
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
+
+    <ModalR ref="modalR">
+      <template #header>
+        <h6>Add New Fiber Area</h6>
+      </template>
+
+      <Form v-slot="{ errors }" :validation-schema="schema" @submit="onSubmit">
+        <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+
+          <div class="mb-2 pb-4">
+            <label for="fibercorep" class="input-label">Fibercores</label>
+            <Field name="form.fibercorep" v-slot="{ field  }">
+              <v-select v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercorep" placeholder="Select Fiber Cores" />
+            </Field>
+            <p class="error-text">
+              {{ errors['form.fibercorep'] }}
+            </p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="fiber_code" class="input-label">Fiber code</label>
+            <Field name="form.fiber_code" v-slot="{ field  }">
+                <input type="text" v-bind="field" id="fiber_code" class="input-control" placeholder="Enter fiber code" />
+            </Field>
+            <p class="error-text">
+              {{ errors['form.fiber_code'] }}
+            </p>
+          </div>
+
+          <div class="text-right">
+            <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+              Save to Project
+            </button>
+          </div>
+
+        </div>
+      </Form>
+    </ModalR>
 
     <div class="flex flex-row w-full absolute top-0 left-0 z-[2]">
       <div class="flex-row relative w-full h-full z-[4]">
@@ -563,43 +423,6 @@ watchEffect(() => {
       </div>
 
     </div>
-
-    <ModalR ref="modalR">
-      <template #header>
-        <h6>Add New Fiber Area</h6>
-      </template>
-
-      <Form v-slot="{ errors }" :validation-schema="schema" @submit="onSubmit">
-        <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
-
-          <div class="mb-2 pb-4">
-            <label for="fibercored" class="input-label">Fibercores</label>
-            <Field name="form.fibercores" v-slot="{ field  }">
-              <v-select v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercored" placeholder="Select Fiber Cores" />
-            </Field>
-            <p class="error-text">
-              {{ errors['form.fibercores'] }}
-            </p>
-          </div>
-
-          <div class="mb-2 pb-4">
-            <label for="fiber_code" class="input-label">Fiber code</label>
-            <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-              placeholder="Enter fiber code" />
-              <p class="error-text" v-if="validationErrors.fiber_code.length">
-                {{  validationErrors.fiber_code[0]  }}
-              </p>
-          </div>
-
-          <div class="text-right">
-            <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-              Save to Project
-            </button>
-          </div>
-
-        </div>
-      </Form>
-    </ModalR>
   </div>
 </template>
 
