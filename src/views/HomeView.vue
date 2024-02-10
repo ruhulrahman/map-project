@@ -329,7 +329,7 @@ const getMapMarkerConnection = async () => {
 const getMapLineConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/getmapdemo/')
-  // console.log('result', result.data)
+
   if (result.data.length) {
     await result.data.forEach((item, index) => {
 
@@ -367,7 +367,7 @@ const getInitData = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/selete/')
   loading.value = false
-  console.log('result', result.data)
+
   if (result.data.fibercores) {
     dropdownList.value.fibercores = result.data.fibercores.map(item => {
       return {
@@ -386,15 +386,7 @@ const getInitData = async () => {
   }
 
   console.log('dropdownList.value', dropdownList.value)
-  // dropdownList.value = result
 }
-
-const isOpen = ref(false)
-const createModal = ref(false)
-
-const isModalVisible = computed(() => {
-  return isOpen.value
-})
 
 const onToggle = () => {
   modalR.value.onToggle()
@@ -470,8 +462,6 @@ const submitData = async () => {
       }
     }
 
-    // console.log('create result == ', result)
-
   } catch (error) {
     validationErrors.value = mixin.cn(error, 'response.data', null)
   } finally {
@@ -482,7 +472,6 @@ const submitData = async () => {
 
 // watcher
 watchEffect(() => {
-  console.log('watchEffect')
   if (form.value.color_code) {
     validationErrors.value.color_code = []
   }
