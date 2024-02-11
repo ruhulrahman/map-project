@@ -8,6 +8,7 @@ import LeftSideBar from '../components/LeftSideBar.vue'
 import NavBar from '../components/NavBar.vue';
 import { Form, Field, ErrorMessage, useForm } from 'vee-validate';
 import * as yup from 'yup';
+import { z } from "zod";
 import InputText from '@/components/InputText.vue';
 
 // import Modal from "@/components/ModalR.vue";
@@ -34,8 +35,9 @@ let drawControl = ref({})
 
 let form = ref({
   id: '',
+  email: '',
   map_type: '',
-  fibercorep: '',
+  fibercorep: null,
   user: 20,
   fibername: '',
   fiber_code: '',
@@ -47,13 +49,36 @@ let form = ref({
 
 const schema = yup.object({
   form: yup.object({
-    fibercorep: yup.string().required().label('Fibercorep'),
+    fibercorep: yup.array().min(2).label('Fibercorep'),
+    map_type: yup.string().required().label('Map Type'),
     fiber_code: yup.string().required().label('Fiber Code'),
+    email: yup.string().email().required().label('Email'),
+    color_code: yup.string().required().min(2).label('Color Code'),
+    width_height: yup.string().required().min(2).label('Width Height'),
   }),
 });
 
-function onSubmit(values) {
+// const schema = z.object({
+//   form: z.object({
+//     fibercorep: z.string().array().min(2),
+//     fiber_code: z.string(),
+//     email: z.string().email(),
+//     color_code: z.string().min(2),
+//     width_height: z.string().min(2),
+//   }),
+// });
+
+const initialErrors = {
+  // 'form.email': 'This email is already taken',
+};
+const myForm = ref()
+function onSubmit(values, { resetForm }) {
   console.log('values ===', values);
+  // this.$refs.myForm.setFieldError('email', 'this email is already taken');
+  resetForm();
+  myForm.value.setErrors({
+    'form.email': 'this field is already taken',
+  });
 }
 
 const toggleLeftSidebar = () => {
@@ -293,16 +318,23 @@ watchEffect(() => {
         <h6>Add New Fiber Area</h6>
       </template>
 
-      <Form v-slot="{ errors }" :validation-schema="schema" @submit="onSubmit">
+      <Form ref="myForm" v-slot="{ errors, handleReset }" :validation-schema="schema" @submit="onSubmit" @invalid-submit="onInvalidSubmit" :initial-errors="initialErrors">
         <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
           <div class="mb-2 pb-4">
             <label for="fibercorep" class="input-label">Fibercores</label>
             <Field name="form.fibercorep" v-slot="{ field  }">
-              <v-select v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercorep" placeholder="Select Fiber Cores" />
+              <v-select multiple v-bind="field" :options="dropdownList.fibercores" :reduce="item => item.value" id="fibercorep" placeholder="Select Fiber Cores" />
             </Field>
             <ErrorMessage class="error-text" name="form.fibercorep" />
-            <p class="error-text">{{ errors['form.fibercorep'] }}</p>
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="map_type" class="input-label">Map Type</label>
+            <Field name="form.map_type" v-slot="{ field  }">
+              <v-select v-bind="field" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type" placeholder="Select Map Type" />
+            </Field>
+            <ErrorMessage class="error-text" name="form.map_type" />
           </div>
 
           <div class="mb-2 pb-4">
@@ -310,11 +342,29 @@ watchEffect(() => {
             <Field name="form.fiber_code" v-slot="{ field  }">
                 <input type="text" v-bind="field" id="fiber_code" class="input-control" placeholder="Enter fiber code" />
             </Field>
-            <ErrorMessage class="error-text" name="form.fiber_code" />
             <p class="error-text">{{ errors['form.fiber_code'] }}</p>
           </div>
 
+          <div class="mb-2 pb-4">
+            <label for="email" class="input-label">Email</label>
+            <Field type="text" name="form.email" id="email" class="input-control" placeholder="Enter color code" />
+            <ErrorMessage class="error-text" name="form.email" />
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="color_code" class="input-label">Fiber code</label>
+            <Field type="text" name="form.color_code" id="color_code" class="input-control" placeholder="Enter fiber code" />
+            <ErrorMessage class="error-text" name="form.color_code" />
+          </div>
+
+          <div class="mb-2 pb-4">
+            <label for="width_height" class="input-label">Width and Height</label>
+            <Field type="text" name="form.width_height" id="width_height" class="input-control" placeholder="Enter fiber width height" />
+            <ErrorMessage class="error-text" name="form.width_height" />
+          </div>
+
           <div class="text-right">
+            <button @click="handleReset" class="btn bg-red-600 hover:bg-red-500 text-gray-300 ml-3">Reset</button>
             <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
               Save to Project
             </button>
