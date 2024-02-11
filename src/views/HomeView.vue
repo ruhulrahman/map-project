@@ -541,7 +541,7 @@ const toggleCreateMenus = () => {
                     <div class="flex flex-col gap-3 mt-[78px] pb-[85px]">
 
                       <div class="flex flex-row justify-end">
-                        <font-awesome-icon @click="toggleCreateMenus()" class="bg-[#2A2A2A] hover:bg-[#434343] transform duration-200 w-[15px] h-[15px] p-2 rounded-full cursor-pointer" :icon="['fas', 'xmark']" />
+                        <font-awesome-icon @click="toggleCreateMenus()" v-tippy="{ content: 'Close', placement: 'left', arrow: true, animation: 'fade', }" class="bg-[#2A2A2A] hover:bg-[#434343] transform duration-200 w-[15px] h-[15px] p-2 rounded-full cursor-pointer" :icon="['fas', 'xmark']" />
                       </div>
 
                       <div class="flex flex-row justify-between">
