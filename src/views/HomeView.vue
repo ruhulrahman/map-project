@@ -536,9 +536,13 @@ const toggleCreateMenus = () => {
                 <div class="flex flex-col w-full h-full">
 
                   <div :class="showCreateMenus ? 'w-full h-full translate-x-[0px]' : ' w-0 h-0 translate-x-[-400px]'"
-                    class="flex flex-col gap-3 pt-3  transform duration-500 transition-all ease-in-out"
+                    class="flex flex-col gap-3 pt-3 transform duration-500 transition-all ease-in-out"
                     style="border-top: 1px solid rgb(60, 60, 60);">
                     <div class="flex flex-col gap-3 mt-[78px] pb-[85px]">
+
+                      <div class="flex flex-row justify-end">
+                        <font-awesome-icon @click="toggleCreateMenus()" class="bg-[#2A2A2A] hover:bg-[#434343] transform duration-200 w-[15px] h-[15px] p-2 rounded-full cursor-pointer" :icon="['fas', 'xmark']" />
+                      </div>
 
                       <div class="flex flex-row justify-between">
                         <button type="button"
@@ -573,7 +577,7 @@ const toggleCreateMenus = () => {
 
 
 
-                  <div v-if="!showCreateMenus" class="flex flex-col w-full h-full gap-3">
+                  <div v-if="!showCreateMenus" class="flex flex-col w-full h-full gap-3 transform duration-500 transition-all ease-in-out">
 
                     <div class="flex flex-col w-full h-auto mt-[78px]">
                       <button @click="toggleCreateMenus()"
