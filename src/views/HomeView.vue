@@ -83,13 +83,13 @@ const toggleLeftSidebar = () => {
 
 
 var greenIcon = new L.Icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-        });
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 onMounted(async () => {
   // Initialize the map
@@ -272,7 +272,7 @@ const activePolyLineDraw = (params) => {
       edit: false
     });
 
-    
+
 
     map.value.addControl(drawControl.value);
     // L.marker({ icon: greenIcon });
@@ -308,7 +308,7 @@ const getMapMarkerConnection = async () => {
           shadowSize: [41, 41]
         });
 
-        var myIcon = L.divIcon({className: 'w-[100px] h-[100px] bg-orange-500 marker-tag'});
+        var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
         // var myIcon = L.divIcon({className: 'w-[50px] h-[50px] bg-orange-500 pin2'});
         // var myIcon = L.divIcon({ className: '<div class="pin2"></div>'});
 
@@ -495,6 +495,12 @@ watchEffect(() => {
   }
 })
 
+const showCreateMenus = ref(false)
+
+const toggleCreateMenus = () => {
+  showCreateMenus.value = !showCreateMenus.value
+}
+
 </script>
 
 <template>
@@ -527,18 +533,56 @@ watchEffect(() => {
                   class="absolute top-1/2 right-[-23px] hover:scale-110 duration-300  bg-neutral-900 bg-opacity-[0.7] hover:bg-neutral-800 cursor-pointer z-[5] py-3 px-2 rounded-r-lg">
                   <font-awesome-icon :icon="['fas', 'caret-left']" />
                 </div>
-                <div class="flex flex-row w-full h-full">
-                  <div class="flex flex-col w-full h-full gap-3">
-                    <div class="flex flex-row mt-[78px]">
-                      <!-- <button class="w-full btn btn-primary bg-green-700 border-none">+ Add New </button> -->
+                <div class="flex flex-col w-full h-full">
 
-                      <button data-ripple-light="true"
+                  <div :class="showCreateMenus ? 'w-full h-full translate-x-[0px]' : ' w-0 h-0 translate-x-[-400px]'"
+                    class="flex flex-col gap-3 pt-3  transform duration-500 transition-all ease-in-out"
+                    style="border-top: 1px solid rgb(60, 60, 60);">
+                    <div class="flex flex-col gap-3 mt-[78px] pb-[85px]">
+
+                      <div class="flex flex-row justify-between">
+                        <button type="button"
+                          class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
+                          <font-awesome-icon :icon="['fas', 'user-plus']" class="text-orange-500 mr-2" />
+                          Add User
+                        </button>
+
+                        <button type="button"
+                          class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
+                          <font-awesome-icon :icon="['fas', 'compass-drafting']" class="text-blue-500 mr-2" />
+                          Add TJ
+                        </button>
+                      </div>
+
+                      <div class="flex flex-row justify-between">
+                        <button type="button"
+                          class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
+                          <font-awesome-icon :icon="['fas', 'network-wired']" class="text-yellow-500 mr-2"/>
+                          Add Fiber
+                        </button>
+
+                        <button type="button"
+                          class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
+                          <font-awesome-icon :icon="['fas', 'map']" class="text-red-500 mr-2" />
+                          Add Area
+                        </button>
+                      </div>
+
+                    </div>
+                  </div>
+
+
+
+                  <div v-if="!showCreateMenus" class="flex flex-col w-full h-full gap-3">
+
+                    <div class="flex flex-col w-full h-auto mt-[78px]">
+                      <button @click="toggleCreateMenus()"
                         class="btn w-full p-[10px] bg-[#304059] hover:bg-[#344560] text-gray-300 hover:-translate-y-[1px] duration-300">
                         + Add New
                       </button>
                     </div>
 
-                    <div class="flex flex-row justify-start items-center pt-3 text-white"
+                    <div class="flex flex-row justify-start items-center text-white pt-3"
                       style="border-top: 1px solid rgb(60, 60, 60);">
                       <div class="flex flex-col">
                         <font-awesome-icon :icon="['fas', 'angle-up']" />
@@ -592,6 +636,8 @@ watchEffect(() => {
                     </div>
 
                   </div>
+
+
                 </div>
               </div>
             </div>
@@ -599,86 +645,84 @@ watchEffect(() => {
         </div>
       </div>
 
-    </div>
-
-    <ModalR ref="modalR">
-      <template #header>
-        <h6>Add New Fiber Area</h6>
-      </template>
-      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
-
-        <div class="mb-2 pb-4">
-          <label for="fibercored" class="input-label">Fibercores</label>
-          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
-            id="fibercored" placeholder="Select Fiber Cores" />
-          <p class="error-text" v-if="validationErrors.fibercorep.length">
-            {{ validationErrors.fibercorep[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="map_type" class="input-label">Map Type</label>
-          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
-            placeholder="Select map type" />
-          <p class="error-text" v-if="validationErrors.map_type.length">
-            {{ validationErrors.map_type[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fibername" class="input-label">Fibername</label>
-          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
-            placeholder="Enter fibername" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fiber_code" class="input-label">Fiber code</label>
-          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-            placeholder="Enter fiber code" />
-          <p class="error-text" v-if="validationErrors.fiber_code.length">
-            {{ validationErrors.fiber_code[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="color_code" class="input-label">Color code</label>
-          <input type="text" v-model="form.color_code" id="color_code" class="input-control"
-            placeholder="Enter color code" />
-          <p class="error-text" v-if="validationErrors.color_code.length">
-            {{ validationErrors.color_code[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="width_height" class="input-label">Width and Height</label>
-          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-            placeholder="Enter width height" />
-          <p class="error-text" v-if="validationErrors.width_height.length">
-            {{ validationErrors.width_height[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4 ">
-          <label for="note" class="input-label">Note</label>
-          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-          <p class="error-text" v-if="validationErrors.note.length">
-            {{ validationErrors.note[0] }}
-          </p>
-        </div>
-
-        <div class="text-right">
-          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-            Save to Project
-          </button>
-        </div>
-
-      </div>
-    </ModalR>
   </div>
-</template>
 
-<style scoped>
-@import '@/style.css';
+  <ModalR ref="modalR">
+    <template #header>
+      <h6>Add New Fiber Area</h6>
+    </template>
+    <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+
+      <div class="mb-2 pb-4">
+        <label for="fibercored" class="input-label">Fibercores</label>
+        <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
+          id="fibercored" placeholder="Select Fiber Cores" />
+        <p class="error-text" v-if="validationErrors.fibercorep.length">
+          {{ validationErrors.fibercorep[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4">
+        <label for="map_type" class="input-label">Map Type</label>
+        <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
+          placeholder="Select map type" />
+        <p class="error-text" v-if="validationErrors.map_type.length">
+          {{ validationErrors.map_type[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4">
+        <label for="fibername" class="input-label">Fibername</label>
+        <input type="text" v-model="form.fibername" id="fibername" class="input-control"
+          placeholder="Enter fibername" />
+      </div>
+
+      <div class="mb-2 pb-4">
+        <label for="fiber_code" class="input-label">Fiber code</label>
+        <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
+          placeholder="Enter fiber code" />
+        <p class="error-text" v-if="validationErrors.fiber_code.length">
+          {{ validationErrors.fiber_code[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4">
+        <label for="color_code" class="input-label">Color code</label>
+        <input type="text" v-model="form.color_code" id="color_code" class="input-control"
+          placeholder="Enter color code" />
+        <p class="error-text" v-if="validationErrors.color_code.length">
+          {{ validationErrors.color_code[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4">
+        <label for="width_height" class="input-label">Width and Height</label>
+        <input type="text" v-model="form.width_height" id="width_height" class="input-control"
+          placeholder="Enter width height" />
+        <p class="error-text" v-if="validationErrors.width_height.length">
+          {{ validationErrors.width_height[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4 ">
+        <label for="note" class="input-label">Note</label>
+        <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
+        <p class="error-text" v-if="validationErrors.note.length">
+          {{ validationErrors.note[0] }}
+        </p>
+      </div>
+
+      <div class="text-right">
+        <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+          Save to Project
+        </button>
+      </div>
+
+    </div>
+  </ModalR>
+</div></template>
+
+<style scoped>@import '@/style.css';
 
 img.leaflet-marker-icon {
   filter: hue-rotate(244deg) !important;
@@ -718,7 +762,7 @@ img.leaflet-marker-icon {
   top: 40%;
   left: 50%;
   margin-left: -115px;
-  
+
   border-radius: 50% 50% 50% 0;
   border: 4px solid #fff;
   width: 20px;
@@ -746,7 +790,7 @@ img.leaflet-marker-icon {
   top: 40%;
   left: 50%;
   margin-left: 115px;
-  
+
   border-radius: 50%;
   border: 8px solid #fff;
   width: 8px;
@@ -762,5 +806,4 @@ img.leaflet-marker-icon {
   left: -6px;
   border: 10px solid transparent;
   border-top: 17px solid #fff;
-}
-</style>
+}</style>
