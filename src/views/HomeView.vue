@@ -335,7 +335,7 @@ const getMapMarkerConnection = async () => {
 
 const getMapLineConnection = async () => {
   loading.value = true
-  let result = await RestApi.get('/api/v1/sg-5/getmapdemo/')
+  let result = await RestApi.get('/api/v1/sg-5/get_polyline_list/')
 
   if (result.data.length) {
     await result.data.forEach((item, index) => {
@@ -344,12 +344,24 @@ const getMapLineConnection = async () => {
 
         const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
         const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
+        // const colorObj = dropdownList.value.colors.find(colorItem => colorItem.value == item.color_code)
+        const colorObj = dropdownList.value.colors.find(colorItem => {
+          console.log('colorItem', colorItem)
+          // if (colorItem.value == item.color_code) {
+
+          // }
+        })
+        console.log('item.color_code', item.color_code)
+        console.log('colorObj', colorObj)
 
         const mapTypeName = mapType ? mapType.label : ''
         const fiberCoreName = fiberCore ? fiberCore.label : ''
+        const colorNameOrCode = colorObj ? colorObj.label : ''
 
-        // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
-        var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
+        console.log('colorNameOrCode', colorNameOrCode)
+
+        var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+        // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
           .bindPopup(`
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
@@ -427,7 +439,7 @@ const getInitData = async () => {
   if (result.data.color) {
     dropdownList.value.colors = result.data.color.map(item => {
       return {
-        value: item.id,
+        value: item.color,
         label: item.color,
       }
     })
@@ -726,7 +738,7 @@ const toggleCreateMenus = () => {
         <label for="fiberarea" class="input-label">Fiber Area</label>
         <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value"
           id="fiberarea" placeholder="Select Fiber Area" />
-        <p class="error-text" v-if="validationErrors.fiberarea.length">
+        <p class="error-text" v-if="validationErrors.fiberarea && validationErrors.fiberarea.length">
           {{ validationErrors.fiberarea[0] }}
         </p>
       </div>
