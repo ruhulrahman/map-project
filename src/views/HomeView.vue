@@ -26,6 +26,10 @@ const mapTypes = ref('')
 const dropdownList = ref({
   fibercores: [],
   map_types: [],
+  tjareas: [],
+  tjtypes: [],
+  splitters: [],
+  colors: [],
 })
 
 const mapDrawEnable = ref(false)
@@ -34,6 +38,7 @@ let drawControl = ref({})
 
 let form = ref({
   id: '',
+  fiberarea: '',
   map_type: '',
   fibercorep: '',
   user: 20,
@@ -49,6 +54,7 @@ let form = ref({
 const resetFormData = () => {
   form.value = {
     id: '',
+    fiberarea: '',
     map_type: '',
     fibercorep: '',
     user: 20,
@@ -64,6 +70,7 @@ const resetFormData = () => {
 
 
 let validationErrors = ref({
+  fiberarea: [],
   map_type: [],
   fibercorep: [],
   fibername: [],
@@ -309,8 +316,8 @@ const getMapMarkerConnection = async () => {
         });
 
         var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
-        // var myIcon = L.divIcon({className: 'w-[50px] h-[50px] bg-orange-500 pin2'});
-        // var myIcon = L.divIcon({ className: '<div class="pin2"></div>'});
+        var myIcon = L.divIcon({className: 'w-[50px] h-[50px] bg-orange-500 pin2'});
+        var myIcon = L.divIcon({ className: '<div class="pin2"></div>'});
 
         map.value.setView([lat.value, long.value], 15);
         L.marker([lat.value, long.value]).addTo(map.value)
@@ -333,28 +340,32 @@ const getMapLineConnection = async () => {
   if (result.data.length) {
     await result.data.forEach((item, index) => {
 
-      const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
-      const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
+      if (index > -1) {
 
-      const mapTypeName = mapType ? mapType.label : ''
-      const fiberCoreName = fiberCore ? fiberCore.label : ''
+        const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
+        const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
 
-      // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
-      var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
-        .bindPopup(`
-                        <div class="p-1">
-                          <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
-                          ${mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
-          }
-                          ${fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
-          }
-                          <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
-                          <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
-                          <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
-                        </div>
-                      `)
+        const mapTypeName = mapType ? mapType.label : ''
+        const fiberCoreName = fiberCore ? fiberCore.label : ''
+
+        // var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+        var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
+          .bindPopup(`
+                          <div class="p-1">
+                            <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
+                            ${mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
+            }
+                            ${fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
+            }
+                            <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
+                            <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
+                            <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
+                          </div>
+                        `)
 
 
+        
+      }
       // zoom the map to the polyline
       // map.value.fitBounds(polyline.getBounds());
     })
@@ -376,11 +387,48 @@ const getInitData = async () => {
       }
     })
   }
+  
   if (result.data.fibercores) {
     dropdownList.value.map_types = result.data.map_types.map(item => {
       return {
         value: item.id,
         label: item.mapcat,
+      }
+    })
+  }
+
+  if (result.data.tjarea) {
+    dropdownList.value.tjareas = result.data.tjarea.map(item => {
+      return {
+        value: item.id,
+        label: item.area_name,
+      }
+    })
+  }
+
+  if (result.data.tjtype) {
+    dropdownList.value.tjtypes = result.data.tjtype.map(item => {
+      return {
+        value: item.id,
+        label: item.cat,
+      }
+    })
+  }
+
+  if (result.data.splitter) {
+    dropdownList.value.splitters = result.data.splitter.map(item => {
+      return {
+        value: item.id,
+        label: item.cat,
+      }
+    })
+  }
+
+  if (result.data.color) {
+    dropdownList.value.colors = result.data.color.map(item => {
+      return {
+        value: item.id,
+        label: item.color,
       }
     })
   }
@@ -392,6 +440,20 @@ const onToggle = () => {
   modalR.value.onToggle()
 }
 
+const getColorNameOrCode = computed(() => {
+  let colorCode = ''
+  if (dropdownList.value.colors) {
+    console.log('form.value.color_code', form.value.color_code)
+    const colorObj = dropdownList.value.colors.find(item => item.value == form.value.color_code)
+    console.log('colorObj', colorObj)
+    colorCode = colorObj ? colorObj.label : ''
+  }
+  
+  console.log('colorCode', colorCode)
+  return colorCode
+})
+
+console.log('getColorNameOrCode', getColorNameOrCode)
 
 // const submitData = async () => {
 //   loading.value = true
@@ -472,6 +534,9 @@ const submitData = async () => {
 
 // watcher
 watchEffect(() => {
+  if (form.value.fiberarea) {
+    validationErrors.value.fiberarea = []
+  }
   if (form.value.color_code) {
     validationErrors.value.color_code = []
   }
@@ -658,6 +723,15 @@ const toggleCreateMenus = () => {
     <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
       <div class="mb-2 pb-4">
+        <label for="fiberarea" class="input-label">Fiber Area</label>
+        <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value"
+          id="fiberarea" placeholder="Select Fiber Area" />
+        <p class="error-text" v-if="validationErrors.fiberarea.length">
+          {{ validationErrors.fiberarea[0] }}
+        </p>
+      </div>
+
+      <div class="mb-2 pb-4">
         <label for="fibercored" class="input-label">Fibercores</label>
         <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
           id="fibercored" placeholder="Select Fiber Cores" />
@@ -689,15 +763,29 @@ const toggleCreateMenus = () => {
           {{ validationErrors.fiber_code[0] }}
         </p>
       </div>
+      
 
-      <div class="mb-2 pb-4">
+      <div class="mb-2 pb-4 flex justify-between">
+        <div class="w-full">
+          <label for="color_code" class="input-label">Fiber Color</label>
+          <v-select v-model="form.color_code" :options="dropdownList.colors" :reduce="item => item.value"
+            id="color_code" placeholder="Select Color" />
+          <p class="error-text" v-if="validationErrors.color_code.length">
+            {{ validationErrors.color_code[0] }}
+          </p>  
+        </div>
+        <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded" :style="`background: ${getColorNameOrCode}`">
+        </div>
+      </div>
+
+      <!--<div class="mb-2 pb-4">
         <label for="color_code" class="input-label">Color code</label>
         <input type="text" v-model="form.color_code" id="color_code" class="input-control"
           placeholder="Enter color code" />
         <p class="error-text" v-if="validationErrors.color_code.length">
           {{ validationErrors.color_code[0] }}
         </p>
-      </div>
+      </div>-->
 
       <div class="mb-2 pb-4">
         <label for="width_height" class="input-label">Width and Height</label>
