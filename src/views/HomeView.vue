@@ -344,21 +344,9 @@ const getMapLineConnection = async () => {
 
         const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
         const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
-        // const colorObj = dropdownList.value.colors.find(colorItem => colorItem.value == item.color_code)
-        const colorObj = dropdownList.value.colors.find(colorItem => {
-          console.log('colorItem', colorItem)
-          // if (colorItem.value == item.color_code) {
-
-          // }
-        })
-        console.log('item.color_code', item.color_code)
-        console.log('colorObj', colorObj)
 
         const mapTypeName = mapType ? mapType.label : ''
         const fiberCoreName = fiberCore ? fiberCore.label : ''
-        const colorNameOrCode = colorObj ? colorObj.label : ''
-
-        console.log('colorNameOrCode', colorNameOrCode)
 
         var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
         // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
