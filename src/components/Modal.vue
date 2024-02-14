@@ -3,6 +3,7 @@ import { ref } from 'vue'
 const isModalVisible = ref(true)
 
 const onToggle = () => {
+  console.log('clicked on main modal')
   isModalVisible.value = !isModalVisible.value
 }
 

@@ -9,6 +9,7 @@ import NavBar from '../components/NavBar.vue';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
+import AddUserForm from '@/views/user/AddUserForm.vue';
 
 // import Modal from "@/components/ModalR.vue";
 
@@ -22,6 +23,7 @@ const long = ref(0)
 const map = ref()
 const mapContainer = ref()
 const modalR = ref()
+const addUserFormRef = ref()
 const mapTypes = ref('')
 const dropdownList = ref({
   fibercores: [],
@@ -30,6 +32,7 @@ const dropdownList = ref({
   tjtypes: [],
   splitters: [],
   colors: [],
+  userType: [],
 })
 
 const mapDrawEnable = ref(false)
@@ -177,17 +180,21 @@ onMounted(async () => {
           return Object.assign(newObject)
         })
       }
+      
+      form.value.coordinates = geoJsonArray
+      
+      modalR.value.onToggle()
     }
 
     if (e.layerType == 'marker') {
       if (geoJson.geometry.coordinates.length) {
         geoJsonArray = geoJson.geometry.coordinates.reverse()
       }
+
+      form.value.coordinates = geoJsonArray
+
+      addUserFormRef.value.onToggle(form.value.coordinates)
     }
-
-    form.value.coordinates = geoJsonArray
-
-    modalR.value.onToggle()
 
 
     layer.bindPopup(`<p>${JSON.stringify(layer.toGeoJSON())}</p>`)
@@ -210,7 +217,15 @@ onMounted(async () => {
 
 });
 
-const activePolyLineDraw = (params) => {
+const getListReload = (listType) => {
+  if (listType == 'marker') {
+    getMapMarkerConnection()
+  } else if (listType == 'polyline') {
+    getMapLineConnection()
+  }
+}
+
+const activateMapDrawer = (params) => {
 
   map.value.removeControl(drawControl.value);
 
@@ -278,8 +293,6 @@ const activePolyLineDraw = (params) => {
       },
       edit: false
     });
-
-
 
     map.value.addControl(drawControl.value);
     // L.marker({ icon: greenIcon });
@@ -579,7 +592,7 @@ const toggleCreateMenus = () => {
         <div
           class="flex-1 bg-[#1F1F1F] bg-opacity-[0.8] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
           <!-- Navbar content -->
-          <NavBar @activedMapDraw="activePolyLineDraw" />
+          <NavBar @activedMapDraw="activateMapDrawer" />
         </div>
 
         <div class="flex-col absolute top-0 left-0 text-white h-full z-[-1]">
@@ -610,7 +623,7 @@ const toggleCreateMenus = () => {
                       </div>
 
                       <div class="flex flex-row justify-between">
-                        <button type="button"
+                        <button type="button" @click="activateMapDrawer('marker')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
                           <font-awesome-icon :icon="['fas', 'user-plus']" class="text-orange-500 mr-2" />
                           Add User
@@ -813,104 +826,9 @@ const toggleCreateMenus = () => {
     </div>
   </ModalR>
 
-  <ModalR ref="addUserModalRef">
-    <template #header>
-      <h6>Add New Fiber Area</h6>
-    </template>
-    <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+  <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload"/>
 
-      <div class="mb-2 pb-4">
-        <label for="fiberarea" class="input-label">Fiber Area</label>
-        <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value"
-          id="fiberarea" placeholder="Select Fiber Area" />
-        <p class="error-text" v-if="validationErrors.fiberarea && validationErrors.fiberarea.length">
-          {{ validationErrors.fiberarea[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fibercored" class="input-label">Fibercores</label>
-        <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
-          id="fibercored" placeholder="Select Fiber Cores" />
-        <p class="error-text" v-if="validationErrors.fibercorep.length">
-          {{ validationErrors.fibercorep[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="map_type" class="input-label">Map Type</label>
-        <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
-          placeholder="Select map type" />
-        <p class="error-text" v-if="validationErrors.map_type.length">
-          {{ validationErrors.map_type[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fibername" class="input-label">Fibername</label>
-        <input type="text" v-model="form.fibername" id="fibername" class="input-control"
-          placeholder="Enter fibername" />
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fiber_code" class="input-label">Fiber code</label>
-        <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-          placeholder="Enter fiber code" />
-        <p class="error-text" v-if="validationErrors.fiber_code.length">
-          {{ validationErrors.fiber_code[0] }}
-        </p>
-      </div>
-      
-
-      <div class="mb-2 pb-4 flex justify-between">
-        <div class="w-full">
-          <label for="color_code" class="input-label">Fiber Color</label>
-          <v-select v-model="form.color_code" :options="dropdownList.colors" :reduce="item => item.value"
-            id="color_code" placeholder="Select Color" />
-          <p class="error-text" v-if="validationErrors.color_code.length">
-            {{ validationErrors.color_code[0] }}
-          </p>  
-        </div>
-        <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded" :style="`background: ${getColorNameOrCode}`">
-        </div>
-      </div>
-
-      <!--<div class="mb-2 pb-4">
-        <label for="color_code" class="input-label">Color code</label>
-        <input type="text" v-model="form.color_code" id="color_code" class="input-control"
-          placeholder="Enter color code" />
-        <p class="error-text" v-if="validationErrors.color_code.length">
-          {{ validationErrors.color_code[0] }}
-        </p>
-      </div>-->
-
-      <div class="mb-2 pb-4">
-        <label for="width_height" class="input-label">Width and Height</label>
-        <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-          placeholder="Enter width height" />
-        <p class="error-text" v-if="validationErrors.width_height.length">
-          {{ validationErrors.width_height[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4 ">
-        <label for="note" class="input-label">Note</label>
-        <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-        <p class="error-text" v-if="validationErrors.note.length">
-          {{ validationErrors.note[0] }}
-        </p>
-      </div>
-
-      <div class="text-right">
-        <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-          Save to Project
-        </button>
-      </div>
-
-    </div>
-  </ModalR>
-
-
+ 
 </div></template>
 
 <style scoped>@import '@/style.css';
