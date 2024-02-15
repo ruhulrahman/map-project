@@ -17,24 +17,16 @@ const listReload = (listType) => {
   emit("getListReload", listType);
 }
 
-const onToggle = (formValue) => {
-    console.log('formValue', formValue)
-    form.value.userlatlong = JSON.stringify(formValue)
-    addUserModalRef.value.onToggle()
-}
-defineExpose({
-    onToggle
-})
-
 defineProps({
   dropdownList: {
     fibercores: [],
-    usertypes: [],
+    map_types: [],
     tjareas: [],
     tjtypes: [],
     splitters: [],
     colors: [],
-    userType: [],
+    userTypes: [],
+    userList: [],
   }
 })
 
@@ -73,45 +65,61 @@ const initialErrors = {
     // 'form.email': 'This email is already taken',
 };
 
-const { handleSubmit, defineField } = useForm({
-  initialValues: form.value,
-});
 
-const onSubmit = handleSubmit(values => {
-  console.log(JSON.stringify(values, null, 2));
-});
+// const userLatLong = ref('')
 
-// const onSubmit = handleSubmit((values, { resetForm }) => {
-//     console.log('values ===', values);
-//     loading.value = true
-//     let result = ''
-//     try {
-//         console.log('form.value', form.value)
-//         form.value.lineby = values.form.lineby
-//         form.value.loginusername = values.form.loginusername
-//         form.value.spilitter = values.form.spilitter
-//         form.value.tjnumber = values.form.tjnumber
-//         form.value.usertype = values.form.usertype
+const onToggle = (formValue) => {
+    console.log('formValue', formValue)
+    form.value.userlatlong = JSON.stringify(formValue)
+    // userLatLong.value = JSON.stringify(formValue)
+    addUserModalRef.value.onToggle()
+    console.log('form.value === modal open', form.value)
+}
 
-//         if (form.value.id) {
-//             result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
-//         } else {
-//             result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
-//         }
+defineExpose({
+    onToggle
+})
 
-//         if (result.status == 201) {
-//             toast.success('User has been created!')
-//             resetForm();
-//             onToggle()
-//             listReload('marker')
-//         }
+// const { handleSubmit, defineField } = useForm({
+//   initialValues: form.value,
+// });
 
-//     } catch (error) {
-//         myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
-//     } finally {
-//         loading.value = false
-//     }
-// })
+// const onSubmit = handleSubmit(values => {
+//   console.log(JSON.stringify(values, null, 2));
+// });
+
+const onSubmit = async (values, { resetForm }) => {
+    console.log('values =', values);
+    loading.value = true
+    let result = ''
+    try {
+        console.log('form.value =', form.value)
+        // form.value.lineby = values.form.lineby
+        // form.value.loginusername = values.form.loginusername
+        // form.value.spilitter = values.form.spilitter
+        // form.value.tjnumber = values.form.tjnumber
+        // form.value.usertype = values.form.usertype
+
+        console.log('form.value = final', form.value)
+        if (form.value.id) {
+            result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
+        } else {
+            result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
+        }
+
+        if (result.status == 201) {
+            toast.success('User has been created!')
+            resetForm();
+            onToggle()
+            listReload('marker')
+        }
+
+    } catch (error) {
+        myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
+    } finally {
+        loading.value = false
+    }
+}
 
 
 const onSubmitData = async () => {
@@ -143,10 +151,8 @@ const onSubmitData = async () => {
     }
 }
 
-
-
 onMounted(async () => {
-
+    console.log('form.value - initial', form.value)
 });
 
 
@@ -158,7 +164,7 @@ onMounted(async () => {
         <template #header>
             <h6>{{ form.id ? 'Update' : 'Add New' }} User</h6>
         </template>
-        <Form ref="myForm" v-slot="{ errors, handleReset }" :validation-schema="schema" @submit="onSubmit"
+        <Form ref="myForm" v-slot="{ handleReset }" :initial-values="form" :validation-schema="schema" @submit="onSubmit"
             @invalid-submit="onInvalidSubmit" :initial-errors="initialErrors">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
@@ -174,7 +180,7 @@ onMounted(async () => {
                 <div class="mb-2 pb-4">
                     <label for="usertype" class="input-label">User Type</label>
                     <Field name="form.usertype" v-slot="{ field }">
-                        <v-select v-bind="field" :options="dropdownList.splitters" :reduce="item => item.value"
+                        <v-select v-bind="field" :options="dropdownList.userTypes" :reduce="item => item.value"
                             id="usertype" placeholder="Select User Type" />
                     </Field>
                     <ErrorMessage class="error-text" name="form.usertype" />
@@ -186,16 +192,16 @@ onMounted(async () => {
                         <input type="text" v-bind="field" id="userlatlong" class="input-control"
                             placeholder="Enter userlatlong" />
                     </Field>
-                    <p class="error-text">{{ errors['form.userlatlong'] }}</p>
+                    <ErrorMessage class="error-text" name="form.userlatlong" />
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
                     <Field name="form.tjnumber" v-slot="{ field }">
-                        <input type="text" v-bind="field" id="tjnumber" class="input-control"
+                        <input type="number" min="0" v-bind="field" id="tjnumber" class="input-control"
                             placeholder="Enter tj number" />
                     </Field>
-                    <p class="error-text">{{ errors['form.tjnumber'] }}</p>
+                    <ErrorMessage class="error-text" name="form.tjnumber" />
                 </div>
                 
                 <div class="mb-2 pb-4">

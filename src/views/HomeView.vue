@@ -25,6 +25,7 @@ const mapContainer = ref()
 const modalR = ref()
 const addUserFormRef = ref()
 const mapTypes = ref('')
+
 const dropdownList = ref({
   fibercores: [],
   map_types: [],
@@ -32,7 +33,8 @@ const dropdownList = ref({
   tjtypes: [],
   splitters: [],
   colors: [],
-  userType: [],
+  userTypes: [],
+  userList: [],
 })
 
 const mapDrawEnable = ref(false)
@@ -192,7 +194,6 @@ onMounted(async () => {
       }
 
       form.value.coordinates = geoJsonArray
-
       addUserFormRef.value.onToggle(form.value.coordinates)
     }
 
@@ -442,6 +443,24 @@ const getInitData = async () => {
       return {
         value: item.color,
         label: item.color,
+      }
+    })
+  }
+
+  if (result.data.mapusertype) {
+    dropdownList.value.userTypes = result.data.mapusertype.map(item => {
+      return {
+        value: item.id,
+        label: item.usertype,
+      }
+    })
+  }
+
+  if (result.data.alluserlist) {
+    dropdownList.value.userList = result.data.alluserlist.map(item => {
+      return {
+        value: item.id,
+        label: item.username,
       }
     })
   }
