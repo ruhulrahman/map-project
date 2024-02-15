@@ -65,6 +65,14 @@ const initialErrors = {
     // 'form.email': 'This email is already taken',
 };
 
+// watcher
+watchEffect(() => {
+    console.log('form.value.loginusername', form.value)
+  if (form.value) {
+    form.value.userlatlong = form.value.loginusername
+  }
+})
+
 
 // const userLatLong = ref('')
 
@@ -115,7 +123,8 @@ const onSubmit = async (values, { resetForm }) => {
         }
 
     } catch (error) {
-        myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
+        console.log('error', error)
+        // myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
     } finally {
         loading.value = false
     }
@@ -164,8 +173,7 @@ onMounted(async () => {
         <template #header>
             <h6>{{ form.id ? 'Update' : 'Add New' }} User</h6>
         </template>
-        <Form ref="myForm" v-slot="{ handleReset }" :initial-values="form" :validation-schema="schema" @submit="onSubmit"
-            @invalid-submit="onInvalidSubmit" :initial-errors="initialErrors">
+        <Form ref="myForm" v-slot="{ handleReset }" :validation-schema="schema" @submit="onSubmit" :initial-errors="initialErrors">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
                 <div class="mb-2 pb-4">

@@ -10,6 +10,8 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
+import debounce from 'lodash.debounce'
+var _ = require('lodash');
 
 // import Modal from "@/components/ModalR.vue";
 
@@ -307,7 +309,18 @@ const getMapMarkerConnection = async () => {
   let result = await RestApi.get('/api/new-connections/')
   if (result.data.length) {
     const latLong = []
+    
+      
+  // debounce(() => {
+    
+  // }, 500)
+
     await result.data.forEach((item, index) => {
+
+      
+  // debounce(() => {
+    
+  // }, 500)
 
       loading.value = true
       if (index < 50) {
