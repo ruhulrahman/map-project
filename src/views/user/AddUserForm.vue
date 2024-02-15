@@ -44,10 +44,10 @@ let form = ref({
     userid: 20,
     tjnumber: '',
     lineby: '',
-    userlatlong: '',
+    userlatlong: '[22.876373,91.109576]',
     usertype: '',
     spilitter: '',
-    loginusername: '',
+    loginusername: 'Ruhul',
 })
 
 const schema = yup.object({
@@ -88,9 +88,11 @@ defineExpose({
     onToggle
 })
 
-// const { handleSubmit, defineField } = useForm({
-//   initialValues: form.value,
-// });
+const { handleSubmit, defineField } = useForm({
+  initialValues: {
+    userlatlong: '[22.876373,91.109576]'
+  },
+});
 
 // const onSubmit = handleSubmit(values => {
 //   console.log(JSON.stringify(values, null, 2));
@@ -102,11 +104,11 @@ const onSubmit = async (values, { resetForm }) => {
     let result = ''
     try {
         console.log('form.value =', form.value)
-        // form.value.lineby = values.form.lineby
-        // form.value.loginusername = values.form.loginusername
-        // form.value.spilitter = values.form.spilitter
-        // form.value.tjnumber = values.form.tjnumber
-        // form.value.usertype = values.form.usertype
+        form.value.lineby = values.form.lineby
+        form.value.loginusername = values.form.loginusername
+        form.value.spilitter = values.form.spilitter
+        form.value.tjnumber = values.form.tjnumber
+        form.value.usertype = values.form.usertype
 
         console.log('form.value = final', form.value)
         if (form.value.id) {
@@ -173,7 +175,7 @@ onMounted(async () => {
         <template #header>
             <h6>{{ form.id ? 'Update' : 'Add New' }} User</h6>
         </template>
-        <Form ref="myForm" v-slot="{ handleReset }" :validation-schema="schema" @submit="onSubmit" :initial-errors="initialErrors">
+        <Form ref="myForm" v-slot="{ handleReset }" :validation-schema="schema" @submit="onSubmit">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
                 <div class="mb-2 pb-4">

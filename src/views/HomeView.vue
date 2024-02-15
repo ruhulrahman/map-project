@@ -11,7 +11,7 @@ import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
 import debounce from 'lodash.debounce'
-var _ = require('lodash');
+import lodash from 'lodash'
 
 // import Modal from "@/components/ModalR.vue";
 
@@ -184,9 +184,9 @@ onMounted(async () => {
           return Object.assign(newObject)
         })
       }
-      
+
       form.value.coordinates = geoJsonArray
-      
+
       modalR.value.onToggle()
     }
 
@@ -306,58 +306,77 @@ const activateMapDrawer = (params) => {
 
 const getMapMarkerConnection = async () => {
   loading.value = true
+
   let result = await RestApi.get('/api/new-connections/')
   if (result.data.length) {
-    const latLong = []
-    
-      
-  // debounce(() => {
-    
-  // }, 500)
+    const chunks = lodash.chunk(result.data, 50);
+    chunks.forEach((arrayItem, arrayIndex) => {
 
-    await result.data.forEach((item, index) => {
-
-      
-  // debounce(() => {
-    
-  // }, 500)
-
-      loading.value = true
-      if (index < 50) {
-
-        let intLatLong = item.user_longlate.split(',')
-        lat.value = intLatLong[0]
-        long.value = intLatLong[1]
-
-        const newArray = [lat.value, long.value]
-
-        latLong.push(newArray)
-
-        var greenIcon = new L.Icon({
-          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41]
-        });
-
-        var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
-        var myIcon = L.divIcon({className: 'w-[50px] h-[50px] bg-orange-500 pin2'});
-        var myIcon = L.divIcon({ className: '<div class="pin2"></div>'});
-
-        map.value.setView([lat.value, long.value], 15);
-        L.marker([lat.value, long.value]).addTo(map.value)
-        L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
-          .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-
+      if (arrayIndex == 0) {
+        mapMarkerCall(arrayItem)
       }
 
-      loading.value = false
+      // if (arrayIndex == 0) {
+      //   mapMarkerCall(arrayItem)
+      // } else if (arrayIndex <= 5) {
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     mapMarkerCall(arrayItem)
+      //   }, 5000);
+      // } else if (arrayIndex <= 10) {
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     mapMarkerCall(arrayItem)
+      //   }, 6000);
+      // } else if (arrayIndex <= 15) {
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     mapMarkerCall(arrayItem)
+      //   }, 7000);
+      // } else {
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     mapMarkerCall(arrayItem)
+      //   }, 8000);
+      // }
+
     })
 
     loading.value = false
   }
+}
+
+const mapMarkerCall = (arrayItem) => {
+  arrayItem.forEach((item, index) => {
+
+
+    loading.value = true
+
+    let intLatLong = item.user_longlate.split(',')
+    lat.value = intLatLong[0]
+    long.value = intLatLong[1]
+
+    var greenIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
+    var myIcon = L.divIcon({ className: 'w-[50px] h-[50px] bg-orange-500 pin2' });
+    var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
+
+    map.value.setView([lat.value, long.value], 15);
+    L.marker([lat.value, long.value]).addTo(map.value)
+    L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
+      .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+
+
+    loading.value = false
+  })
 }
 
 const getMapLineConnection = async () => {
@@ -376,7 +395,7 @@ const getMapLineConnection = async () => {
         const fiberCoreName = fiberCore ? fiberCore.label : ''
 
         var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
-        // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
+          // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
           .bindPopup(`
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
@@ -391,7 +410,7 @@ const getMapLineConnection = async () => {
                         `)
 
 
-        
+
       }
       // zoom the map to the polyline
       // map.value.fitBounds(polyline.getBounds());
@@ -414,7 +433,7 @@ const getInitData = async () => {
       }
     })
   }
-  
+
   if (result.data.fibercores) {
     dropdownList.value.map_types = result.data.map_types.map(item => {
       return {
@@ -493,7 +512,7 @@ const getColorNameOrCode = computed(() => {
     console.log('colorObj', colorObj)
     colorCode = colorObj ? colorObj.label : ''
   }
-  
+
   console.log('colorCode', colorCode)
   return colorCode
 })
@@ -651,7 +670,10 @@ const toggleCreateMenus = () => {
                     <div class="flex flex-col gap-3 mt-[78px] pb-[85px]">
 
                       <div class="flex flex-row justify-end">
-                        <font-awesome-icon @click="toggleCreateMenus()" v-tippy="{ content: 'Close', placement: 'left', arrow: true, animation: 'fade', }" class="bg-[#2A2A2A] hover:bg-[#434343] transform duration-200 w-[15px] h-[15px] p-2 rounded-full cursor-pointer" :icon="['fas', 'xmark']" />
+                        <font-awesome-icon @click="toggleCreateMenus()"
+                          v-tippy="{ content: 'Close', placement: 'left', arrow: true, animation: 'fade', }"
+                          class="bg-[#2A2A2A] hover:bg-[#434343] transform duration-200 w-[15px] h-[15px] p-2 rounded-full cursor-pointer"
+                          :icon="['fas', 'xmark']" />
                       </div>
 
                       <div class="flex flex-row justify-between">
@@ -671,7 +693,7 @@ const toggleCreateMenus = () => {
                       <div class="flex flex-row justify-between">
                         <button type="button"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
-                          <font-awesome-icon :icon="['fas', 'network-wired']" class="text-yellow-500 mr-2"/>
+                          <font-awesome-icon :icon="['fas', 'network-wired']" class="text-yellow-500 mr-2" />
                           Add Fiber
                         </button>
 
@@ -687,7 +709,8 @@ const toggleCreateMenus = () => {
 
 
 
-                  <div v-if="!showCreateMenus" class="flex flex-col w-full h-full gap-3 transform duration-500 transition-all ease-in-out">
+                  <div v-if="!showCreateMenus"
+                    class="flex flex-col w-full h-full gap-3 transform duration-500 transition-all ease-in-out">
 
                     <div class="flex flex-col w-full h-auto mt-[78px]">
                       <button @click="toggleCreateMenus()"
@@ -759,71 +782,72 @@ const toggleCreateMenus = () => {
         </div>
       </div>
 
-  </div>
+    </div>
 
-  <ModalR ref="modalR">
-    <template #header>
-      <h6>Add New Fiber Area</h6>
-    </template>
-    <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
+    <ModalR ref="modalR">
+      <template #header>
+        <h6>Add New Fiber Area</h6>
+      </template>
+      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
-      <div class="mb-2 pb-4">
-        <label for="fiberarea" class="input-label">Fiber Area</label>
-        <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value"
-          id="fiberarea" placeholder="Select Fiber Area" />
-        <p class="error-text" v-if="validationErrors.fiberarea && validationErrors.fiberarea.length">
-          {{ validationErrors.fiberarea[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fibercored" class="input-label">Fibercores</label>
-        <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
-          id="fibercored" placeholder="Select Fiber Cores" />
-        <p class="error-text" v-if="validationErrors.fibercorep.length">
-          {{ validationErrors.fibercorep[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="map_type" class="input-label">Map Type</label>
-        <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
-          placeholder="Select map type" />
-        <p class="error-text" v-if="validationErrors.map_type.length">
-          {{ validationErrors.map_type[0] }}
-        </p>
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fibername" class="input-label">Fibername</label>
-        <input type="text" v-model="form.fibername" id="fibername" class="input-control"
-          placeholder="Enter fibername" />
-      </div>
-
-      <div class="mb-2 pb-4">
-        <label for="fiber_code" class="input-label">Fiber code</label>
-        <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-          placeholder="Enter fiber code" />
-        <p class="error-text" v-if="validationErrors.fiber_code.length">
-          {{ validationErrors.fiber_code[0] }}
-        </p>
-      </div>
-      
-
-      <div class="mb-2 pb-4 flex justify-between">
-        <div class="w-full">
-          <label for="color_code" class="input-label">Fiber Color</label>
-          <v-select v-model="form.color_code" :options="dropdownList.colors" :reduce="item => item.value"
-            id="color_code" placeholder="Select Color" />
-          <p class="error-text" v-if="validationErrors.color_code.length">
-            {{ validationErrors.color_code[0] }}
-          </p>  
+        <div class="mb-2 pb-4">
+          <label for="fiberarea" class="input-label">Fiber Area</label>
+          <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value" id="fiberarea"
+            placeholder="Select Fiber Area" />
+          <p class="error-text" v-if="validationErrors.fiberarea && validationErrors.fiberarea.length">
+            {{ validationErrors.fiberarea[0] }}
+          </p>
         </div>
-        <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded" :style="`background: ${getColorNameOrCode}`">
-        </div>
-      </div>
 
-      <!--<div class="mb-2 pb-4">
+        <div class="mb-2 pb-4">
+          <label for="fibercored" class="input-label">Fibercores</label>
+          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
+            id="fibercored" placeholder="Select Fiber Cores" />
+          <p class="error-text" v-if="validationErrors.fibercorep.length">
+            {{ validationErrors.fibercorep[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="map_type" class="input-label">Map Type</label>
+          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
+            placeholder="Select map type" />
+          <p class="error-text" v-if="validationErrors.map_type.length">
+            {{ validationErrors.map_type[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="fibername" class="input-label">Fibername</label>
+          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
+            placeholder="Enter fibername" />
+        </div>
+
+        <div class="mb-2 pb-4">
+          <label for="fiber_code" class="input-label">Fiber code</label>
+          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
+            placeholder="Enter fiber code" />
+          <p class="error-text" v-if="validationErrors.fiber_code.length">
+            {{ validationErrors.fiber_code[0] }}
+          </p>
+        </div>
+
+
+        <div class="mb-2 pb-4 flex justify-between">
+          <div class="w-full">
+            <label for="color_code" class="input-label">Fiber Color</label>
+            <v-select v-model="form.color_code" :options="dropdownList.colors" :reduce="item => item.value"
+              id="color_code" placeholder="Select Color" />
+            <p class="error-text" v-if="validationErrors.color_code.length">
+              {{ validationErrors.color_code[0] }}
+            </p>
+          </div>
+          <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded"
+            :style="`background: ${getColorNameOrCode}`">
+          </div>
+        </div>
+
+        <!--<div class="mb-2 pb-4">
         <label for="color_code" class="input-label">Color code</label>
         <input type="text" v-model="form.color_code" id="color_code" class="input-control"
           placeholder="Enter color code" />
@@ -832,38 +856,40 @@ const toggleCreateMenus = () => {
         </p>
       </div>-->
 
-      <div class="mb-2 pb-4">
-        <label for="width_height" class="input-label">Width and Height</label>
-        <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-          placeholder="Enter width height" />
-        <p class="error-text" v-if="validationErrors.width_height.length">
-          {{ validationErrors.width_height[0] }}
-        </p>
+        <div class="mb-2 pb-4">
+          <label for="width_height" class="input-label">Width and Height</label>
+          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
+            placeholder="Enter width height" />
+          <p class="error-text" v-if="validationErrors.width_height.length">
+            {{ validationErrors.width_height[0] }}
+          </p>
+        </div>
+
+        <div class="mb-2 pb-4 ">
+          <label for="note" class="input-label">Note</label>
+          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
+          <p class="error-text" v-if="validationErrors.note.length">
+            {{ validationErrors.note[0] }}
+          </p>
+        </div>
+
+        <div class="text-right">
+          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
+            Save to Project
+          </button>
+        </div>
+
       </div>
+    </ModalR>
 
-      <div class="mb-2 pb-4 ">
-        <label for="note" class="input-label">Note</label>
-        <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-        <p class="error-text" v-if="validationErrors.note.length">
-          {{ validationErrors.note[0] }}
-        </p>
-      </div>
+    <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
 
-      <div class="text-right">
-        <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-          Save to Project
-        </button>
-      </div>
 
-    </div>
-  </ModalR>
+  </div>
+</template>
 
-  <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload"/>
-
- 
-</div></template>
-
-<style scoped>@import '@/style.css';
+<style scoped>
+@import '@/style.css';
 
 img.leaflet-marker-icon {
   filter: hue-rotate(244deg) !important;
@@ -947,4 +973,5 @@ img.leaflet-marker-icon {
   left: -6px;
   border: 10px solid transparent;
   border-top: 17px solid #fff;
-}</style>
+}
+</style>
