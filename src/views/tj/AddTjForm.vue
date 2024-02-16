@@ -10,7 +10,7 @@ const toast = useToast()
 
 const loading = ref(false)
 const myForm = ref()
-const addUserModalRef = ref()
+const addTJModalRef = ref()
 
 const listReload = (listType) => {
     emit("getListReload", listType);
@@ -83,7 +83,7 @@ watchEffect(() => {
     console.log('email - watchEffect')
 })
 
-const onToggle = (formValue) => {
+const show = (formValue) => {
 
     //   setValues({
     //     email: 'test@example.com',
@@ -91,11 +91,11 @@ const onToggle = (formValue) => {
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
     setFieldValue('tj_longlate', JSON.stringify(formValue));
-    addUserModalRef.value.onToggle()
+    addTJModalRef.value.show()
 }
 
 defineExpose({
-    onToggle
+    show
 })
 
 onMounted(async () => {
@@ -105,7 +105,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <ModalR ref="addUserModalRef">
+    <ModalR ref="addTJModalRef">
         <template #header>
             <h6>{{ id ? 'Update' : 'Add New' }} Tj</h6>
         </template>

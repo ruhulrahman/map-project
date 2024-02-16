@@ -168,9 +168,9 @@ onMounted(async () => {
   map.value.on("draw:created", function (e) {
     var type = e.layerType;
     var layer = e.layer;
-    console.log(layer.toGeoJSON())
+    // console.log(layer.toGeoJSON())
 
-    console.log('e.layerType', e.layerType)
+    // console.log('e.layerType', e.layerType)
 
     form.value.drawType = ''
 
@@ -198,7 +198,12 @@ onMounted(async () => {
       }
 
       form.value.coordinates = geoJsonArray
-      addUserFormRef.value.onToggle(form.value.coordinates)
+
+      if (activeCreatorMenu.value == 'user' || activeCreatorMenu.value == 'marker') {
+        addUserFormRef.value.onToggle(form.value.coordinates)
+      } else if (activeCreatorMenu.value == 'tjmarker') {
+        addTjFormRef.value.show(form.value.coordinates)
+      }
     }
 
 
@@ -229,6 +234,8 @@ const getListReload = (listType) => {
     getMapLineConnection()
   }
 }
+
+let activeCreatorMenu = ref('user')
 
 const activateMapDrawer = (params) => {
 
@@ -285,7 +292,9 @@ const activateMapDrawer = (params) => {
     map.value.addControl(drawControl.value);
     document.querySelector(".leaflet-draw-draw-polyline").click();
 
-  } else if (params == 'marker') {
+  } else if (params == 'marker' || params == 'tjmarker') {
+
+    activeCreatorMenu.value = params
 
     drawControl.value = new L.Control.Draw({
       draw: {
@@ -300,25 +309,6 @@ const activateMapDrawer = (params) => {
     });
 
     map.value.addControl(drawControl.value);
-    // L.marker({ icon: greenIcon });
-    document.querySelector(".leaflet-draw-draw-marker").click();
-
-  } else if (params == 'tjmarker') {
-
-    drawControl.value = new L.Control.Draw({
-      draw: {
-        position: 'topleft',
-        polygon: false,
-        polyline: false,
-        rectangle: false,
-        circle: false,
-        circlemarker: false,
-      },
-      edit: false
-    });
-
-    map.value.addControl(drawControl.value);
-    // L.marker({ icon: greenIcon });
     document.querySelector(".leaflet-draw-draw-marker").click();
 
   }
@@ -527,17 +517,11 @@ const onToggle = () => {
 const getColorNameOrCode = computed(() => {
   let colorCode = ''
   if (dropdownList.value.colors) {
-    console.log('form.value.color_code', form.value.color_code)
     const colorObj = dropdownList.value.colors.find(item => item.value == form.value.color_code)
-    console.log('colorObj', colorObj)
     colorCode = colorObj ? colorObj.label : ''
   }
-
-  console.log('colorCode', colorCode)
   return colorCode
 })
-
-console.log('getColorNameOrCode', getColorNameOrCode)
 
 // const submitData = async () => {
 //   loading.value = true

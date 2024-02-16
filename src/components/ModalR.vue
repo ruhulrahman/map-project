@@ -6,8 +6,16 @@ const onToggle = () => {
   isModalVisible.value = !isModalVisible.value
 }
 
+const show = () => {
+  isModalVisible.value = true
+}
+
+const hide = () => {
+  isModalVisible.value = false
+}
+
 defineExpose({
-  onToggle
+  onToggle, show, hide
 })
 
 </script>
