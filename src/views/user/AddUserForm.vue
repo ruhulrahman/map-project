@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watchEffect } from "vue";
+import { ref, onMounted, computed, watchEffect, reactive } from "vue";
 import RestApi from '@/libs/config'
 import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
@@ -14,20 +14,20 @@ const myForm = ref()
 const addUserModalRef = ref()
 
 const listReload = (listType) => {
-  emit("getListReload", listType);
+    emit("getListReload", listType);
 }
 
 defineProps({
-  dropdownList: {
-    fibercores: [],
-    map_types: [],
-    tjareas: [],
-    tjtypes: [],
-    splitters: [],
-    colors: [],
-    userTypes: [],
-    userList: [],
-  }
+    dropdownList: {
+        fibercores: [],
+        map_types: [],
+        tjareas: [],
+        tjtypes: [],
+        splitters: [],
+        colors: [],
+        userTypes: [],
+        userList: [],
+    }
 })
 
 // const dropdownList = ref({
@@ -42,95 +42,128 @@ defineProps({
 let form = ref({
     id: '',
     userid: 20,
+    spilitter: '',
+    usertype: '',
+    userlatlong: '',
     tjnumber: '',
     lineby: '',
-    userlatlong: '[22.876373,91.109576]',
-    usertype: '',
-    spilitter: '',
     loginusername: 'Ruhul',
 })
 
-const schema = yup.object({
-    form: yup.object({
-        userlatlong: yup.string().required().label('User latlong'),
-        spilitter: yup.string().required().label('Splitter'),
-        usertype: yup.string().required().label('User Type'),
-        tjnumber: yup.string().required().label('Tj Number'),
-        lineby: yup.string().required().min(2).label('Line By'),
-        loginusername: yup.string().required().min(2).label('Username'),
-    }),
-});
-
 const initialErrors = {
-    // 'form.email': 'This email is already taken',
+    // 'email': 'This email is already taken',
 };
 
-// watcher
-watchEffect(() => {
-    console.log('form.value.loginusername', form.value)
-  if (form.value) {
-    form.value.userlatlong = form.value.loginusername
-  }
-})
 
+
+function updateValues() {
+  // set a single field value
+  // setFieldValue('email', 'test@example.com');
+
+  // set multiple fields values
+  setValues({
+    email: 'test@example.com',
+  });
+}
+
+
+// const schema = yup.object({
+//     id: yup.string().default('').label('Id'),
+//     userid: yup.string().default(20).label('User Id'),
+//     spilitter: yup.string().required().label('Splitter'),
+//     usertype: yup.string().required().label('User Type'),
+//     userlatlong: yup.string().required().default('nothing').label('User latlong'),
+//     tjnumber: yup.string().required().label('Tj Number'),
+//     lineby: yup.string().required().min(2).label('Line By'),
+//     loginusername: yup.string().required().min(2).default('Ruhul').label('Username'),
+// });
+
+const schema = yup.object({
+    email: yup.string().min(5).label('Email'),
+});
 
 // const userLatLong = ref('')
+const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit } = useForm({
+    validationSchema: schema,
+});
+
+const [email, emailAttrs] = defineField('email');
+const [password, passwordAttrs] = defineField('password');
+
+const onSubmit = handleSubmit((values) => {
+    console.log(JSON.stringify(values, null, 2));
+});
+// watcher
+watchEffect(() => {
+    // if (value) {
+    //     value.userlatlong = value.loginusername
+    // }
+    console.log('email - watchEffect', email)
+})
 
 const onToggle = (formValue) => {
-    console.log('formValue', formValue)
-    form.value.userlatlong = JSON.stringify(formValue)
+    
+//   setValues({
+//     email: 'test@example.com',
+//   });
+  setFieldValue('email', 'test@example.com');
+    // console.log('formValue', formValue)
+    // schema.userlatlong = JSON.stringify(formValue)
     // userLatLong.value = JSON.stringify(formValue)
+    // setFieldValue('userLatLong', JSON.stringify(formValue)); 
     addUserModalRef.value.onToggle()
-    console.log('form.value === modal open', form.value)
+    // console.log('schema === modal open', schema)
 }
 
 defineExpose({
     onToggle
 })
 
-const { handleSubmit, defineField } = useForm({
-  initialValues: {
-    userlatlong: '[22.876373,91.109576]'
-  },
-});
-
-// const onSubmit = handleSubmit(values => {
-//   console.log(JSON.stringify(values, null, 2));
+// const { handleSubmit, values } = useForm({
+//     validationSchema: schema
 // });
 
-const onSubmit = async (values, { resetForm }) => {
-    console.log('values =', values);
-    loading.value = true
-    let result = ''
-    try {
-        console.log('form.value =', form.value)
-        form.value.lineby = values.form.lineby
-        form.value.loginusername = values.form.loginusername
-        form.value.spilitter = values.form.spilitter
-        form.value.tjnumber = values.form.tjnumber
-        form.value.usertype = values.form.usertype
 
-        console.log('form.value = final', form.value)
-        if (form.value.id) {
-            result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
-        } else {
-            result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
-        }
+// resetForm({
+//     values: {
+//       email: '',
+//     },
+//   });
 
-        if (result.status == 201) {
-            toast.success('User has been created!')
-            resetForm();
-            onToggle()
-            listReload('marker')
-        }
 
-    } catch (error) {
-        console.log('error', error)
-        // myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
-    } finally {
-        loading.value = false
-    }
-}
+// const onSubmit = async (values, { resetForm }) => {
+//     console.log('values =', values);
+//     loading.value = true
+//     let result = ''
+//     try {
+//         console.log('form.value =', form.value)
+//         form.value.lineby = values.form.lineby
+//         form.value.loginusername = values.form.loginusername
+//         form.value.spilitter = values.form.spilitter
+//         form.value.tjnumber = values.form.tjnumber
+//         form.value.usertype = values.form.usertype
+
+//         console.log('form.value = final', form.value)
+//         if (form.value.id) {
+//             result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
+//         } else {
+//             result = await RestApi.post('api/v1/sg-5/create_useer_map/', form.value)
+//         }
+
+//         if (result.status == 201) {
+//             toast.success('User has been created!')
+//             resetForm();
+//             onToggle()
+//             listReload('marker')
+//         }
+
+//     } catch (error) {
+//         console.log('error', error)
+//         myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
+//     } finally {
+//         loading.value = false
+//     }
+// }
 
 
 const onSubmitData = async () => {
@@ -175,57 +208,65 @@ onMounted(async () => {
         <template #header>
             <h6>{{ form.id ? 'Update' : 'Add New' }} User</h6>
         </template>
-        <Form ref="myForm" v-slot="{ handleReset }" :validation-schema="schema" @submit="onSubmit">
+        <Form ref="myForm" @submit="onSubmit">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
-                <div class="mb-2 pb-4">
+                <!-- <div class="mb-2 pb-4">
                     <label for="spilitter" class="input-label">Splitter</label>
-                    <Field name="form.spilitter" v-slot="{ field }">
+                    <Field name="spilitter" v-slot="{ field }">
                         <v-select v-bind="field" :options="dropdownList.splitters" :reduce="item => item.value"
                             id="spilitter" placeholder="Select Splitter" />
                     </Field>
-                    <ErrorMessage class="error-text" name="form.spilitter" />
-                </div>
+                    <ErrorMessage class="error-text" name="spilitter" />
+                </div> -->
+                <!-- <div class="mb-2 pb-4">
+                    <label for="spilitter" class="input-label">Splitter</label>
+                        <v-select v-model="spilitter" :options="dropdownList.splitters" :reduce="item => item.value"
+                            id="spilitter" placeholder="Select Splitter" />
 
-                <div class="mb-2 pb-4">
+                    <p class="error-text">{{ errors.spilitter }}</p>
+                    <ErrorMessage class="error-text" name="spilitter" />
+                </div> -->
+
+                <!-- <div class="mb-2 pb-4">
                     <label for="usertype" class="input-label">User Type</label>
-                    <Field name="form.usertype" v-slot="{ field }">
-                        <v-select v-bind="field" :options="dropdownList.userTypes" :reduce="item => item.value"
+                        <v-select v-model="usertype" :options="dropdownList.userTypes" :reduce="item => item.value"
                             id="usertype" placeholder="Select User Type" />
-                    </Field>
-                    <ErrorMessage class="error-text" name="form.usertype" />
+                    <ErrorMessage class="error-text" name="usertype" />
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="userlatlong" class="input-label">User Latlong</label>
-                    <Field name="form.userlatlong" v-slot="{ field }">
-                        <input type="text" v-bind="field" id="userlatlong" class="input-control"
+                        <input type="text" v-model="userlatlong" id="userlatlong" class="input-control"
                             placeholder="Enter userlatlong" />
-                    </Field>
-                    <ErrorMessage class="error-text" name="form.userlatlong" />
+                    <ErrorMessage class="error-text" name="userlatlong" />
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                    <Field name="form.tjnumber" v-slot="{ field }">
-                        <input type="number" min="0" v-bind="field" id="tjnumber" class="input-control"
+                        <input type="number" min="0" v-model="tjnumber" id="tjnumber" class="input-control"
                             placeholder="Enter tj number" />
-                    </Field>
-                    <ErrorMessage class="error-text" name="form.tjnumber" />
+                    <ErrorMessage class="error-text" name="tjnumber" />
                 </div>
-                
+
                 <div class="mb-2 pb-4">
                     <label for="lineby" class="input-label">Line By</label>
-                    <Field type="text" name="form.lineby" id="lineby" class="input-control"
-                        placeholder="Enter lineby" />
-                    <ErrorMessage class="error-text" name="form.lineby" />
+                    <input type="text" v-model="lineby" id="lineby" class="input-control" placeholder="Enter lineby" />
+                    <ErrorMessage class="error-text" name="lineby" />
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="loginusername" class="input-label">Username</label>
-                    <Field type="text" name="form.loginusername" id="loginusername" class="input-control"
+                    <input type="text" v-model="loginusername" id="loginusername" class="input-control"
                         placeholder="Enter username" />
-                    <ErrorMessage class="error-text" name="form.loginusername" />
+                    <ErrorMessage class="error-text" name="loginusername" />
+                </div> -->
+
+                <div class="mb-2 pb-4">
+                    <label for="email" class="input-label">Email</label>
+                    <input type="email" v-model="email" id="email" class="input-control"
+                        placeholder="Enter Email"  />
+                    <p class="error-text">{{ errors.email }}</p>
                 </div>
 
                 <div class="text-right">
@@ -240,4 +281,6 @@ onMounted(async () => {
     </ModalR>
 </template>
 
-<style scoped>@import '@/style.css';</style>
+<style scoped>
+@import '@/style.css';
+</style>
