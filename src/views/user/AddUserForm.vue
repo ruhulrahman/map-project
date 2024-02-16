@@ -53,7 +53,18 @@ const [tjnumber] = defineField('tjnumber');
 const [lineby] = defineField('lineby');
 const [loginusername] = defineField('loginusername');
 
-const onSubmit = handleSubmit( async(values, { resetForm }) => {
+const resetFormData = () => {
+    setValues({
+        spilitter: '',
+        usertype: '',
+        userlatlong: '',
+        tjnumber: '',
+        lineby: '',
+        loginusername: '',
+    });
+}
+
+const onSubmit = handleSubmit(async (values, { resetForm }) => {
     console.log(JSON.stringify(values, null, 2));
     loading.value = true
     let result = ''
@@ -123,22 +134,22 @@ onMounted(async () => {
 
                 <div class="mb-2 pb-4">
                     <label for="usertype" class="input-label">User Type</label>
-                        <v-select v-model="usertype" :options="dropdownList.userTypes" :reduce="item => item.value"
-                            id="usertype" placeholder="Select User Type" />
+                    <v-select v-model="usertype" :options="dropdownList.userTypes" :reduce="item => item.value"
+                        id="usertype" placeholder="Select User Type" />
                     <p class="error-text">{{ errors.usertype }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="userlatlong" class="input-label">User Latlong</label>
-                        <input type="text" v-model="userlatlong" id="userlatlong" class="input-control"
-                            placeholder="Enter userlatlong" />
+                    <input type="text" v-model="userlatlong" id="userlatlong" class="input-control"
+                        placeholder="Enter userlatlong" />
                     <p class="error-text">{{ errors.userlatlong }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                        <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
-                            placeholder="Enter tj number" />
+                    <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
+                        placeholder="Enter tj number" />
                     <p class="error-text">{{ errors.tjnumber }}</p>
                 </div>
 
@@ -156,7 +167,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="text-right">
-                    <button @click="handleReset" class="btn bg-red-600 hover:bg-red-500 text-gray-300 ml-3">Reset</button>
+                    <button @click="resetFormData()" class="btn bg-red-600 hover:bg-red-500 text-gray-300 ml-3">Reset</button>
                     <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
                         Save to Project
                     </button>

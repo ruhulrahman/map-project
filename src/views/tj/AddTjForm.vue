@@ -53,7 +53,19 @@ const [tjnumber] = defineField('tjnumber');
 const [tj_connect] = defineField('tj_connect');
 const [tj_description] = defineField('tj_description');
 
-const onSubmit = handleSubmit( async(values, { resetForm }) => {
+const resetFormData = () => {
+    setValues({
+        tj_area_name: '',
+        spilitter: '',
+        tj_type: '',
+        tj_longlate: '',
+        tjnumber: '',
+        tj_connect: '',
+        tj_description: '',
+    });
+}
+
+const onSubmit = handleSubmit(async (values, { resetForm }) => {
     console.log(JSON.stringify(values, null, 2));
     loading.value = true
     let result = ''
@@ -129,28 +141,29 @@ onMounted(async () => {
 
                 <div class="mb-2 pb-4">
                     <label for="tj_type" class="input-label">Tj Type</label>
-                        <v-select v-model="tj_type" :options="dropdownList.tjtypes" :reduce="item => item.value"
-                            id="tj_type" placeholder="Select User Type" />
+                    <v-select v-model="tj_type" :options="dropdownList.tjtypes" :reduce="item => item.value" id="tj_type"
+                        placeholder="Select User Type" />
                     <p class="error-text">{{ errors.tj_type }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tj_longlate" class="input-label">Tj Latlong</label>
-                        <input type="text" v-model="tj_longlate" id="tj_longlate" class="input-control"
-                            placeholder="Enter latlong" />
+                    <input type="text" v-model="tj_longlate" id="tj_longlate" class="input-control"
+                        placeholder="Enter latlong" />
                     <p class="error-text">{{ errors.tj_longlate }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                        <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
-                            placeholder="Enter tj number" />
+                    <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
+                        placeholder="Enter tj number" />
                     <p class="error-text">{{ errors.tjnumber }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tj_connect" class="input-label">Tj Connect</label>
-                    <input type="text" v-model="tj_connect" id="tj_connect" class="input-control" placeholder="Enter tj connect" />
+                    <input type="text" v-model="tj_connect" id="tj_connect" class="input-control"
+                        placeholder="Enter tj connect" />
                     <p class="error-text">{{ errors.tj_connect }}</p>
                 </div>
 
@@ -162,7 +175,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="text-right">
-                    <button @click="handleReset" class="btn bg-red-600 hover:bg-red-500 text-gray-300 ml-3">Reset</button>
+                    <button @click="resetFormData()" class="btn bg-red-600 hover:bg-red-500 text-gray-300 ml-3">Reset</button>
                     <button type="submit" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
                         Save to Project
                     </button>
