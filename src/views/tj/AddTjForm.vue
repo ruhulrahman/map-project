@@ -65,7 +65,7 @@ const onSubmit = handleSubmit( async(values, { resetForm }) => {
         }
 
         if (result.status == 201) {
-            toast.success('User has been created!')
+            toast.success('Tj has been created!')
             resetForm();
             addTJModalRef.value.hide()
             listReload('marker')
