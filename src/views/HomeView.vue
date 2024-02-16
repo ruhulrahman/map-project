@@ -10,6 +10,7 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
+import AddTjForm from '@/views/tj/AddTjForm.vue';
 import debounce from 'lodash.debounce'
 import lodash from 'lodash'
 
@@ -26,6 +27,7 @@ const map = ref()
 const mapContainer = ref()
 const modalR = ref()
 const addUserFormRef = ref()
+const addTjFormRef = ref()
 const mapTypes = ref('')
 
 const dropdownList = ref({
@@ -284,6 +286,24 @@ const activateMapDrawer = (params) => {
     document.querySelector(".leaflet-draw-draw-polyline").click();
 
   } else if (params == 'marker') {
+
+    drawControl.value = new L.Control.Draw({
+      draw: {
+        position: 'topleft',
+        polygon: false,
+        polyline: false,
+        rectangle: false,
+        circle: false,
+        circlemarker: false,
+      },
+      edit: false
+    });
+
+    map.value.addControl(drawControl.value);
+    // L.marker({ icon: greenIcon });
+    document.querySelector(".leaflet-draw-draw-marker").click();
+
+  } else if (params == 'tjmarker') {
 
     drawControl.value = new L.Control.Draw({
       draw: {
@@ -683,7 +703,7 @@ const toggleCreateMenus = () => {
                           Add User
                         </button>
 
-                        <button type="button"
+                        <button type="button" @click="activateMapDrawer('tjmarker')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'compass-drafting']" class="text-blue-500 mr-2" />
                           Add TJ
@@ -883,6 +903,7 @@ const toggleCreateMenus = () => {
     </ModalR>
 
     <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
+    <AddTjForm ref="addTjFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
 
 
   </div>

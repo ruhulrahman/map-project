@@ -24,20 +24,20 @@ defineProps({
         tjtypes: [],
         splitters: [],
         colors: [],
-        userTypes: [],
+        tj_types: [],
         userList: [],
     }
 })
 
 const schema = yup.object({
     id: yup.string().label('Id'),
-    userid: yup.string().label('User Id'),
+    tj_area_name: yup.string().required().label('Tj Area'),
     spilitter: yup.string().required().label('Splitter'),
-    usertype: yup.string().required().label('User Type'),
-    userlatlong: yup.string().required().label('User latlong'),
+    tj_type: yup.string().required().label('Tj Type'),
+    tj_longlate: yup.string().required().label('Tj latlong'),
     tjnumber: yup.number().required().label('Tj Number'),
-    lineby: yup.string().required().min(2).label('Line By'),
-    loginusername: yup.string().required().min(2).label('Username'),
+    tj_connect: yup.string().required().min(2).label('Tj Connect'),
+    tj_description: yup.string().required().min(2).label('Description'),
 });
 
 const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit } = useForm({
@@ -45,13 +45,13 @@ const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit }
 });
 
 const [id] = defineField('id');
-const [userid] = defineField('userid');
+const [tj_area_name] = defineField('tj_area_name');
 const [spilitter] = defineField('spilitter');
-const [usertype] = defineField('usertype');
-const [userlatlong] = defineField('userlatlong');
+const [tj_type] = defineField('tj_type');
+const [tj_longlate] = defineField('tj_longlate');
 const [tjnumber] = defineField('tjnumber');
-const [lineby] = defineField('lineby');
-const [loginusername] = defineField('loginusername');
+const [tj_connect] = defineField('tj_connect');
+const [tj_description] = defineField('tj_description');
 
 const onSubmit = handleSubmit( async(values, { resetForm }) => {
     console.log(JSON.stringify(values, null, 2));
@@ -59,9 +59,9 @@ const onSubmit = handleSubmit( async(values, { resetForm }) => {
     let result = ''
     try {
         if (values.id) {
-            result = await RestApi.post('api/v1/sg-5/create_useer_map/', values)
+            result = await RestApi.post('api/v1/sg-5/create_tj_numbers/', values)
         } else {
-            result = await RestApi.post('api/v1/sg-5/create_useer_map/', values)
+            result = await RestApi.post('api/v1/sg-5/create_tj_numbers/', values)
         }
 
         if (result.status == 201) {
@@ -90,8 +90,7 @@ const onToggle = (formValue) => {
     //   });
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
-    setFieldValue('userid', 20);
-    setFieldValue('userlatlong', JSON.stringify(formValue));
+    setFieldValue('tj_longlate', JSON.stringify(formValue));
     addUserModalRef.value.onToggle()
 }
 
@@ -108,11 +107,18 @@ onMounted(async () => {
 <template>
     <ModalR ref="addUserModalRef">
         <template #header>
-            <h6>{{ id ? 'Update' : 'Add New' }} User</h6>
+            <h6>{{ id ? 'Update' : 'Add New' }} Tj</h6>
         </template>
         <Form ref="myForm" @submit="onSubmit">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
+
+                <div class="mb-2 pb-4">
+                    <label for="tj_area_name" class="input-label">Tj Area</label>
+                    <v-select v-model="tj_area_name" :options="dropdownList.tjareas" :reduce="item => item.value"
+                        id="tj_area_name" placeholder="Select Area" />
+                    <p class="error-text">{{ errors.tj_area_name }}</p>
+                </div>
 
                 <div class="mb-2 pb-4">
                     <label for="spilitter" class="input-label">Splitter</label>
@@ -122,17 +128,17 @@ onMounted(async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="usertype" class="input-label">User Type</label>
-                        <v-select v-model="usertype" :options="dropdownList.userTypes" :reduce="item => item.value"
-                            id="usertype" placeholder="Select User Type" />
-                    <p class="error-text">{{ errors.usertype }}</p>
+                    <label for="tj_type" class="input-label">Tj Type</label>
+                        <v-select v-model="tj_type" :options="dropdownList.tjtypes" :reduce="item => item.value"
+                            id="tj_type" placeholder="Select User Type" />
+                    <p class="error-text">{{ errors.tj_type }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="userlatlong" class="input-label">User Latlong</label>
-                        <input type="text" v-model="userlatlong" id="userlatlong" class="input-control"
-                            placeholder="Enter userlatlong" />
-                    <p class="error-text">{{ errors.userlatlong }}</p>
+                    <label for="tj_longlate" class="input-label">Tj Latlong</label>
+                        <input type="text" v-model="tj_longlate" id="tj_longlate" class="input-control"
+                            placeholder="Enter latlong" />
+                    <p class="error-text">{{ errors.tj_longlate }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
@@ -143,16 +149,16 @@ onMounted(async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="lineby" class="input-label">Line By</label>
-                    <input type="text" v-model="lineby" id="lineby" class="input-control" placeholder="Enter lineby" />
-                    <p class="error-text">{{ errors.lineby }}</p>
+                    <label for="tj_connect" class="input-label">Tj Connect</label>
+                    <input type="text" v-model="tj_connect" id="tj_connect" class="input-control" placeholder="Enter tj connect" />
+                    <p class="error-text">{{ errors.tj_connect }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="loginusername" class="input-label">Username</label>
-                    <input type="text" v-model="loginusername" id="loginusername" class="input-control"
+                    <label for="tj_description" class="input-label">Description</label>
+                    <input type="text" v-model="tj_description" id="tj_description" class="input-control"
                         placeholder="Enter username" />
-                    <p class="error-text">{{ errors.loginusername }}</p>
+                    <p class="error-text">{{ errors.tj_description }}</p>
                 </div>
 
                 <div class="text-right">
