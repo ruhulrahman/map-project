@@ -12,6 +12,8 @@ const loading = ref(false)
 const myForm = ref()
 const addUserModalRef = ref()
 
+const emit = defineEmits(["getListReload"])
+
 const listReload = (listType) => {
     emit("getListReload", listType);
 }
@@ -26,6 +28,7 @@ defineProps({
         colors: [],
         userTypes: [],
         userList: [],
+        tjNumberList: [],
     }
 })
 
@@ -148,16 +151,23 @@ onMounted(async () => {
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                    <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
-                        placeholder="Enter tj number" />
+                    <v-select v-model="tjnumber" :options="dropdownList.tjNumberList" :reduce="item => item.value"
+                        id="tjnumber" placeholder="Select Tj Number" />
                     <p class="error-text">{{ errors.tjnumber }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="lineby" class="input-label">Line By</label>
-                    <input type="text" v-model="lineby" id="lineby" class="input-control" placeholder="Enter lineby" />
+                    <v-select v-model="lineby" :options="dropdownList.userList" :reduce="item => item.value"
+                        id="lineby" placeholder="Select Line By" />
                     <p class="error-text">{{ errors.lineby }}</p>
                 </div>
+
+                <!-- <div class="mb-2 pb-4">
+                    <label for="lineby" class="input-label">Line By</label>
+                    <input type="text" v-model="lineby" id="lineby" class="input-control" placeholder="Enter lineby" />
+                    <p class="error-text">{{ errors.lineby }}</p>
+                </div> -->
 
                 <div class="mb-2 pb-4">
                     <label for="loginusername" class="input-label">Username</label>

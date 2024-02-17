@@ -391,4 +391,9 @@
     @apply
     shadow-[0.625rem_0.625rem_0.875rem_0_rgb(225,226,228),-0.5rem_-0.5rem_1.125rem_0_rgb(255,255,255)]
   }
+
+  .map-layout-item {
+    @apply
+    flex-col w-[70px] h-full rounded-lg p-[2px] flex hover:scale-110 duration-300 cursor-pointer
+  }
 }

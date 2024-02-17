@@ -20,6 +20,8 @@ const toast = useToast()
 
 const hideLeftSidebar = ref(true)
 
+const user_id = ref(20)
+
 const loading = ref(false)
 const lat = ref(0)
 const long = ref(0)
@@ -29,6 +31,7 @@ const modalR = ref()
 const addUserFormRef = ref()
 const addTjFormRef = ref()
 const mapTypes = ref('')
+const mapLayoutMode = ref('')
 
 const dropdownList = ref({
   fibercores: [],
@@ -39,6 +42,7 @@ const dropdownList = ref({
   colors: [],
   userTypes: [],
   userList: [],
+  tjNumberList: [],
 })
 
 const mapDrawEnable = ref(false)
@@ -107,7 +111,29 @@ var greenIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
+
+const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+  maxZoom: 20,
+  subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+});
+
+const googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+  maxZoom: 20,
+  subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+});
+const googleSatellite = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+  maxZoom: 20,
+  subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+});
+
+const googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
+  maxZoom: 20,
+  subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+});
+
 onMounted(async () => {
+
+  await getMapLayoutData()
   // Initialize the map
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
 
@@ -116,25 +142,23 @@ onMounted(async () => {
   //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   // })
 
-  const googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-  });
-  const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-  });
-  const googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-  });
 
-  const googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}', {
-    maxZoom: 20,
-    subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
-  });
+  const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
+  let selectedLayout = ''
 
-  googleHybrid.addTo(map.value);
+  if (activeMapLayout == 'hybrid') {
+    selectedLayout = googleHybrid
+  } else if (activeMapLayout == 'street') {
+    selectedLayout = googleStreets
+  } else if (activeMapLayout == 'satellite') {
+    selectedLayout = googleSatellite
+  } else if (activeMapLayout == 'terrain') {
+    selectedLayout = googleTerrain
+  } else {
+    selectedLayout = googleHybrid
+  }
+
+  selectedLayout.addTo(map.value);
 
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
@@ -221,10 +245,10 @@ onMounted(async () => {
 
   });
 
-  getInitData()
   getMapMarkerConnection()
   getMapLineConnection()
-
+  getInitData()
+  getTjnuberInitData()
 });
 
 const getListReload = (listType) => {
@@ -507,7 +531,33 @@ const getInitData = async () => {
     })
   }
 
-  console.log('dropdownList.value', dropdownList.value)
+  // console.log('dropdownList.value', dropdownList.value)
+}
+
+const getTjnuberInitData = async () => {
+  loading.value = true
+  let result = await RestApi.get('/alltjlist/v1/')
+  loading.value = false
+
+  if (result.data) {
+    dropdownList.value.tjNumberList = result.data.map(item => {
+      return {
+        value: item.id,
+        label: item.tj_number,
+      }
+    })
+  }
+}
+
+const getMapLayoutData = async () => {
+  const user_id = 20;
+  loading.value = true
+  let result = await RestApi.get(`/api/v1/sg-5/maptypestate/update/${user_id}/`)
+  loading.value = false
+
+  if (result.data) {
+    mapLayoutMode.value = result.data.status
+  }
 }
 
 const onToggle = () => {
@@ -634,10 +684,47 @@ const toggleCreateMenus = () => {
   showCreateMenus.value = !showCreateMenus.value
 }
 
+const updateMapLayout = async (layoutMode) => {
+  loading.value = true
+  let result = ''
+  try {
+    const params = { status: layoutMode, user_id: user_id }
+    if (mapLayoutMode.value) {
+      result = await RestApi.put('api/v1/sg-5/maptypestate/update/20/', params)
+    } else {
+      result = await RestApi.post('api/v1/sg-5/maptypestate/create/', params)
+    }
+
+    if (result.status == 200) {
+      await getMapLayoutData()
+
+      const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
+      let selectedLayout = ''
+
+      if (activeMapLayout == 'hybrid') {
+        selectedLayout = googleHybrid
+      } else if (activeMapLayout == 'street') {
+        selectedLayout = googleStreets
+      } else if (activeMapLayout == 'satellite') {
+        selectedLayout = googleSatellite
+      } else if (activeMapLayout == 'terrain') {
+        selectedLayout = googleTerrain
+      }
+
+      selectedLayout.addTo(map.value);
+    }
+
+  } catch (error) {
+    console.log('error', error)
+  } finally {
+    loading.value = false
+  }
+}
+
 </script>
 
 <template>
-  <ProgressBar v-if="loading" />
+  <ProgressBar color="green" v-if="loading" />
 
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
@@ -779,6 +866,40 @@ const toggleCreateMenus = () => {
                   </div>
 
 
+                </div>
+              </div>
+
+              <div :class="hideLeftSidebar ? 'left-[20px]' : 'left-[320px]'"
+                class="absolute bottom-[20px] left-[20px] w-[80px] h-[80px] z-[5]">
+                <div class="flex flex-col w-full h-full">
+                  <div
+                    class="flex-col w-full h-full relative rounded-lg overflow-hidden border-2 border-gray-950 hover:border-4 flex hover:scale-110 duration-300 cursor-pointer">
+                    <img :src="`/src/assets/images/map-layout/${mapLayoutMode ? mapLayoutMode : 'hybrid'}.png`"
+                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <div class="text-[12px] w-full h-full flex flex-row justify-center items-end z-[6] pb-1">
+                      <font-awesome-icon :icon="['fas', 'layer-group']" class="" /> <span
+                        class="font-semibold ml-1">Layers</span>
+                    </div>
+                  </div>
+                  <div
+                    class="absolute top-0 left-[100px] text-[12px] w-[320px] h-[80px] bg-white rounded-lg flex flex-row justify-center space-x-3 items-end z-[6] p-3">
+                    <div @click="updateMapLayout('hybrid')" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
+                      <img src="/src/assets/images/map-layout/hybrid.png" class="w-full h-full rounded-lg" alt="">
+                    </div>
+                    <div @click="updateMapLayout('satellite')" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
+                      <img src="/src/assets/images/map-layout/satellite.png" class="w-full h-full rounded-lg" alt="">
+                    </div>
+                    <div @click="updateMapLayout('street')" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'street' }">
+                      <img src="/src/assets/images/map-layout/street.png" class="w-full h-full rounded-lg" alt="">
+                    </div>
+                    <div @click="updateMapLayout('terrain')" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'terrain' }">
+                      <img src="/src/assets/images/map-layout/terrain.png" class="w-full h-full rounded-lg" alt="">
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

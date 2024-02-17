@@ -12,6 +12,8 @@ const loading = ref(false)
 const myForm = ref()
 const addTJModalRef = ref()
 
+const emit = defineEmits(["getListReload"])
+
 const listReload = (listType) => {
     emit("getListReload", listType);
 }
@@ -26,6 +28,7 @@ defineProps({
         colors: [],
         tj_types: [],
         userList: [],
+        tjNumberList: [],
     }
 })
 
@@ -155,8 +158,8 @@ onMounted(async () => {
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                    <input type="text" v-model.number="tjnumber" id="tjnumber" class="input-control"
-                        placeholder="Enter tj number" />
+                    <v-select v-model="tjnumber" :options="dropdownList.tjNumberList" :reduce="item => item.value"
+                        id="tjnumber" placeholder="Select Tj Number" />
                     <p class="error-text">{{ errors.tjnumber }}</p>
                 </div>
 
