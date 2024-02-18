@@ -394,6 +394,15 @@
 
   .map-layout-item {
     @apply
-    flex-col w-[70px] h-full rounded-lg p-[2px] flex hover:scale-110 duration-300 cursor-pointer
+    flex 
+    flex-col
+    w-[70px]
+    h-full 
+    rounded-lg 
+    p-[2px] 
+    hover:scale-110 
+    duration-300 
+    cursor-pointer
   }
+
 }

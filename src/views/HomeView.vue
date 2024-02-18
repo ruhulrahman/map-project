@@ -9,8 +9,10 @@ import NavBar from '../components/NavBar.vue';
 import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
+import AddFiberForm from '@/views/fiber/AddFiberForm.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
 import AddTjForm from '@/views/tj/AddTjForm.vue';
+import AddAreaForm from '@/views/area/AddAreaForm.vue';
 import debounce from 'lodash.debounce'
 import lodash from 'lodash'
 
@@ -30,7 +32,8 @@ let mapContainer = ref()
 const modalR = ref()
 const addUserFormRef = ref()
 const addTjFormRef = ref()
-const mapTypes = ref('')
+const addFiberFormRef = ref()
+const addAreaFormRef = ref()
 const mapLayoutMode = ref('')
 const showMapLayoutMode = ref(false)
 
@@ -57,62 +60,11 @@ const dropdownList = ref({
   tjNumberList: [],
 })
 
-const mapDrawEnable = ref(false)
 let drawControl = ref({})
-
-
-let form = ref({
-  id: '',
-  fiberarea: '',
-  map_type: '',
-  fibercorep: '',
-  user: 20,
-  fibername: '',
-  fiber_code: '',
-  color_code: '',
-  width_height: '',
-  note: '',
-  coordinates: '',
-  drawType: '',
-})
-
-const resetFormData = () => {
-  form.value = {
-    id: '',
-    fiberarea: '',
-    map_type: '',
-    fibercorep: '',
-    user: 20,
-    fibername: '',
-    fiber_code: '',
-    color_code: '',
-    width_height: '',
-    note: '',
-    coordinates: '',
-    drawType: '',
-  }
-}
-
-
-let validationErrors = ref({
-  fiberarea: [],
-  map_type: [],
-  fibercorep: [],
-  fibername: [],
-  fiber_code: [],
-  color_code: [],
-  width_height: [],
-  note: [],
-  coordinates: [],
-})
-
-
 
 const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
-
-
 
 var greenIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
@@ -208,14 +160,11 @@ onMounted(async () => {
 
     // console.log('e.layerType', e.layerType)
 
-    form.value.drawType = ''
-
     const geoJson = layer.toGeoJSON()
-    form.value.drawType = e.layerType
 
     let geoJsonArray = []
 
-    if (e.layerType == 'polyline' || e.layerType == 'polygon') {
+    if (e.layerType == 'polyline') {
       if (geoJson.geometry.coordinates.length) {
         geoJsonArray = geoJson.geometry.coordinates.map(item => {
           const newObject = item.reverse()
@@ -223,9 +172,22 @@ onMounted(async () => {
         })
       }
 
-      form.value.coordinates = geoJsonArray
+      const coordinates = geoJsonArray
+      addFiberFormRef.value.show(coordinates)
+    }
 
-      modalR.value.onToggle()
+    if (e.layerType == 'polygon') {
+      if (geoJson.geometry.coordinates.length) {
+        geoJsonArray = geoJson.geometry.coordinates.map(item => {
+          return item.map(item2 => {
+            const newObject = item2.reverse()
+            return Object.assign(newObject)
+          })
+        })
+      }
+
+      const coordinates = geoJsonArray
+      addAreaFormRef.value.show(coordinates)
     }
 
     if (e.layerType == 'marker') {
@@ -233,12 +195,12 @@ onMounted(async () => {
         geoJsonArray = geoJson.geometry.coordinates.reverse()
       }
 
-      form.value.coordinates = geoJsonArray
+      const coordinates = geoJsonArray
 
       if (activeCreatorMenu.value == 'user' || activeCreatorMenu.value == 'marker') {
-        addUserFormRef.value.onToggle(form.value.coordinates)
+        addUserFormRef.value.onToggle(coordinates)
       } else if (activeCreatorMenu.value == 'tjmarker') {
-        addTjFormRef.value.show(form.value.coordinates)
+        addTjFormRef.value.show(coordinates)
       }
     }
 
@@ -266,7 +228,11 @@ onMounted(async () => {
 const getListReload = (listType) => {
   if (listType == 'marker') {
     getMapMarkerConnection()
+  } else if (listType == 'tj') {
+    getMapMarkerConnection()
   } else if (listType == 'polyline') {
+    getMapLineConnection()
+  } else if (listType == 'polygon') {
     getMapLineConnection()
   }
 }
@@ -572,122 +538,8 @@ const getMapLayoutData = async () => {
   }
 }
 
-const onToggle = () => {
-  modalR.value.onToggle()
-}
-
-const getColorNameOrCode = computed(() => {
-  let colorCode = ''
-  if (dropdownList.value.colors) {
-    const colorObj = dropdownList.value.colors.find(item => item.value == form.value.color_code)
-    colorCode = colorObj ? colorObj.label : ''
-  }
-  return colorCode
-})
-
-// const submitData = async () => {
-//   loading.value = true
-//   let result = ''
-
-//   if (form.value.id) {
-//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-//     } else {
-//       result = await RestApi.post('api/v1/sg-5/createfiber/', form.value)
-//     }
-//     loading.value = false
-
-//     console.log('create result == ', result)
-//     if (result.error) {
-//       validationErrors.value = mixin.cn(result.error, 'data.errors', null)
-//     }
-
-// }
-
-const submitData = async () => {
-  loading.value = true
-  let result = ''
-  try {
-    console.log('form.value', form.value)
-    if (form.value.drawType == 'polyline') {
-      if (form.value.id) {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      } else {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      }
-
-      if (result.status == 201) {
-        toast.success('Polyline has been created!')
-        onToggle()
-        resetFormData()
-        getMapLineConnection()
-      }
-
-    }
-
-    if (form.value.drawType == 'polygon') {
-      if (form.value.id) {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      } else {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      }
-
-      if (result.status == 201) {
-        toast.success('Polyline has been created!')
-        onToggle()
-        resetFormData()
-        getMapLineConnection()
-      }
-    }
-
-    if (form.value.drawType == 'marker') {
-      if (form.value.id) {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      } else {
-        result = await RestApi.post('api/v1/sg-5/create_line_draw/', form.value)
-      }
-
-      if (result.status == 201) {
-        toast.success('Polyline has been created!')
-        onToggle()
-        resetFormData()
-        getMapLineConnection()
-      }
-    }
-
-  } catch (error) {
-    validationErrors.value = mixin.cn(error, 'response.data', null)
-  } finally {
-    loading.value = false
-  }
-}
-
-
 // watcher
 watchEffect(() => {
-  if (form.value.fiberarea) {
-    validationErrors.value.fiberarea = []
-  }
-  if (form.value.color_code) {
-    validationErrors.value.color_code = []
-  }
-  if (form.value.coordinates) {
-    validationErrors.value.coordinates = []
-  }
-  if (form.value.fiber_code) {
-    validationErrors.value.fiber_code = []
-  }
-  if (form.value.fibercorep) {
-    validationErrors.value.fibercorep = []
-  }
-  if (form.value.map_type) {
-    validationErrors.value.map_type = []
-  }
-  if (form.value.note) {
-    validationErrors.value.note = []
-  }
-  if (form.value.width_height) {
-    validationErrors.value.width_height = []
-  }
 })
 
 const showCreateMenus = ref(false)
@@ -712,19 +564,21 @@ const updateMapLayout = async (layoutMode) => {
 
       // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
       const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
-      let selectedLayout = ''
+      let selectedLayout = ref('')
 
       if (activeMapLayout == 'hybrid') {
-        selectedLayout = googleHybrid
-      } else if (activeMapLayout == 'street') {
-        selectedLayout = googleStreets
+        selectedLayout.value = googleHybrid
       } else if (activeMapLayout == 'satellite') {
-        selectedLayout = googleSatellite
+        selectedLayout.value = googleSatellite
+      } else if (activeMapLayout == 'street') {
+        selectedLayout.value = googleStreets
       } else if (activeMapLayout == 'terrain') {
-        selectedLayout = googleTerrain
+        selectedLayout.value = googleTerrain
       }
 
-      selectedLayout.addTo(map.value);
+      console.log('selectedLayout.value', selectedLayout.value)
+
+      selectedLayout.value.addTo(map.value);
     }
 
   } catch (error) {
@@ -795,13 +649,13 @@ const updateMapLayout = async (layoutMode) => {
                       </div>
 
                       <div class="flex flex-row justify-between">
-                        <button type="button"
+                        <button type="button" @click="activateMapDrawer('polyline')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
                           <font-awesome-icon :icon="['fas', 'network-wired']" class="text-yellow-500 mr-2" />
                           Add Fiber
                         </button>
 
-                        <button type="button"
+                        <button type="button"  @click="activateMapDrawer('polygon')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'map']" class="text-red-500 mr-2" />
                           Add Area
@@ -885,8 +739,7 @@ const updateMapLayout = async (layoutMode) => {
               <div :class="hideLeftSidebar ? 'left-[20px]' : 'left-[320px]'"
                 class="absolute bottom-[20px] left-[20px] w-[80px] h-[80px] z-[5]">
                 <div class="flex flex-col w-full h-full">
-                  <div
-                    v-on:mouseenter="showMapLayout()"
+                  <div v-on:mouseenter="showMapLayout()"
                     class="flex-col w-full h-full relative rounded-lg overflow-hidden border-2 border-gray-950 hover:border-4 flex hover:scale-110 duration-300 cursor-pointer">
                     <img :src="`/src/assets/images/map-layout/${mapLayoutMode ? mapLayoutMode : 'hybrid'}.png`"
                       class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
@@ -895,17 +748,20 @@ const updateMapLayout = async (layoutMode) => {
                         class="font-semibold ml-1">Layers</span>
                     </div>
                   </div>
-                  <div
-                  v-on:mouseenter="showMapLayout()"
-                    v-on:mouseleave="hideMapLayout()"
+                  <div v-on:mouseenter="showMapLayout()" v-on:mouseleave="hideMapLayout()"
                     :class="showMapLayoutMode ? 'w-[320px] h-[80px] space-x-3 p-3' : 'w-0 h-0'"
                     class="absolute bottom-0 left-[100px] text-[12px] bg-white rounded-lg flex flex-row justify-center items-end z-[6] transition-all duration-200">
                     <div @click="updateMapLayout('hybrid')" class="map-layout-item border-2"
                       :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
-                      <img src="/src/assets/images/map-layout/hybrid.png" class="w-full h-full rounded-lg" alt="">
+                      <img v-tippy="'Hybrid'" src="/src/assets/images/map-layout/hybrid.png"
+                        class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('satellite')" class="map-layout-item border-2"
-                      :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
+                    <div @click="updateMapLayout('satellite')" v-tippy="{
+                      content: 'Satellite',
+                      appendTo: 'parent',
+                      theme: 'green',
+                      arrow: false
+                    }" class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
                       <img src="/src/assets/images/map-layout/satellite.png" class="w-full h-full rounded-lg" alt="">
                     </div>
                     <div @click="updateMapLayout('street')" class="map-layout-item border-2"
@@ -926,113 +782,23 @@ const updateMapLayout = async (layoutMode) => {
 
     </div>
 
-    <ModalR ref="modalR">
-      <template #header>
-        <h6>Add New Fiber Area</h6>
-      </template>
-      <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
-
-        <div class="mb-2 pb-4">
-          <label for="fiberarea" class="input-label">Fiber Area</label>
-          <v-select v-model="form.fiberarea" :options="dropdownList.tjareas" :reduce="item => item.value" id="fiberarea"
-            placeholder="Select Fiber Area" />
-          <p class="error-text" v-if="validationErrors.fiberarea && validationErrors.fiberarea.length">
-            {{ validationErrors.fiberarea[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fibercored" class="input-label">Fibercores</label>
-          <v-select v-model="form.fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
-            id="fibercored" placeholder="Select Fiber Cores" />
-          <p class="error-text" v-if="validationErrors.fibercorep.length">
-            {{ validationErrors.fibercorep[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="map_type" class="input-label">Map Type</label>
-          <v-select v-model="form.map_type" :options="dropdownList.map_types" :reduce="item => item.value" id="map_type"
-            placeholder="Select map type" />
-          <p class="error-text" v-if="validationErrors.map_type.length">
-            {{ validationErrors.map_type[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fibername" class="input-label">Fibername</label>
-          <input type="text" v-model="form.fibername" id="fibername" class="input-control"
-            placeholder="Enter fibername" />
-        </div>
-
-        <div class="mb-2 pb-4">
-          <label for="fiber_code" class="input-label">Fiber code</label>
-          <input type="text" v-model="form.fiber_code" id="fiber_code" class="input-control"
-            placeholder="Enter fiber code" />
-          <p class="error-text" v-if="validationErrors.fiber_code.length">
-            {{ validationErrors.fiber_code[0] }}
-          </p>
-        </div>
-
-
-        <div class="mb-2 pb-4 flex justify-between">
-          <div class="w-full">
-            <label for="color_code" class="input-label">Fiber Color</label>
-            <v-select v-model="form.color_code" :options="dropdownList.colors" :reduce="item => item.value"
-              id="color_code" placeholder="Select Color" />
-            <p class="error-text" v-if="validationErrors.color_code.length">
-              {{ validationErrors.color_code[0] }}
-            </p>
-          </div>
-          <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded"
-            :style="`background: ${getColorNameOrCode}`">
-          </div>
-        </div>
-
-        <!--<div class="mb-2 pb-4">
-        <label for="color_code" class="input-label">Color code</label>
-        <input type="text" v-model="form.color_code" id="color_code" class="input-control"
-          placeholder="Enter color code" />
-        <p class="error-text" v-if="validationErrors.color_code.length">
-          {{ validationErrors.color_code[0] }}
-        </p>
-      </div>-->
-
-        <div class="mb-2 pb-4">
-          <label for="width_height" class="input-label">Width and Height</label>
-          <input type="text" v-model="form.width_height" id="width_height" class="input-control"
-            placeholder="Enter width height" />
-          <p class="error-text" v-if="validationErrors.width_height.length">
-            {{ validationErrors.width_height[0] }}
-          </p>
-        </div>
-
-        <div class="mb-2 pb-4 ">
-          <label for="note" class="input-label">Note</label>
-          <textarea v-model="form.note" id="note" class="input-control" placeholder="Enter Note"></textarea>
-          <p class="error-text" v-if="validationErrors.note.length">
-            {{ validationErrors.note[0] }}
-          </p>
-        </div>
-
-        <div class="text-right">
-          <button @click="submitData" class="btn bg-[#2f3e56] hover:bg-[#3c4f6d] text-gray-300 ml-3">
-            Save to Project
-          </button>
-        </div>
-
-      </div>
-    </ModalR>
-
+    <AddFiberForm ref="addFiberFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddTjForm ref="addTjFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
-
+    <AddAreaForm ref="addAreaFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
 
   </div>
 </template>
 
 <style scoped>
 @import '@/style.css';
+
+* >>> .tippy-box[data-theme~='green'] {
+    background-color: #27A824;
+    padding: 3px;
+    border-radius: 3px;
+    color: rgb(255, 255, 255);
+  }
 
 img.leaflet-marker-icon {
   filter: hue-rotate(244deg) !important;

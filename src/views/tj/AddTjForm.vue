@@ -66,10 +66,11 @@ const resetFormData = () => {
         tj_connect: '',
         tj_description: '',
     });
+    
+    listReload('marker')
 }
 
 const onSubmit = handleSubmit(async (values, { resetForm }) => {
-    console.log(JSON.stringify(values, null, 2));
     loading.value = true
     let result = ''
     try {
@@ -95,7 +96,7 @@ const onSubmit = handleSubmit(async (values, { resetForm }) => {
 });
 // watcher
 watchEffect(() => {
-    console.log('email - watchEffect')
+    // console.log('email - watchEffect')
 })
 
 const show = (formValue) => {

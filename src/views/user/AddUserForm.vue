@@ -34,12 +34,12 @@ defineProps({
 
 const schema = yup.object({
     id: yup.string().label('Id'),
-    userid: yup.string().label('User Id'),
     spilitter: yup.string().required().label('Splitter'),
     usertype: yup.string().required().label('User Type'),
     userlatlong: yup.string().required().label('User latlong'),
     tjnumber: yup.number().required().label('Tj Number'),
     lineby: yup.string().required().min(2).label('Line By'),
+    userid: yup.string().required().min(2).label('User ID'),
     loginusername: yup.string().required().min(2).label('Username'),
 });
 
@@ -48,12 +48,12 @@ const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit }
 });
 
 const [id] = defineField('id');
-const [userid] = defineField('userid');
 const [spilitter] = defineField('spilitter');
 const [usertype] = defineField('usertype');
 const [userlatlong] = defineField('userlatlong');
 const [tjnumber] = defineField('tjnumber');
 const [lineby] = defineField('lineby');
+const [userid] = defineField('userid');
 const [loginusername] = defineField('loginusername');
 
 const resetFormData = () => {
@@ -63,12 +63,14 @@ const resetFormData = () => {
         userlatlong: '',
         tjnumber: '',
         lineby: '',
+        userid: '',
         loginusername: '',
     });
+    
+    listReload('marker')
 }
 
 const onSubmit = handleSubmit(async (values, { resetForm }) => {
-    console.log(JSON.stringify(values, null, 2));
     loading.value = true
     let result = ''
     try {
@@ -94,7 +96,7 @@ const onSubmit = handleSubmit(async (values, { resetForm }) => {
 });
 // watcher
 watchEffect(() => {
-    console.log('email - watchEffect')
+    // console.log('email - watchEffect')
 })
 
 const onToggle = (formValue) => {
@@ -104,7 +106,6 @@ const onToggle = (formValue) => {
     //   });
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
-    setFieldValue('userid', 20);
     setFieldValue('userlatlong', JSON.stringify(formValue));
     addUserModalRef.value.onToggle()
 }
@@ -168,6 +169,13 @@ onMounted(async () => {
                     <input type="text" v-model="lineby" id="lineby" class="input-control" placeholder="Enter lineby" />
                     <p class="error-text">{{ errors.lineby }}</p>
                 </div> -->
+
+                <div class="mb-2 pb-4">
+                    <label for="userid" class="input-label">User ID</label>
+                    <input type="text" v-model="userid" id="userid" class="input-control"
+                        placeholder="Enter user id" />
+                    <p class="error-text">{{ errors.userid }}</p>
+                </div>
 
                 <div class="mb-2 pb-4">
                     <label for="loginusername" class="input-label">Username</label>
