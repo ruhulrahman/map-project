@@ -33,17 +33,18 @@
     @apply hidden;
   }
 
-  input[type='text'] {
+  /* input[type='text'] {
     background: none;
-  }
+  } */
 
-  input[type='text']:focus {
+  /* input[type='text']:focus {
     outline: none;
-  }
+  } */
 
   textarea:focus {
     outline: none;
   }
+
 
   .switch {
     @apply relative
@@ -91,6 +92,18 @@
 }
 
 @layer components {
+
+  
+  
+.login-input {
+  @apply
+  block 
+  w-full 
+  p-3 
+  text-lg 
+  rounded-full 
+  bg-black
+}
   /* Group Utilities */
   .btn {
     @apply

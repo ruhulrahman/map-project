@@ -10,6 +10,11 @@ const router = createRouter({
       component: HomeView
     },
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/Login.vue')
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -18,6 +23,18 @@ const router = createRouter({
       component: () => import('../views/AboutView.vue')
     }
   ]
+})
+
+router.beforeEach(async (to, from) => {
+  const isAuthenticated = localStorage.getItem('token')
+  if (!isAuthenticated && to.name !== 'login') {
+    // redirect the user to the login page
+    return { name: 'login' }
+  }
+  if (isAuthenticated && to.name == 'login') {
+    // redirect the user to the login page
+    return { path: '/' }
+  }
 })
 
 export default router

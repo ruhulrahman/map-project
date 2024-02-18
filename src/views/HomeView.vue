@@ -655,7 +655,7 @@ const updateMapLayout = async (layoutMode) => {
                           Add Fiber
                         </button>
 
-                        <button type="button"  @click="activateMapDrawer('polygon')"
+                        <button type="button" @click="activateMapDrawer('polygon')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'map']" class="text-red-500 mr-2" />
                           Add Area
@@ -751,25 +751,21 @@ const updateMapLayout = async (layoutMode) => {
                   <div v-on:mouseenter="showMapLayout()" v-on:mouseleave="hideMapLayout()"
                     :class="showMapLayoutMode ? 'w-[320px] h-[80px] space-x-3 p-3' : 'w-0 h-0'"
                     class="absolute bottom-0 left-[100px] text-[12px] bg-white rounded-lg flex flex-row justify-center items-end z-[6] transition-all duration-200">
-                    <div @click="updateMapLayout('hybrid')" class="map-layout-item border-2"
-                      :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
-                      <img v-tippy="'Hybrid'" src="/src/assets/images/map-layout/hybrid.png"
-                        class="w-full h-full rounded-lg" alt="">
+                    <div @click="updateMapLayout('hybrid')" v-tippy="{ content: 'Hybrid', appendTo: 'parent', theme: 'green' }"
+                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
+                      <img src="/src/assets/images/map-layout/hybrid.png" class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('satellite')" v-tippy="{
-                      content: 'Satellite',
-                      appendTo: 'parent',
-                      theme: 'green',
-                      arrow: false
-                    }" class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
+                    <div @click="updateMapLayout('satellite')"
+                      v-tippy="{ content: 'Satellite', appendTo: 'parent', theme: 'green' }"
+                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
                       <img src="/src/assets/images/map-layout/satellite.png" class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('street')" class="map-layout-item border-2"
-                      :class="{ 'border-blue-500': mapLayoutMode == 'street' }">
+                    <div @click="updateMapLayout('street')" v-tippy="{ content: 'Street', appendTo: 'parent', theme: 'green' }"
+                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'street' }">
                       <img src="/src/assets/images/map-layout/street.png" class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('terrain')" class="map-layout-item border-2"
-                      :class="{ 'border-blue-500': mapLayoutMode == 'terrain' }">
+                    <div @click="updateMapLayout('terrain')" v-tippy="{ content: 'Terrain', appendTo: 'parent', theme: 'green' }"
+                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'terrain' }">
                       <img src="/src/assets/images/map-layout/terrain.png" class="w-full h-full rounded-lg" alt="">
                     </div>
                   </div>
@@ -793,12 +789,12 @@ const updateMapLayout = async (layoutMode) => {
 <style scoped>
 @import '@/style.css';
 
-* >>> .tippy-box[data-theme~='green'] {
-    background-color: #27A824;
-    padding: 3px;
-    border-radius: 3px;
-    color: rgb(255, 255, 255);
-  }
+*>>>.tippy-box[data-theme~='green'] {
+  background-color: #27A824;
+  padding: 3px;
+  border-radius: 3px;
+  color: rgb(255, 255, 255);
+}
 
 img.leaflet-marker-icon {
   filter: hue-rotate(244deg) !important;

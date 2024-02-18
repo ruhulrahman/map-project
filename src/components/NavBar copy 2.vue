@@ -1,26 +1,18 @@
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 const showMenubar = ref(true);
-const open = ref(false);
 
 const toggleMenubar = () => {
   showMenubar.value = !showMenubar.value;
 }
-
-const authUser = computed(() => {
-  return JSON.parse(localStorage.getItem('authUser'))
-})
 
 const emit = defineEmits(["activedMapDraw"])
 
 const activateMapDraw = (drawTool) => {
   emit("activedMapDraw", drawTool);
 }
-
-onMounted(() => {
-})
 
 </script>
 
@@ -71,28 +63,29 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="flex absolute right-0 top-0">
-        <div x-data="{ open: false }" class=" w-64  shadow flex justify-center items-center">
-          <div @click="open = !open" class="relative border-b-4 border-transparent"
-            :class="{ 'border-indigo-700 transform transition duration-300 ': open } && { 'py-3' : showMenubar }">
+      <div class="flex">
+        <div x-data="{ open: false }" class="bg-white dark:bg-gray-800 w-64  shadow flex justify-center items-center">
+          <div @click="open = !open" class="relative border-b-4 border-transparent py-3"
+            :class="{ 'border-indigo-700 transform transition duration-300 ': open }"
+            x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
+            x-transition:leave-start="transform opacity-100 scale-100">
             <div class="flex justify-center items-center space-x-3 cursor-pointer">
               <div class="w-12 h-12 rounded-full overflow-hidden border-2 dark:border-white border-gray-900">
                 <img
-                v-if="authUser && authUser.user_profile"
-                  :src="authUser.user_profile.photo_url"
-                  alt="" class="w-full h-full object-cover">
-                <img
-                 v-else
                   src="https://images.unsplash.com/photo-1610397095767-84a5b4736cbd?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80"
                   alt="" class="w-full h-full object-cover">
               </div>
               <div class="font-semibold dark:text-white text-gray-900 text-lg">
-                <div class="cursor-pointer" v-if="authUser"><span class="uppercase">{{ authUser.user_name }}</span></div>
+                <div class="cursor-pointer">Hasan Muhammad</div>
               </div>
             </div>
-            <div v-show="open" class="absolute w-60 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
+            <div x-show="open" x-transition:enter="transition ease-out duration-100"
+              x-transition:enter-start="transform opacity-0 scale-95"
+              x-transition:enter-end="transform opacity-100 scale-100" x-transition:leave="transition ease-in duration-75"
+              x-transition:leave-start="transform opacity-100 scale-100"
+              x-transition:leave-end="transform opacity-0 scale-95"
+              class="absolute w-60 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
               <ul class="space-y-3 dark:text-white">
-                <!--
                 <li class="font-medium">
                   <a href="#"
                     class="flex items-center transform transition-colors duration-200 border-r-4 border-transparent hover:border-indigo-700">
@@ -121,7 +114,7 @@ onMounted(() => {
                     </div>
                     Setting
                   </a>
-                </li>-->
+                </li>
                 <hr class="dark:border-gray-700">
                 <li class="font-medium">
                   <a href="#"
