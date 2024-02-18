@@ -26,7 +26,7 @@ const loading = ref(false)
 const lat = ref(0)
 const long = ref(0)
 const map = ref()
-const mapContainer = ref()
+let mapContainer = ref()
 const modalR = ref()
 const addUserFormRef = ref()
 const addTjFormRef = ref()
@@ -710,6 +710,7 @@ const updateMapLayout = async (layoutMode) => {
     if (result.status == 200) {
       await getMapLayoutData()
 
+      // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
       const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
       let selectedLayout = ''
 
