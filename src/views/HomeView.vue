@@ -32,6 +32,18 @@ const addUserFormRef = ref()
 const addTjFormRef = ref()
 const mapTypes = ref('')
 const mapLayoutMode = ref('')
+const showMapLayoutMode = ref(false)
+
+const showMapLayout = () => {
+  showMapLayoutMode.value = true
+}
+
+const hideMapLayout = () => {
+  // setTimeout(function () {
+  //   showMapLayoutMode.value = false
+  // }, 1000);
+  showMapLayoutMode.value = false
+}
 
 const dropdownList = ref({
   fibercores: [],
@@ -873,6 +885,7 @@ const updateMapLayout = async (layoutMode) => {
                 class="absolute bottom-[20px] left-[20px] w-[80px] h-[80px] z-[5]">
                 <div class="flex flex-col w-full h-full">
                   <div
+                    v-on:mouseenter="showMapLayout()"
                     class="flex-col w-full h-full relative rounded-lg overflow-hidden border-2 border-gray-950 hover:border-4 flex hover:scale-110 duration-300 cursor-pointer">
                     <img :src="`/src/assets/images/map-layout/${mapLayoutMode ? mapLayoutMode : 'hybrid'}.png`"
                       class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
@@ -882,7 +895,10 @@ const updateMapLayout = async (layoutMode) => {
                     </div>
                   </div>
                   <div
-                    class="absolute top-0 left-[100px] text-[12px] w-[320px] h-[80px] bg-white rounded-lg flex flex-row justify-center space-x-3 items-end z-[6] p-3">
+                  v-on:mouseenter="showMapLayout()"
+                    v-on:mouseleave="hideMapLayout()"
+                    :class="showMapLayoutMode ? 'w-[320px] h-[80px] space-x-3 p-3' : 'w-0 h-0'"
+                    class="absolute bottom-0 left-[100px] text-[12px] bg-white rounded-lg flex flex-row justify-center items-end z-[6] transition-all duration-200">
                     <div @click="updateMapLayout('hybrid')" class="map-layout-item border-2"
                       :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
                       <img src="/src/assets/images/map-layout/hybrid.png" class="w-full h-full rounded-lg" alt="">
