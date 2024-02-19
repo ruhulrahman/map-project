@@ -1,6 +1,9 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
+import { useRouter } from "vue-router";
+
+const router = useRouter()
 
 const showMenubar = ref(true);
 const open = ref(false);
@@ -17,6 +20,12 @@ const emit = defineEmits(["activedMapDraw"])
 
 const activateMapDraw = (drawTool) => {
   emit("activedMapDraw", drawTool);
+}
+
+const logout = () => {
+  localStorage.setItem('token', '')
+  localStorage.setItem('authUser', '')
+  router.push('/login')
 }
 
 onMounted(() => {
@@ -90,7 +99,7 @@ onMounted(() => {
                 <div class="cursor-pointer" v-if="authUser"><span class="uppercase">{{ authUser.user_name }}</span></div>
               </div>
             </div>
-            <div v-show="open" class="absolute w-60 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
+            <div v-show="open" class="absolute right-[-75px] w-56 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
               <ul class="space-y-3 dark:text-white">
                 <!--
                 <li class="font-medium">
@@ -124,7 +133,7 @@ onMounted(() => {
                 </li>-->
                 <hr class="dark:border-gray-700">
                 <li class="font-medium">
-                  <a href="#"
+                  <a href="#" @click="logout()"
                     class="flex items-center transform transition-colors duration-200 border-r-4 border-transparent hover:border-red-600">
                     <div class="mr-3 text-red-600">
                       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
