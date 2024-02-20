@@ -838,8 +838,11 @@ const updateMapLayout = async (layoutMode) => {
                 <div class="flex flex-col w-full h-full">
                   <div v-on:mouseenter="showMapLayout()"
                     class="flex-col w-full h-full relative rounded-lg overflow-hidden border-2 border-gray-950 hover:border-4 flex hover:scale-110 duration-300 cursor-pointer">
-                    <img :src="`/src/assets/images/map-layout/${mapLayoutMode ? mapLayoutMode : 'hybrid'}.png`"
-                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-if="mapLayoutMode == 'hybrid'" :src="`/src/assets/images/map-layout/hybrid.png`" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'satellite'" :src="`/src/assets/images/map-layout/satellite.png`" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'street'" :src="`/src/assets/images/map-layout/street.png`" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'terrain'" :src="`/src/assets/images/map-layout/terrain.png`" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+
                     <div class="text-[12px] w-full h-full flex flex-row justify-center items-end z-[6] pb-1">
                       <font-awesome-icon :icon="['fas', 'layer-group']" class="" /> <span
                         class="font-semibold ml-1">Layers</span>
