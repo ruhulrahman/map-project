@@ -233,17 +233,17 @@ onMounted(async () => {
   getTjnuberInitData()
 
   intervalId = setInterval(() => {
-    checkInstance();
-  }, 3000);
+    getIpAddressStatus();
+  }, 5000);
 });
 
 let intervalId;
 
 onUnmounted(() => clearInterval(intervalId))
 
-function checkInstance() {
-  console.log("checkInstance")
-}
+// function checkInstance() {
+//   console.log("checkInstance")
+// }
 
 const getListReload = (listType) => {
   if (listType == 'marker') {
@@ -298,7 +298,7 @@ const activateMapDrawer = (params) => {
     document.querySelector(".leaflet-draw-draw-polygon").click();
 
   } else if (params == 'polyline' || params == 'fiber_monitor') {
-    
+
     activeCreatorMenu.value = params
 
     drawControl.value = new L.Control.Draw({
@@ -457,31 +457,51 @@ const getMapLineConnection = async () => {
   loading.value = false
 }
 
+const fiberMonitorList = ref([])
+
 const getFiberMonitorConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/fiber_monitor_get/')
 
   if (result.data.length) {
-    await result.data.forEach((item, index) => {
+    fiberMonitorList.value = await result.data.map((item, index) => {
 
-      if (index > -1) {
+      const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
+      const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
 
-        const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
-        const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
+      item.mapTypeName = mapType ? mapType.label : ''
+      item.fiberCoreName = fiberCore ? fiberCore.label : ''
 
-        const mapTypeName = mapType ? mapType.label : ''
-        const fiberCoreName = fiberCore ? fiberCore.label : ''
+      return Object.assign({}, item)
 
-        console.log('coordinates', item.coordinates)
+    })
 
-        var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+    getIpAddressStatus()
+
+  }
+
+  loading.value = false
+}
+
+const getIpAddressStatus = () => {
+
+  fiberMonitorList.value.forEach(async (item, index) => {
+
+    const params = { ip_address: item.ipaddr }
+
+    try {
+      let result = await RestApi.get('/pingajax', { params })
+
+      item.color_code = result.data.status
+
+      L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
           // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
           .bindPopup(`
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
-                            ${mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
+                            ${item.mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${item.mapTypeName}</span></p>` : ''
             }
-                            ${fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
+                            ${item.fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${item.fiberCoreName}</span></p>` : ''
             }
                             <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
                             <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
@@ -489,15 +509,12 @@ const getFiberMonitorConnection = async () => {
                           </div>
                         `)
 
+    } catch (error) {
+      console.log('error', error)
+    }
 
+  })
 
-      }
-      // zoom the map to the polyline
-      // map.value.fitBounds(polyline.getBounds());
-    })
-  }
-
-  loading.value = false
 }
 
 const getInitData = async () => {
@@ -830,8 +847,9 @@ const updateMapLayout = async (layoutMode) => {
                   <div v-on:mouseenter="showMapLayout()" v-on:mouseleave="hideMapLayout()"
                     :class="showMapLayoutMode ? 'w-[320px] h-[80px] space-x-3 p-3' : 'w-0 h-0'"
                     class="absolute bottom-0 left-[100px] text-[12px] bg-white rounded-lg flex flex-row justify-center items-end z-[6] transition-all duration-200">
-                    <div @click="updateMapLayout('hybrid')" v-tippy="{ content: 'Hybrid', appendTo: 'parent', theme: 'green' }"
-                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
+                    <div @click="updateMapLayout('hybrid')"
+                      v-tippy="{ content: 'Hybrid', appendTo: 'parent', theme: 'green' }" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'hybrid' }">
                       <img src="/src/assets/images/map-layout/hybrid.png" class="w-full h-full rounded-lg" alt="">
                     </div>
                     <div @click="updateMapLayout('satellite')"
@@ -839,11 +857,13 @@ const updateMapLayout = async (layoutMode) => {
                       class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'satellite' }">
                       <img src="/src/assets/images/map-layout/satellite.png" class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('street')" v-tippy="{ content: 'Street', appendTo: 'parent', theme: 'green' }"
-                      class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'street' }">
+                    <div @click="updateMapLayout('street')"
+                      v-tippy="{ content: 'Street', appendTo: 'parent', theme: 'green' }" class="map-layout-item border-2"
+                      :class="{ 'border-blue-500': mapLayoutMode == 'street' }">
                       <img src="/src/assets/images/map-layout/street.png" class="w-full h-full rounded-lg" alt="">
                     </div>
-                    <div @click="updateMapLayout('terrain')" v-tippy="{ content: 'Terrain', appendTo: 'parent', theme: 'green' }"
+                    <div @click="updateMapLayout('terrain')"
+                      v-tippy="{ content: 'Terrain', appendTo: 'parent', theme: 'green' }"
                       class="map-layout-item border-2" :class="{ 'border-blue-500': mapLayoutMode == 'terrain' }">
                       <img src="/src/assets/images/map-layout/terrain.png" class="w-full h-full rounded-lg" alt="">
                     </div>
@@ -958,5 +978,4 @@ img.leaflet-marker-icon {
   left: -6px;
   border: 10px solid transparent;
   border-top: 17px solid #fff;
-}
-</style>
+}</style>
