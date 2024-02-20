@@ -227,7 +227,7 @@ onMounted(async () => {
   });
 
   getMapMarkerConnection()
-  // getMapLineConnection()
+  getMapLineConnection()
   getFiberMonitorConnection()
   getInitData()
   getTjnuberInitData()
