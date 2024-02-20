@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, watchEffect } from "vue";
+import { ref, onMounted, onUnmounted, computed, watchEffect } from "vue";
 import RestApi from '@/libs/config'
 import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
@@ -10,11 +10,13 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup';
 import InputText from '@/components/InputText.vue';
 import AddFiberForm from '@/views/fiber/AddFiberForm.vue';
+import AddFiberMonitorForm from '@/views/fiber/AddFiberMonitorForm.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
 import AddTjForm from '@/views/tj/AddTjForm.vue';
 import AddAreaForm from '@/views/area/AddAreaForm.vue';
 import debounce from 'lodash.debounce'
 import lodash from 'lodash'
+import router from "@/router";
 
 // import Modal from "@/components/ModalR.vue";
 
@@ -33,8 +35,9 @@ const modalR = ref()
 const addUserFormRef = ref()
 const addTjFormRef = ref()
 const addFiberFormRef = ref()
+const addFiberMonitorFormRef = ref()
 const addAreaFormRef = ref()
-const mapLayoutMode = ref('')
+const mapLayoutMode = ref('hibrid')
 const showMapLayoutMode = ref(false)
 
 const showMapLayout = () => {
@@ -107,7 +110,7 @@ onMounted(async () => {
   // })
 
 
-  const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
+  const activeMapLayout = mapLayoutMode.value
   let selectedLayout = ''
 
   if (activeMapLayout == 'hybrid') {
@@ -173,7 +176,11 @@ onMounted(async () => {
       }
 
       const coordinates = geoJsonArray
-      addFiberFormRef.value.show(coordinates)
+      if (activeCreatorMenu.value == 'polyline') {
+        addFiberFormRef.value.show(coordinates)
+      } else if (activeCreatorMenu.value == 'fiber_monitor') {
+        addFiberMonitorFormRef.value.show(coordinates)
+      }
     }
 
     if (e.layerType == 'polygon') {
@@ -220,10 +227,23 @@ onMounted(async () => {
   });
 
   getMapMarkerConnection()
-  getMapLineConnection()
+  // getMapLineConnection()
+  getFiberMonitorConnection()
   getInitData()
   getTjnuberInitData()
+
+  intervalId = setInterval(() => {
+    checkInstance();
+  }, 3000);
 });
+
+let intervalId;
+
+onUnmounted(() => clearInterval(intervalId))
+
+function checkInstance() {
+  console.log("checkInstance")
+}
 
 const getListReload = (listType) => {
   if (listType == 'marker') {
@@ -234,6 +254,8 @@ const getListReload = (listType) => {
     getMapLineConnection()
   } else if (listType == 'polygon') {
     getMapLineConnection()
+  } else if (listType == 'polyline_fiber_monitor') {
+    getFiberMonitorConnection()
   }
 }
 
@@ -275,7 +297,10 @@ const activateMapDrawer = (params) => {
     map.value.addControl(drawControl.value);
     document.querySelector(".leaflet-draw-draw-polygon").click();
 
-  } else if (params == 'polyline') {
+  } else if (params == 'polyline' || params == 'fiber_monitor') {
+    
+    activeCreatorMenu.value = params
+
     drawControl.value = new L.Control.Draw({
       draw: {
         position: 'topleft',
@@ -432,6 +457,49 @@ const getMapLineConnection = async () => {
   loading.value = false
 }
 
+const getFiberMonitorConnection = async () => {
+  loading.value = true
+  let result = await RestApi.get('/api/v1/sg-5/fiber_monitor_get/')
+
+  if (result.data.length) {
+    await result.data.forEach((item, index) => {
+
+      if (index > -1) {
+
+        const mapType = dropdownList.value.map_types.find(mapType => mapType.value === item.map_type)
+        const fiberCore = dropdownList.value.fibercores.find(mapType => mapType.value === item.fibercorep)
+
+        const mapTypeName = mapType ? mapType.label : ''
+        const fiberCoreName = fiberCore ? fiberCore.label : ''
+
+        console.log('coordinates', item.coordinates)
+
+        var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
+          // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
+          .bindPopup(`
+                          <div class="p-1">
+                            <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
+                            ${mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${mapTypeName}</span></p>` : ''
+            }
+                            ${fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${fiberCoreName}</span></p>` : ''
+            }
+                            <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
+                            <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
+                            <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
+                          </div>
+                        `)
+
+
+
+      }
+      // zoom the map to the polyline
+      // map.value.fitBounds(polyline.getBounds());
+    })
+  }
+
+  loading.value = false
+}
+
 const getInitData = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/selete/')
@@ -560,6 +628,9 @@ const updateMapLayout = async (layoutMode) => {
     }
 
     if (result.status == 200) {
+
+      // router.go()
+
       await getMapLayoutData()
 
       // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
@@ -659,6 +730,14 @@ const updateMapLayout = async (layoutMode) => {
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'map']" class="text-red-500 mr-2" />
                           Add Area
+                        </button>
+                      </div>
+
+                      <div class="flex flex-row justify-between">
+                        <button type="button" @click="activateMapDrawer('fiber_monitor')"
+                          class="text-gray-900 w-full bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
+                          <font-awesome-icon :icon="['fab', 'watchman-monitoring']" class="text-green-500 mr-2" />
+                          Add Fiber Monitor
                         </button>
                       </div>
 
@@ -778,10 +857,11 @@ const updateMapLayout = async (layoutMode) => {
 
     </div>
 
-    <AddFiberForm ref="addFiberFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddTjForm ref="addTjFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
+    <AddFiberForm ref="addFiberFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddAreaForm ref="addAreaFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
+    <AddFiberMonitorForm ref="addFiberMonitorFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
 
   </div>
 </template>

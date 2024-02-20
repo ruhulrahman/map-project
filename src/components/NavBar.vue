@@ -80,14 +80,14 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="flex absolute right-0 top-0">
-        <div x-data="{ open: false }" class=" w-64  shadow flex justify-center items-center">
+      <div class="flex absolute right-0 top-1">
+        <div x-data="{ open: false }" class=" w-64  shadow flex justify-end items-center pr-3">
           <div @click="open = !open" class="relative border-b-4 border-transparent"
             :class="{ 'border-indigo-700 transform transition duration-300 ': open } && { 'py-3' : showMenubar }">
-            <div class="flex justify-center items-center space-x-3 cursor-pointer">
-              <div class="w-12 h-12 rounded-full overflow-hidden border-2 dark:border-white border-gray-900">
+            <div class="flex justify-end items-center space-x-3 cursor-pointer">
+              <div class="w-[40px] h-[40px] rounded-full overflow-hidden border-2 dark:border-white border-gray-900">
                 <img
-                v-if="authUser && authUser.user_profile"
+                  v-if="authUser && authUser.user_profile"
                   :src="authUser.user_profile.photo_url"
                   alt="" class="w-full h-full object-cover">
                 <img
@@ -96,10 +96,10 @@ onMounted(() => {
                   alt="" class="w-full h-full object-cover">
               </div>
               <div class="font-semibold dark:text-white text-gray-900 text-lg">
-                <div class="cursor-pointer" v-if="authUser"><span class="uppercase">{{ authUser.user_name }}</span></div>
+                <div class="cursor-pointer" v-if="authUser"><span class="uppercase text-[13px]">{{ authUser.user_name }}</span></div>
               </div>
             </div>
-            <div v-show="open" class="absolute right-[-75px] w-56 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
+            <div v-show="open" class="absolute right-[-10px] w-56 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
               <ul class="space-y-3 dark:text-white">
                 <!--
                 <li class="font-medium">

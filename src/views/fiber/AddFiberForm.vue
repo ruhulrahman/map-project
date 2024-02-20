@@ -117,12 +117,14 @@ watchEffect(() => {
 
 const show = (formValue) => {
 
+    const authUser = JSON.parse(localStorage.getItem('authUser'))
+    setFieldValue('user', mixin.cn(authUser, 'id'));
+
     //   setValues({
     //     email: 'test@example.com',
     //   });
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
-    setFieldValue('user', mixin.auth_id);
     setFieldValue('coordinates', formValue);
     addTJModalRef.value.show()
 }

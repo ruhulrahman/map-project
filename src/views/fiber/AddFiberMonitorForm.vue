@@ -45,9 +45,13 @@ const getColorNameOrCode = computed(() => {
 const schema = yup.object({
     id: yup.string().label('Id'),
     fiberarea: yup.string().required().label('Fiber Area'),
-    displayname: yup.string().required().label('Display Name'),
-    color_code: yup.string().required().min(2).label('Color Code'),
-    note: yup.string().label('Note'),
+    map_type: yup.string().required().label('Map Type'),
+    fibercorep: yup.string().required().label('Fibercorep'),
+    fibername: yup.string().required().label('Fibername'),
+    fiber_code: yup.string().required().label('Fiber Code'),
+    width_height: yup.number().required().label('Fiber Width'),
+    // color_code: yup.string().required().min(2).label('Color Code'),
+    note: yup.string().required().label('Note'),
 });
 
 const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit } = useForm({
@@ -57,38 +61,48 @@ const { errors, setErrors, setValues, setFieldValue, defineField, handleSubmit }
 const [id] = defineField('id');
 const [user] = defineField('user');
 const [fiberarea] = defineField('fiberarea');
-const [displayname] = defineField('displayname');
-const [coordinates] = defineField('coordinates');
-const [color_code] = defineField('color_code');
+const [map_type] = defineField('map_type');
+const [fibercorep] = defineField('fibercorep');
+const [fibername] = defineField('fibername');
+const [fiber_code] = defineField('fiber_code');
+// const [color_code] = defineField('color_code');
+const [width_height] = defineField('width_height');
 const [note] = defineField('note');
+const [coordinates] = defineField('coordinates');
+const [ipaddr] = defineField('ipaddr');
 
 const resetFormData = () => {
     setValues({
         fiberarea: '',
-        displayname: '',
+        map_type: '',
+        fibercorep: '',
+        fibername: '',
+        fiber_code: '',
         color_code: '',
+        width_height: '',
         note: '',
         coordinates: '',
     });
-    
-    listReload('polygon')
+
+    listReload('polyline')
 }
+
 
 const onSubmit = handleSubmit(async (values, { resetForm }) => {
     loading.value = true
     let result = ''
     try {
         if (values.id) {
-            result = await RestApi.post('api/v1/sg-5/create_area/', values)
+            result = await RestApi.post('api/v1/sg-3/fibermonitor_create/', values)
         } else {
-            result = await RestApi.post('api/v1/sg-5/create_area/', values)
+            result = await RestApi.post('api/v1/sg-3/fibermonitor_create/', values)
         }
 
         if (result.status == 201) {
-            toast.success('Area has been created!')
+            toast.success('Fiber Monitor has been created!')
             resetForm();
             addTJModalRef.value.hide()
-            listReload('polygon')
+            listReload('polyline_fiber_monitor')
         }
 
     } catch (error) {
@@ -112,7 +126,7 @@ const show = (formValue) => {
     //   });
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
-    setFieldValue('coordinates', JSON.stringify(formValue));
+    setFieldValue('coordinates', formValue);
     addTJModalRef.value.show()
 }
 
@@ -122,14 +136,28 @@ defineExpose({
 
 onMounted(async () => {
     // console.log('form.value - initial', form.value)
+    // getIpAddressInfo()
 });
+
+
+const getIpAddressInfo = async () => {
+    loading.value = true
+    try {
+        let result = await RestApi.get('https://ipinfo.io')
+
+        console.log('result', result)
+
+    } catch (error) {
+        console.log('error', error)
+    }
+}
 
 </script>
 
 <template>
     <ModalR ref="addTJModalRef">
         <template #header>
-            <h6>{{ id ? 'Update' : 'Add New' }} Area</h6>
+            <h6>{{ id ? 'Update' : 'Add New' }} Fiber Monitor</h6>
         </template>
         <Form ref="myForm" @submit="onSubmit">
             <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
@@ -143,23 +171,37 @@ onMounted(async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="displayname" class="input-label">Display Name</label>
-                    <input type="text" v-model="displayname" id="displayname" class="input-control"
-                        placeholder="Enter Display Name" />
-                    <p class="error-text">{{ errors.displayname }}</p>
+                    <label for="fibercorep" class="input-label">Fibercores</label>
+                    <v-select v-model="fibercorep" :options="dropdownList.fibercores" :reduce="item => item.value"
+                        id="fibercorep" placeholder="Select Fiber Cores" />
+                    <p class="error-text">{{ errors.fibercorep }}</p>
                 </div>
 
-                <div class="mb-2 pb-4 flex justify-between">
-                    <div class="w-full">
-                        <label for="color_code" class="input-label">Fiber Color</label>
-                        <v-select v-model="color_code" :options="dropdownList.colors" :reduce="item => item.value"
-                            id="color_code" placeholder="Select Color" />
-                        <p class="error-text">{{ errors.color_code }}</p>
-                    </div>
-                    {{ getColorNameOrCode }}
-                    <div v-if="getColorNameOrCode" class="w-[30%] h-[37px] mt-[30px] ml-3 rounded"
-                        :style="`background: ${getColorNameOrCode}`">
-                    </div>
+                <div class="mb-2 pb-4">
+                    <label for="map_type" class="input-label">Map Type</label>
+                    <v-select v-model="map_type" :options="dropdownList.map_types" :reduce="item => item.value"
+                        id="map_type" placeholder="Select Map Type" />
+                    <p class="error-text">{{ errors.map_type }}</p>
+                </div>
+
+                <div class="mb-2 pb-4">
+                    <label for="fibername" class="input-label">Fibername</label>
+                    <input type="text" v-model="fibername" id="fibername" class="input-control"
+                        placeholder="Enter Fibername" />
+                    <p class="error-text">{{ errors.fibername }}</p>
+                </div>
+
+                <div class="mb-2 pb-4">
+                    <label for="fiber_code" class="input-label">Fiber code</label>
+                    <input type="text" v-model="fiber_code" id="fiber_code" class="input-control"
+                        placeholder="Enter Fiber code" />
+                    <p class="error-text">{{ errors.fiber_code }}</p>
+                </div>
+
+                <div class="mb-2 pb-4">
+                    <label for="width_height" class="input-label">Fiber Width</label>
+                    <input type="text" v-model="width_height" id="width_height" class="input-control" placeholder="Enter Fiber Width" />
+                    <p class="error-text">{{ errors.width_height }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">

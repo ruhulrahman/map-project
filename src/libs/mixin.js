@@ -42,7 +42,7 @@ export default {
     return if_false
   },
   authUser: function () {
-    return localStorage.getItem('authUser')
+    return JSON.parse(localStorage.getItem('authUser'))
   },
   auth_id: function () {
     this.cn(this.authUser, 'id')
