@@ -41,6 +41,15 @@ export default {
     if (obj) return obj
     return if_false
   },
+  authUser: function () {
+    return localStorage.getItem('authUser')
+  },
+  auth_id: function () {
+    this.cn(this.authUser, 'id')
+  },
+  auth_name: function () {
+    this.cn(this.authUser, 'user_name')
+  },
   noty: function (msg, type ='success', args = null, callback = null) {
     let options = {
       position: {

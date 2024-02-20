@@ -122,7 +122,7 @@ const show = (formValue) => {
     //   });
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
-    setFieldValue('user', 20);
+    setFieldValue('user', mixin.auth_id);
     setFieldValue('coordinates', formValue);
     addTJModalRef.value.show()
 }
