@@ -431,6 +431,7 @@ const getMapLineConnection = async () => {
         const mapTypeName = mapType ? mapType.label : ''
         const fiberCoreName = fiberCore ? fiberCore.label : ''
 
+        // var polyline = L.polyline(item.coordinates, { color: item.color_code, weight: item.width_height }).addTo(map.value)
         var polyline = L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
           // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
           .bindPopup(`
