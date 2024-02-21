@@ -79,7 +79,7 @@ const [map_type] = defineField('map_type');
 const [fibercorep] = defineField('fibercorep');
 const [fibername] = defineField('fibername');
 const [fiber_code] = defineField('fiber_code');
-// const [color_code] = defineField('color_code');
+const [color_code] = defineField('color_code');
 const [width_height] = defineField('width_height');
 const [note] = defineField('note');
 const [coordinates] = defineField('coordinates');
@@ -248,3 +248,4 @@ const getIpAddressInfo = async () => {
 <style scoped>
 @import '@/style.css';
 </style>
+
