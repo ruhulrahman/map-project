@@ -49,7 +49,7 @@ const schema = yup.object({
     fibercorep: yup.string().required().label('Fibercorep'),
     fibername: yup.string().required().label('Fibername'),
     fiber_code: yup.string().required().label('Fiber Code'),
-    width_height: yup.number().required().label('Fiber Width'),
+    width_height: yup.number().required().min(1).max(7).label('Fiber Weight'),
     color_code: yup.string().required().min(2).label('Color Code'),
     note: yup.string().required().label('Note'),
 });
@@ -197,8 +197,8 @@ onMounted(async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="width_height" class="input-label">Fiber Width</label>
-                    <input type="text" v-model="width_height" id="width_height" class="input-control" placeholder="Enter Fiber Width" />
+                    <label for="width_height" class="input-label">Fiber Weight</label>
+                    <input type="text" v-model="width_height" id="width_height" class="input-control" placeholder="Enter Fiber Weight" />
                     <p class="error-text">{{ errors.width_height }}</p>
                 </div>
 

@@ -495,8 +495,8 @@ const getIpAddressStatus = () => {
 
       item.color_code = result.data.status
 
-      L.polyline(item.coordinates, { color: item.color_code }).addTo(map.value)
-          // var polyline = L.polyline(item.coordinates, { color: 'red' }).addTo(map.value)
+      L.polyline(item.coordinates, { color: item.color_code, weight: item.width_height }).addTo(map.value)
+      // L.polyline(item.coordinates, { color: item.color_code, weight: 3 }).addTo(map.value)
           .bindPopup(`
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>

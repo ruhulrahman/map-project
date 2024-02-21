@@ -42,6 +42,20 @@ const getColorNameOrCode = computed(() => {
     return colorCode
 })
 
+function ipv4(message = 'Invalid IP address') {
+  return this.matches(/(^(\d{1,3}\.){3}(\d{1,3})$)/, {
+    message,
+    excludeEmptyString: true
+  }).test('ip', message, value => {
+    return value === undefined || value.trim() === ''
+      ? true
+      : value.split('.').find(i => parseInt(i, 10) > 255) === undefined;
+  });
+}
+
+yup.addMethod(yup.string, 'ipv4', ipv4);
+
+
 const schema = yup.object({
     id: yup.string().label('Id'),
     fiberarea: yup.string().required().label('Fiber Area'),
@@ -49,9 +63,8 @@ const schema = yup.object({
     fibercorep: yup.string().required().label('Fibercorep'),
     fibername: yup.string().required().label('Fibername'),
     fiber_code: yup.string().required().label('Fiber Code'),
-    width_height: yup.number().required().label('Fiber Width'),
-    ipaddr: yup.string().required().min(7).label('IP Address'),
-    // color_code: yup.string().required().min(2).label('Color Code'),
+    width_height: yup.number().required().min(1).max(7).label('Fiber Weight'),
+    ipaddr: yup.string().ipv4().required().label('IP Address'),
     note: yup.string().required().label('Note'),
 });
 
@@ -208,8 +221,8 @@ const getIpAddressInfo = async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="width_height" class="input-label">Fiber Width</label>
-                    <input type="text" v-model="width_height" id="width_height" class="input-control" placeholder="Enter Fiber Width" />
+                    <label for="width_height" class="input-label">Fiber Weight</label>
+                    <input type="text" v-model="width_height" id="width_height" class="input-control" placeholder="Enter Fiber Weight" />
                     <p class="error-text">{{ errors.width_height }}</p>
                 </div>
 
