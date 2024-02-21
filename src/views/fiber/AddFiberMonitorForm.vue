@@ -50,6 +50,7 @@ const schema = yup.object({
     fibername: yup.string().required().label('Fibername'),
     fiber_code: yup.string().required().label('Fiber Code'),
     width_height: yup.number().required().label('Fiber Width'),
+    ipaddr: yup.string().required().min(7).label('IP Address'),
     // color_code: yup.string().required().min(2).label('Color Code'),
     note: yup.string().required().label('Note'),
 });
@@ -78,8 +79,9 @@ const resetFormData = () => {
         fibercorep: '',
         fibername: '',
         fiber_code: '',
-        color_code: '',
+        color_code: 'green',
         width_height: '',
+        ipaddr: '',
         note: '',
         coordinates: '',
     });
@@ -127,6 +129,7 @@ const show = (formValue) => {
     // setFieldValue('email', 'test@example.com');
     setFieldValue('id', '');
     setFieldValue('coordinates', formValue);
+    setFieldValue('color_code', 'green');
     addTJModalRef.value.show()
 }
 
@@ -196,6 +199,12 @@ const getIpAddressInfo = async () => {
                     <input type="text" v-model="fiber_code" id="fiber_code" class="input-control"
                         placeholder="Enter Fiber code" />
                     <p class="error-text">{{ errors.fiber_code }}</p>
+                </div>
+
+                <div class="mb-2 pb-4">
+                    <label for="ipaddr" class="input-label">IP Address</label>
+                    <input type="text" v-model="ipaddr" id="ipaddr" class="input-control" placeholder="Enter ip address" />
+                    <p class="error-text">{{ errors.ipaddr }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
