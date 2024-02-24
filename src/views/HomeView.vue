@@ -101,8 +101,17 @@ const googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z
 onMounted(async () => {
 
   await getMapLayoutData()
+
+  // var labelTextCollision = new L.LabelTextCollision({
+  //     collisionFlg : true
+  //   });
   // Initialize the map
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
+//   map.value = new L.Map('map', {
+//   center : new L.LatLng(lat.value, long.value),
+//   zoom : 13,
+//   renderer : labelTextCollision
+// });;
 
   // Add the OpenStreetMap tiles
   // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -226,12 +235,12 @@ onMounted(async () => {
 
   });
 
-  getMapMarkerConnection()
-  getMapLineConnection()
-  getMapPolygonConnection()
-  getFiberMonitorConnection()
   getInitData()
   getTjnuberInitData()
+  getMapPolygonConnection()
+  getMapMarkerConnection()
+  getMapLineConnection()
+  getFiberMonitorConnection()
 
   intervalId = setInterval(() => {
     getIpAddressStatus();
@@ -466,28 +475,26 @@ const getMapPolygonConnection = async () => {
 
   
   if (result.data.length) {
-    console.log('result.data', result.data)
+    // console.log('result.data', result.data)
     await result.data.forEach((item, index) => {
 
-      if (index > 0) {
+      if (index > -1) {
 
-        const fiberAreaObj = dropdownList.value.tjareas.find(mapType => mapType.value === item.fiberarea)
+        const fiberAreaObj = dropdownList.value.tjareas.find(areaItem => areaItem.value === item.fiberarea)
 
         const fiberAreaName = fiberAreaObj ? fiberAreaObj.label : ''
         const coordinates = JSON.parse(item.coordinates)
 
-        console.log('coordinates', coordinates)
-
-        L.polygon(coordinates, { color: item.color_code }).addTo(map.value)
-          .bindPopup(`
+        const content = `
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Display Name</b>: <span>${item.displayname}</span></p>
                             <p class="m-0 p-0"><b>Fiber Area</b>: <span>${fiberAreaName}</span></p>
                             <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
                           </div>
-                        `)
-
-
+                        `
+        L.polygon(coordinates, { color: item.color_code, title: 'Leaflet.LabelTextCollision!!!!!!!!' }).addTo(map.value)
+        .bindTooltip(item.displayname, {permanent: true, direction:"center"})
+          .bindPopup(content)
 
       }
       // zoom the map to the polyline
