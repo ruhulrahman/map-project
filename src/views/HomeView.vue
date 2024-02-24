@@ -228,6 +228,7 @@ onMounted(async () => {
 
   getMapMarkerConnection()
   getMapLineConnection()
+  getMapPolygonConnection()
   getFiberMonitorConnection()
   getInitData()
   getTjnuberInitData()
@@ -253,7 +254,7 @@ const getListReload = (listType) => {
   } else if (listType == 'polyline') {
     getMapLineConnection()
   } else if (listType == 'polygon') {
-    getMapLineConnection()
+    getMapPolygonConnection()
   } else if (listType == 'polyline_fiber_monitor') {
     getFiberMonitorConnection()
   }
@@ -443,6 +444,45 @@ const getMapLineConnection = async () => {
             }
                             <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
                             <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
+                            <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
+                          </div>
+                        `)
+
+
+
+      }
+      // zoom the map to the polyline
+      // map.value.fitBounds(polyline.getBounds());
+    })
+  }
+
+  loading.value = false
+}
+
+
+const getMapPolygonConnection = async () => {
+  loading.value = true
+  let result = await RestApi.get('/api/v1/sg-5/get_area/')
+
+  
+  if (result.data.length) {
+    console.log('result.data', result.data)
+    await result.data.forEach((item, index) => {
+
+      if (index > 0) {
+
+        const fiberAreaObj = dropdownList.value.tjareas.find(mapType => mapType.value === item.fiberarea)
+
+        const fiberAreaName = fiberAreaObj ? fiberAreaObj.label : ''
+        const coordinates = JSON.parse(item.coordinates)
+
+        console.log('coordinates', coordinates)
+
+        L.polygon(coordinates, { color: item.color_code }).addTo(map.value)
+          .bindPopup(`
+                          <div class="p-1">
+                            <p class="m-0 p-0"><b>Display Name</b>: <span>${item.displayname}</span></p>
+                            <p class="m-0 p-0"><b>Fiber Area</b>: <span>${fiberAreaName}</span></p>
                             <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
                           </div>
                         `)
