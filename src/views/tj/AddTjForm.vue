@@ -159,15 +159,14 @@ onMounted(async () => {
 
                 <div class="mb-2 pb-4">
                     <label for="tjnumber" class="input-label">Tj Number</label>
-                    <v-select v-model="tjnumber" :options="dropdownList.tjNumberList" :reduce="item => item.value"
-                        id="tjnumber" placeholder="Select Tj Number" />
-                    <p class="error-text">{{ errors.tjnumber }}</p>
+                    <input type="text" v-model="tjnumber" id="tjnumber" class="input-control"
+                        placeholder="Enter tj number" />
                 </div>
 
                 <div class="mb-2 pb-4">
                     <label for="tj_connect" class="input-label">Tj Connect</label>
-                    <input type="text" v-model="tj_connect" id="tj_connect" class="input-control"
-                        placeholder="Enter tj connect" />
+                    <v-select v-model="tj_connect" :options="dropdownList.tjNumberList" :reduce="item => item.value"
+                        id="tj_connect" placeholder="Select Tj Connect" />
                     <p class="error-text">{{ errors.tj_connect }}</p>
                 </div>
 
