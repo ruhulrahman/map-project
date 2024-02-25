@@ -107,11 +107,11 @@ onMounted(async () => {
   //   });
   // Initialize the map
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
-//   map.value = new L.Map('map', {
-//   center : new L.LatLng(lat.value, long.value),
-//   zoom : 13,
-//   renderer : labelTextCollision
-// });;
+  //   map.value = new L.Map('map', {
+  //   center : new L.LatLng(lat.value, long.value),
+  //   zoom : 13,
+  //   renderer : labelTextCollision
+  // });;
 
   // Add the OpenStreetMap tiles
   // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -351,53 +351,86 @@ const activateMapDrawer = (params) => {
   }
 }
 
+const markerLoadingMsg = computed(() => {
+  return `${userMarkerLoadingCount.value} of ${totalUserMarkerCount.value} users`
+})
+
+const markerLoadingShow = computed(() => {
+  if (totalUserMarkerCount.value != userMarkerLoadingCount.value) {
+    // if (userMarkerLoadingCount.value > 600) {
+    //   return false
+    // }
+    return true
+  } else {
+    return false
+  }
+})
+
+
+const markerLoading = ref(false)
+let totalUserMarkerCount = ref(0)
+let userMarkerLoadingCount = ref(0)
+
 const getMapMarkerConnection = async () => {
-  loading.value = true
+  markerLoading.value = true
+  totalUserMarkerCount.value = 0
+  userMarkerLoadingCount.value = 0
 
   let result = await RestApi.get('/api/new-connections/')
+  totalUserMarkerCount.value = result.data.length
+
   if (result.data.length) {
     const chunks = lodash.chunk(result.data, 50);
-    chunks.forEach((arrayItem, arrayIndex) => {
 
-      if (arrayIndex == 0) {
-        mapMarkerCall(arrayItem)
-      }
+    chunks.forEach((arrayItem, arrayIndex) => {
 
       // if (arrayIndex == 0) {
       //   mapMarkerCall(arrayItem)
-      // } else if (arrayIndex <= 5) {
-      //   setTimeout(function () {
-      //     console.log('debounce calling')
-      //     mapMarkerCall(arrayItem)
-      //   }, 5000);
-      // } else if (arrayIndex <= 10) {
-      //   setTimeout(function () {
-      //     console.log('debounce calling')
-      //     mapMarkerCall(arrayItem)
-      //   }, 6000);
-      // } else if (arrayIndex <= 15) {
-      //   setTimeout(function () {
-      //     console.log('debounce calling')
-      //     mapMarkerCall(arrayItem)
-      //   }, 7000);
-      // } else {
-      //   setTimeout(function () {
-      //     console.log('debounce calling')
-      //     mapMarkerCall(arrayItem)
-      //   }, 8000);
       // }
+
+      if (arrayIndex == 0) {
+        markerLoading.value = true
+        mapMarkerCall(arrayItem)
+      } else if (arrayIndex <= 5) {
+        markerLoading.value = true
+        setTimeout(function () {
+          console.log('debounce calling')
+          mapMarkerCall(arrayItem)
+        }, 5000);
+      } else if (arrayIndex <= 10) {
+        markerLoading.value = true
+        setTimeout(function () {
+          console.log('debounce calling')
+          mapMarkerCall(arrayItem)
+        }, 6000);
+      } else if (arrayIndex <= 15) {
+        markerLoading.value = true
+        setTimeout(function () {
+          console.log('debounce calling')
+          mapMarkerCall(arrayItem)
+        }, 7000);
+      } else {
+        markerLoading.value = true
+        setTimeout(function () {
+          console.log('debounce calling')
+          mapMarkerCall(arrayItem)
+        }, 8000);
+      }
 
     })
 
-    loading.value = false
+    markerLoading.value = false
   }
 }
 
 const mapMarkerCall = (arrayItem) => {
+
+  markerLoading.value = true
+
+  console.log('markerLoading.value', markerLoading.value)
   arrayItem.forEach((item, index) => {
 
-
-    loading.value = true
+    userMarkerLoadingCount.value += 1
 
     let intLatLong = item.user_longlate.split(',')
     lat.value = intLatLong[0]
@@ -421,9 +454,11 @@ const mapMarkerCall = (arrayItem) => {
     L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
       .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
 
-
-    loading.value = false
   })
+  
+  markerLoading.value = false
+
+  console.log('markerLoading.value', markerLoading.value)
 }
 
 const getMapLineConnection = async () => {
@@ -473,7 +508,7 @@ const getMapPolygonConnection = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/get_area/')
 
-  
+
   if (result.data.length) {
     // console.log('result.data', result.data)
     await result.data.forEach((item, index) => {
@@ -493,7 +528,7 @@ const getMapPolygonConnection = async () => {
                           </div>
                         `
         L.polygon(coordinates, { color: item.color_code, title: 'Leaflet.LabelTextCollision!!!!!!!!' }).addTo(map.value)
-        .bindTooltip(item.displayname, {permanent: true, direction:"center"})
+          .bindTooltip(item.displayname, { permanent: true, direction: "center" })
           .bindPopup(content)
 
       }
@@ -543,14 +578,14 @@ const getIpAddressStatus = () => {
       item.color_code = result.data.status
 
       L.polyline(item.coordinates, { color: item.color_code, weight: item.width_height }).addTo(map.value)
-      // L.polyline(item.coordinates, { color: item.color_code, weight: 3 }).addTo(map.value)
-          .bindPopup(`
+        // L.polyline(item.coordinates, { color: item.color_code, weight: 3 }).addTo(map.value)
+        .bindPopup(`
                           <div class="p-1">
                             <p class="m-0 p-0"><b>Fibername</b>: <span>${item.fibername}</span></p>
                             ${item.mapTypeName ? `<p class="m-0 p-0"><b>Map Type</b>: <span>${item.mapTypeName}</span></p>` : ''
-            }
+          }
                             ${item.fiberCoreName ? `<p class="m-0 p-0"><b>Fibercores</b>: <span>${item.fiberCoreName}</span></p>` : ''
-            }
+          }
                             <p class="m-0 p-0"><b>Fiber Code</b>: <span>${item.fiber_code}</span></p>
                             <p class="m-0 p-0"><b>Width and Height</b>: <span>${item.width_height}</span></p>
                             <p class="m-0 p-0"><b>Note</b>: <span>${item.note}</span></p>
@@ -731,6 +766,12 @@ const updateMapLayout = async (layoutMode) => {
 
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
+    <div
+      v-if="markerLoadingShow"
+      class="absolute top-[80px] right-0 w-auto h-auto z-[2] bg-gray-950 opacity-50 p-2 rounded-sm">
+      <p>Loading ....</p>
+      <p>{{ markerLoadingMsg }}</p>
+    </div>
 
     <div class="flex flex-row w-full absolute top-0 left-0 z-[2]">
       <div class="flex-row relative w-full h-full z-[4]">
@@ -885,10 +926,14 @@ const updateMapLayout = async (layoutMode) => {
                 <div class="flex flex-col w-full h-full">
                   <div v-on:mouseenter="showMapLayout()"
                     class="flex-col w-full h-full relative rounded-lg overflow-hidden border-2 border-gray-950 hover:border-4 flex hover:scale-110 duration-300 cursor-pointer">
-                    <img v-if="mapLayoutMode == 'hybrid'" src="/src/assets/images/map-layout/hybrid.png" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
-                    <img v-else-if="mapLayoutMode == 'satellite'" src="/src/assets/images/map-layout/satellite.png" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
-                    <img v-else-if="mapLayoutMode == 'street'" src="/src/assets/images/map-layout/street.png" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
-                    <img v-else-if="mapLayoutMode == 'terrain'" src="/src/assets/images/map-layout/terrain.png" class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-if="mapLayoutMode == 'hybrid'" src="/src/assets/images/map-layout/hybrid.png"
+                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'satellite'" src="/src/assets/images/map-layout/satellite.png"
+                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'street'" src="/src/assets/images/map-layout/street.png"
+                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
+                    <img v-else-if="mapLayoutMode == 'terrain'" src="/src/assets/images/map-layout/terrain.png"
+                      class="absolute top-0 left-0 w-full h-full z-[5]" alt="">
 
                     <div class="text-[12px] w-full h-full flex flex-row justify-center items-end z-[6] pb-1">
                       <font-awesome-icon :icon="['fas', 'layer-group']" class="" /> <span
