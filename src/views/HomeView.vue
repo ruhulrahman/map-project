@@ -433,6 +433,11 @@ const markerLoadingShow = computed(() => {
   }
 })
 
+const userMarkerList = ref([])
+const tjMarkerList = ref([])
+const fiberLineList = ref([])
+const areaPolygonList = ref([])
+const fiberMonitorLineList = ref([])
 
 const markerLoading = ref(false)
 let totalUserMarkerCount = ref(0)
@@ -443,7 +448,9 @@ const getUserMarkerConnection = async () => {
   totalUserMarkerCount.value = 0
   userMarkerLoadingCount.value = 0
 
+  userMarkerList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_user_marker_list/')
+  userMarkerList.value = result.data
   totalUserMarkerCount.value = result.data.length
 
   if (result.data.length) {
@@ -527,8 +534,6 @@ const userMapMarkerCall = (arrayItem) => {
   markerLoading.value = false
 }
 
-
-
 let totalTjMarkerCount = ref(0)
 let tjMarkerLoadingCount = ref(0)
 
@@ -536,7 +541,9 @@ const getTjMarkerConnection = async () => {
   totalTjMarkerCount.value = 0
   tjMarkerLoadingCount.value = 0
 
+  tjMarkerList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_tj_marker_list/')
+  tjMarkerList.value = result.data
   totalTjMarkerCount.value = result.data.length
 
   if (result.data.length) {
@@ -618,7 +625,9 @@ const tjMapMarkerCall = (arrayItem) => {
 
 const getMapLineConnection = async () => {
   loading.value = true
+  fiberLineList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_polyline_list/')
+  fiberLineList.value = result.data
 
   if (result.data.length) {
     await result.data.forEach((item, index) => {
@@ -661,8 +670,9 @@ const getMapLineConnection = async () => {
 
 const getMapPolygonConnection = async () => {
   loading.value = true
+  areaPolygonList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_area/')
-
+  areaPolygonList.value = result.data
 
   if (result.data.length) {
     // console.log('result.data', result.data)
@@ -699,7 +709,9 @@ const fiberMonitorList = ref([])
 
 const getFiberMonitorConnection = async () => {
   loading.value = true
+  fiberMonitorLineList.value = []
   let result = await RestApi.get('/api/v1/sg-5/fiber_monitor_get/')
+  fiberMonitorLineList.value = result.data
 
   if (result.data.length) {
     fiberMonitorList.value = await result.data.map((item, index) => {
