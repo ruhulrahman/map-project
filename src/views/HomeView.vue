@@ -145,6 +145,9 @@ const emptyMapCall = () => {
   map.value.addLayer(drawnFeatures);
 }
 
+const userIcon = ref({})
+const tjIcon = ref({})
+
 onMounted(async () => {
 
   await getMapLayoutData()
@@ -272,6 +275,7 @@ onMounted(async () => {
 
   });
 
+  getIconData()
   getInitData()
   getTjnuberInitData()
   getUserMarkerConnection()
@@ -513,10 +517,19 @@ const userMapMarkerCall = (arrayItem) => {
     lat.value = intLatLong[0]
     long.value = intLatLong[1]
 
+    // var greenIcon = new L.Icon({
+    //   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+    //   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    //   iconSize: [25, 41],
+    //   iconAnchor: [12, 41],
+    //   popupAnchor: [1, -34],
+    //   shadowSize: [41, 41]
+    // });
+
     var greenIcon = new L.Icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      iconUrl: userIcon.value.iconurl,
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
+      iconSize: [35, 35],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
       shadowSize: [41, 41]
@@ -612,9 +625,10 @@ const tjMapMarkerCall = (arrayItem) => {
     long.value = intLatLong[1]
 
     var greenIcon = new L.Icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      // iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      iconUrl: tjIcon.value.iconurl,
       shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-      iconSize: [25, 41],
+      iconSize: [35, 35],
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
       shadowSize: [41, 41]
@@ -780,6 +794,19 @@ const getIpAddressStatus = () => {
 
   })
 
+}
+
+const getIconData = async () => {
+  loading.value = true
+  let result = await RestApi.get('/api/v1/sg-5/get_iconncare_maps/')
+  loading.value = false
+
+  if (result.data.length) {
+    userIcon.value = result.data[0]
+    tjIcon.value = result.data[1]
+  }
+
+  // console.log('dropdownList.value', dropdownList.value)
 }
 
 const getInitData = async () => {
