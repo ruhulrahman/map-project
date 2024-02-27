@@ -98,20 +98,24 @@ const googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z
   subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
 });
 
-onMounted(async () => {
+const emptyMapCall = () => {
 
-  await getMapLayoutData()
+  var osmBase = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png');
 
-  // var labelTextCollision = new L.LabelTextCollision({
-  //     collisionFlg : true
-  //   });
-  // Initialize the map
+  var baseMaps = {
+    "OSMBaseLayer": osmBase
+  };
+
+  // var overlayMaps = {
+  //     "MetroStops": metroStops
+  //      };
+
+  // map.value = L.map(mapContainer.value, {
+  //   zoom: 13,
+  //   layers: [osmBase]
+  // });
+
   map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
-  //   map.value = new L.Map('map', {
-  //   center : new L.LatLng(lat.value, long.value),
-  //   zoom : 13,
-  //   renderer : labelTextCollision
-  // });;
 
   // Add the OpenStreetMap tiles
   // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -139,7 +143,40 @@ onMounted(async () => {
   // leaflet draw 
   var drawnFeatures = new L.FeatureGroup();
   map.value.addLayer(drawnFeatures);
+}
 
+onMounted(async () => {
+
+  await getMapLayoutData()
+
+  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
+
+  // Add the OpenStreetMap tiles
+  // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  // })
+
+
+  const activeMapLayout = mapLayoutMode.value
+  let selectedLayout = ''
+
+  if (activeMapLayout == 'hybrid') {
+    selectedLayout = googleHybrid
+  } else if (activeMapLayout == 'street') {
+    selectedLayout = googleStreets
+  } else if (activeMapLayout == 'satellite') {
+    selectedLayout = googleSatellite
+  } else if (activeMapLayout == 'terrain') {
+    selectedLayout = googleTerrain
+  } else {
+    selectedLayout = googleHybrid
+  }
+
+  selectedLayout.addTo(map.value);
+
+  // leaflet draw 
+  var drawnFeatures = new L.FeatureGroup();
+  map.value.addLayer(drawnFeatures);
 
   drawControl.value = new L.Control.Draw({
     draw: {
@@ -238,7 +275,7 @@ onMounted(async () => {
   getInitData()
   getTjnuberInitData()
   getMapPolygonConnection()
-  getMapMarkerConnection()
+  getUserMarkerConnection()
   getMapLineConnection()
   getFiberMonitorConnection()
 
@@ -255,11 +292,41 @@ onUnmounted(() => clearInterval(intervalId))
 //   console.log("checkInstance")
 // }
 
+const checkedSidebarMenu = ref([])
+
+const getListDataByCheckedMenus = async () => {
+  // emptyMapCall()
+
+  map.value.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+      layer.remove();
+    }
+    if (layer instanceof L.Polygon) {
+      layer.remove();
+    }
+    if (layer instanceof L.Polyline) {
+      layer.remove();
+    }
+    if (layer instanceof L.Polyline) {
+      layer.remove();
+    }
+  });
+  console.log('checkedSidebarMenu', checkedSidebarMenu)
+  if (checkedSidebarMenu.value.length) {
+    checkedSidebarMenu.value.forEach((item, index) => {
+      getListReload(item)
+    })
+  }
+}
+// const getListDataByTab = async (tab) => {
+//   getListReload(tab)
+// }
+
 const getListReload = (listType) => {
   if (listType == 'marker') {
-    getMapMarkerConnection()
+    getUserMarkerConnection()
   } else if (listType == 'tj') {
-    getMapMarkerConnection()
+    getTjMarkerConnection()
   } else if (listType == 'polyline') {
     getMapLineConnection()
   } else if (listType == 'polygon') {
@@ -371,12 +438,12 @@ const markerLoading = ref(false)
 let totalUserMarkerCount = ref(0)
 let userMarkerLoadingCount = ref(0)
 
-const getMapMarkerConnection = async () => {
+const getUserMarkerConnection = async () => {
   markerLoading.value = true
   totalUserMarkerCount.value = 0
   userMarkerLoadingCount.value = 0
 
-  let result = await RestApi.get('/api/new-connections/')
+  let result = await RestApi.get('/api/v1/sg-5/get_user_marker_list/')
   totalUserMarkerCount.value = result.data.length
 
   if (result.data.length) {
@@ -384,38 +451,38 @@ const getMapMarkerConnection = async () => {
 
     chunks.forEach((arrayItem, arrayIndex) => {
 
-      // if (arrayIndex == 0) {
-      //   mapMarkerCall(arrayItem)
-      // }
-
       if (arrayIndex == 0) {
-        markerLoading.value = true
-        mapMarkerCall(arrayItem)
-      } else if (arrayIndex <= 5) {
-        markerLoading.value = true
-        setTimeout(function () {
-          console.log('debounce calling')
-          mapMarkerCall(arrayItem)
-        }, 5000);
-      } else if (arrayIndex <= 10) {
-        markerLoading.value = true
-        setTimeout(function () {
-          console.log('debounce calling')
-          mapMarkerCall(arrayItem)
-        }, 6000);
-      } else if (arrayIndex <= 15) {
-        markerLoading.value = true
-        setTimeout(function () {
-          console.log('debounce calling')
-          mapMarkerCall(arrayItem)
-        }, 7000);
-      } else {
-        markerLoading.value = true
-        setTimeout(function () {
-          console.log('debounce calling')
-          mapMarkerCall(arrayItem)
-        }, 8000);
+        userMapMarkerCall(arrayItem)
       }
+
+      // if (arrayIndex == 0) {
+      //   markerLoading.value = true
+      //   userMapMarkerCall(arrayItem)
+      // } else if (arrayIndex <= 5) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     userMapMarkerCall(arrayItem)
+      //   }, 5000);
+      // } else if (arrayIndex <= 10) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     userMapMarkerCall(arrayItem)
+      //   }, 6000);
+      // } else if (arrayIndex <= 15) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     userMapMarkerCall(arrayItem)
+      //   }, 7000);
+      // } else {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     userMapMarkerCall(arrayItem)
+      //   }, 8000);
+      // }
 
     })
 
@@ -423,14 +490,16 @@ const getMapMarkerConnection = async () => {
   }
 }
 
-const mapMarkerCall = (arrayItem) => {
+const userMapMarkerCall = (arrayItem) => {
 
   markerLoading.value = true
 
-  console.log('markerLoading.value', markerLoading.value)
   arrayItem.forEach((item, index) => {
 
     userMarkerLoadingCount.value += 1
+
+    const userLatLong = item.user_longlate
+    item.user_longlate = userLatLong.trim()
 
     let intLatLong = item.user_longlate.split(',')
     lat.value = intLatLong[0]
@@ -445,20 +514,106 @@ const mapMarkerCall = (arrayItem) => {
       shadowSize: [41, 41]
     });
 
-    var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
-    var myIcon = L.divIcon({ className: 'w-[50px] h-[50px] bg-orange-500 pin2' });
-    var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
+    // var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
+    // var myIcon = L.divIcon({ className: 'w-[50px] h-[50px] bg-orange-500 pin2' });
+    // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
 
     map.value.setView([lat.value, long.value], 15);
-    L.marker([lat.value, long.value]).addTo(map.value)
     L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
       .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
 
   })
-  
+
   markerLoading.value = false
+}
+
+
+
+let totalTjMarkerCount = ref(0)
+let tjMarkerLoadingCount = ref(0)
+
+const getTjMarkerConnection = async () => {
+  totalTjMarkerCount.value = 0
+  tjMarkerLoadingCount.value = 0
+
+  let result = await RestApi.get('/api/v1/sg-5/get_tj_marker_list/')
+  totalTjMarkerCount.value = result.data.length
+
+  if (result.data.length) {
+    const chunks = lodash.chunk(result.data, 50);
+
+    chunks.forEach((arrayItem, arrayIndex) => {
+
+      if (arrayIndex == 0) {
+        tjMapMarkerCall(arrayItem)
+      }
+
+      // if (arrayIndex == 0) {
+      //   markerLoading.value = true
+      //   tjMapMarkerCall(arrayItem)
+      // } else if (arrayIndex <= 5) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     tjMapMarkerCall(arrayItem)
+      //   }, 5000);
+      // } else if (arrayIndex <= 10) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     tjMapMarkerCall(arrayItem)
+      //   }, 6000);
+      // } else if (arrayIndex <= 15) {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     tjMapMarkerCall(arrayItem)
+      //   }, 7000);
+      // } else {
+      //   markerLoading.value = true
+      //   setTimeout(function () {
+      //     console.log('debounce calling')
+      //     tjMapMarkerCall(arrayItem)
+      //   }, 8000);
+      // }
+
+    })
+
+  }
+}
+
+const tjMapMarkerCall = (arrayItem) => {
 
   console.log('markerLoading.value', markerLoading.value)
+  arrayItem.forEach((item, index) => {
+
+    tjMarkerLoadingCount.value += 1
+
+    const userLatLong = item.tj_longlate.trim()
+
+    let intLatLong = userLatLong.split(',')
+    lat.value = intLatLong[0]
+    long.value = intLatLong[1]
+
+    var greenIcon = new L.Icon({
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+
+    // var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
+    // var myIcon = L.divIcon({ className: 'w-[50px] h-[50px] bg-orange-500 pin2' });
+    // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
+
+    map.value.setView([lat.value, long.value], 15);
+    L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
+      .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+
+  })
+
 }
 
 const getMapLineConnection = async () => {
@@ -766,8 +921,7 @@ const updateMapLayout = async (layoutMode) => {
 
   <div class="flex h-screen relative">
     <div class="w-full h-full z-[1]" ref="mapContainer" />
-    <div
-      v-if="markerLoadingShow"
+    <div v-if="markerLoadingShow"
       class="absolute top-[80px] right-0 w-auto h-auto z-[2] bg-gray-950 opacity-50 p-2 rounded-sm">
       <p>Loading ....</p>
       <p>{{ markerLoadingMsg }}</p>
@@ -860,6 +1014,69 @@ const updateMapLayout = async (layoutMode) => {
                         class="btn w-full p-[10px] bg-[#304059] hover:bg-[#344560] text-gray-300 hover:-translate-y-[1px] duration-300">
                         + Add New
                       </button>
+                    </div>
+
+                    <div
+                      class="flex flex-row w-full overflow-x-auto no-scrollbar justify-start items-center text-white pt-3"
+                      style="border-top: 1px solid rgb(60, 60, 60);">
+                      <div class="flex flex-row w-full py-1">
+
+                        <ul class="flex flex-row w-full space-x-2">
+                          <li>
+                            <input type="checkbox" id="marker" @change="getListDataByCheckedMenus()" v-model="checkedSidebarMenu" value="marker" class="hidden peer">
+                            <label for="marker"
+                              class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500 cursor-pointer peer-checked:border-blue-600 peer-checked:bg-lime-700 peer-checked:text-white">
+                              User
+                            </label>
+                          </li>
+                          <li>
+                            <input type="checkbox" id="tjmarker" @change="getListDataByCheckedMenus()" v-model="checkedSidebarMenu" value="tj"
+                              class="hidden peer">
+                            <label for="tjmarker"
+                              class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500 cursor-pointer peer-checked:border-blue-600 peer-checked:bg-lime-700 peer-checked:text-white">
+                              TJs
+                            </label>
+                          </li>
+                          <li>
+                            <input type="checkbox" id="polyline" @change="getListDataByCheckedMenus()" v-model="checkedSidebarMenu" value="polyline"
+                              class="hidden peer">
+                            <label for="polyline"
+                              class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500 cursor-pointer peer-checked:border-blue-600 peer-checked:bg-lime-700 peer-checked:text-white">
+                              Fibers
+                            </label>
+                          </li>
+                          <li>
+                            <input type="checkbox" id="polygon" @change="getListDataByCheckedMenus()" v-model="checkedSidebarMenu" value="polygon"
+                              class="hidden peer">
+                            <label for="polygon"
+                              class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500 cursor-pointer peer-checked:border-blue-600 peer-checked:bg-lime-700 peer-checked:text-white">
+                              Areas
+                            </label>
+                          </li>
+                          <li>
+                            <input type="checkbox" id="polyline_fiber_monitor" @change="getListDataByCheckedMenus()" v-model="checkedSidebarMenu"
+                              value="polyline_fiber_monitor" class="hidden peer">
+                            <label for="polyline_fiber_monitor"
+                              class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500 cursor-pointer peer-checked:border-blue-600 peer-checked:bg-lime-700 peer-checked:text-white">
+                              Fiber Motitors
+                            </label>
+                          </li>
+
+                        </ul>
+
+                        <!--<input type="checkbox" v-model="checkedSidebarMenu" value="marker" id="marker" class="peer hidden" />
+                        <label for="marker" class="checkbox-btn-label">User</label>
+
+                        <input type="checkbox" v-model="checkedSidebarMenu" value="tjmarker" id="tjmarker" class="peer hidden" />
+                        <label for="tjmarker" class="checkbox-btn-label">TJs</label>
+   
+                        <button @click="getListDataByTab('marker')" :class="userActive ? 'bg-lime-700 text-white' : 'bg-slate-50'" class="btn btn-secondary hover:bg-slate-200 hover:text-green-500">User</button>
+                        <button @click="getListDataByTab('tjmarker')" class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500">TJs</button>
+                        <button @click="getListDataByTab('polyline')" class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500">Fibers</button>
+                        <button @click="getListDataByTab('polygon')" class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500">Areas</button>
+                        <button @click="getListDataByTab('polyline_fiber_monitor')" class="btn btn-secondary bg-slate-50 hover:bg-slate-200 hover:text-green-500">Fiber Motitors</button>
+                      -->
+                      </div>
                     </div>
 
                     <div class="flex flex-row justify-start items-center text-white pt-3"
@@ -1074,4 +1291,5 @@ img.leaflet-marker-icon {
   left: -6px;
   border: 10px solid transparent;
   border-top: 17px solid #fff;
-}</style>
+}
+</style>
