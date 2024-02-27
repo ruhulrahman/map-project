@@ -115,7 +115,7 @@ const emptyMapCall = () => {
   //   layers: [osmBase]
   // });
 
-  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
+  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 15);
 
   // Add the OpenStreetMap tiles
   // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -149,7 +149,7 @@ onMounted(async () => {
 
   await getMapLayoutData()
 
-  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
+  map.value = L.map(mapContainer.value).setView([lat.value, long.value], 15);
 
   // Add the OpenStreetMap tiles
   // var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -274,10 +274,11 @@ onMounted(async () => {
 
   getInitData()
   getTjnuberInitData()
-  getMapPolygonConnection()
   getUserMarkerConnection()
-  getMapLineConnection()
-  getFiberMonitorConnection()
+  // getMapPolygonConnection()
+  // getTjMarkerConnection()
+  // getMapLineConnection()
+  // getFiberMonitorConnection()
 
   intervalId = setInterval(() => {
     getIpAddressStatus();
@@ -524,7 +525,7 @@ const userMapMarkerCall = (arrayItem) => {
     // var myIcon = L.divIcon({ className: 'w-[100px] h-[100px] bg-orange-500 marker-tag' });
     // var myIcon = L.divIcon({ className: 'w-[50px] h-[50px] bg-orange-500 pin2' });
     // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
-
+  
     map.value.setView([lat.value, long.value], 15);
     L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
       .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
@@ -543,10 +544,19 @@ const getTjMarkerConnection = async () => {
 
   tjMarkerList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_tj_marker_list/')
-  tjMarkerList.value = result.data
   totalTjMarkerCount.value = result.data.length
-
+  
   if (result.data.length) {
+    tjMarkerList.value = result.data.map(item => {
+      
+      const areaObj = dropdownList.value.tjareas.find(areaItem => areaItem.value == item.tj_area_name)
+      const mapTypeObj = dropdownList.value.map_types.find(areaItem => areaItem.value == item.tj_type)
+      const splitterObj = dropdownList.value.splitters.find(areaItem => areaItem.value == item.spilitter)
+      item.area_name = areaObj ? areaObj.label : ''
+      item.tj_type_name = mapTypeObj ? mapTypeObj.label : ''
+      item.splitter_name = splitterObj ? splitterObj.label : ''
+      return Object.assign(item)
+    })
     const chunks = lodash.chunk(result.data, 50);
 
     chunks.forEach((arrayItem, arrayIndex) => {
@@ -591,7 +601,6 @@ const getTjMarkerConnection = async () => {
 
 const tjMapMarkerCall = (arrayItem) => {
 
-  console.log('markerLoading.value', markerLoading.value)
   arrayItem.forEach((item, index) => {
 
     tjMarkerLoadingCount.value += 1
@@ -672,10 +681,16 @@ const getMapPolygonConnection = async () => {
   loading.value = true
   areaPolygonList.value = []
   let result = await RestApi.get('/api/v1/sg-5/get_area/')
-  areaPolygonList.value = result.data
-
+  
   if (result.data.length) {
-    // console.log('result.data', result.data)
+    areaPolygonList.value = result.data.map(item => {
+      const areaObj = dropdownList.value.tjareas.find(areaItem => areaItem.value == item.fiberarea)
+      const userObj = dropdownList.value.userList.find(areaItem => areaItem.value == item.user)
+      item.area_name = areaObj ? areaObj.label : ''
+      item.user_name = userObj ? userObj.label : ''
+      return Object.assign(item)
+    })
+
     await result.data.forEach((item, index) => {
 
       if (index > -1) {
@@ -900,7 +915,7 @@ const updateMapLayout = async (layoutMode) => {
 
       await getMapLayoutData()
 
-      // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 13);
+      // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 15);
       const activeMapLayout = mapLayoutMode.value ? mapLayoutMode.value : 'hybrid'
       let selectedLayout = ref('')
 
@@ -1029,8 +1044,8 @@ const updateMapLayout = async (layoutMode) => {
                     </div>
 
                     <div
-                      class="flex flex-row w-full overflow-x-auto no-scrollbar justify-start items-center text-white pt-3"
-                      style="border-top: 1px solid rgb(60, 60, 60);">
+                      class="flex flex-row w-full min-h-[50px] overflow-x-auto no-scrollbar justify-start items-center text-white pt-3"
+                      style="border-top: 1px solid #3c3c3c;">
                       <div class="flex flex-row w-full py-1">
 
                         <ul class="flex flex-row w-full space-x-2">
@@ -1091,57 +1106,109 @@ const updateMapLayout = async (layoutMode) => {
                       </div>
                     </div>
 
-                    <div class="flex flex-row justify-start items-center text-white pt-3"
+                    <!--<div class="flex flex-row justify-start items-center text-white pt-3"
                       style="border-top: 1px solid rgb(60, 60, 60);">
                       <div class="flex flex-col">
                         <font-awesome-icon :icon="['fas', 'angle-up']" />
                       </div>
-                      <div class="flex flex-col ml-4">
-                        <p>Drive Projects</p>
+                      <div  class="flex flex-col ml-4">
+                        <p>Project Drive</p>
                       </div>
+                    </div>-->
+
+                    <p v-if="checkedSidebarMenu.length > 1" class="text-red-500">You have selected Multiple Menus</p>
+
+                    <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
+                      <p>User List</p>
+                      <template v-for="(item, index) in userMarkerList" :key="index">
+                        <div class="btn-create text-[10px]">
+                          <div class="flex-none p-3">
+                            <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
+                          </div>
+                          <div class="flex-1">
+                            <h6>Tj Number: {{ item.tj_number }}</h6>
+                            <p>PPPOE ID: {{ item.pppoe_id }}</p>
+                          </div>
+                        </div>
+                      </template>
+
+                      <!--<div class="btn-create">
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                        </div>
+                        <div class="flex-1">
+                          <h6>Untitled</h6>
+                          <p>Dec 16, 2023</p>
+                        </div>
+                        <div class="flex-none p-3">
+                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
+                        </div>
+                      </div>-->
+
                     </div>
 
-                    <div class="flex flex-col gap-3 pb-[85px]">
+                    <div v-if="checkedSidebarMenu[0] == 'tj'" class="flex flex-col gap-3 pb-[85px]">
+                      <p>Tj List</p>
+                      <template v-for="(item, index) in tjMarkerList" :key="index">
+                        <div class="btn-create text-[10px]">
+                          <div class="flex-none p-3">
+                            <img src="/src/assets/images/demo-img.jpg" class="w-[70px] h-[110px]" alt="Image">
+                          </div>
+                          <div class="flex-1">
+                            <h6>Tj Number: {{ item.tj_number }}</h6>
+                            <p>Tj Connect: {{ item.tj_connect }}</p>
+                            <p>Desc: {{ item.tj_description }}</p>
+                            <p>Tj Area: {{ item.area_name }}</p>
+                            <p>Tj Type: {{ item.tj_type_name }}</p>
+                            <p>Splitter: {{ item.splitter_name }}</p>
+                          </div>
+                        </div>
+                      </template>
+                    </div>
 
-                      <div class="btn-create">
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                    <div v-if="checkedSidebarMenu[0] == 'polyline'" class="flex flex-col gap-3 pb-[85px]">
+                      <p>Fiber List</p>
+                      <template v-for="(item, index) in fiberLineList" :key="index">
+                        <div class="btn-create text-[11px]">
+                          <div class="flex-1">
+                            <h6>Area name: {{ item.fiberarea_name }}</h6>
+                            <p>Fiber Name: {{ item.fibername }}</p>
+                            <p>Fiber Code: {{ item.fiber_code }}</p>
+                            <p>Note: {{ item.note }}</p>
+                          </div>
                         </div>
-                        <div class="flex-1">
-                          <h6>Untitled</h6>
-                          <p>Dec 16, 2023</p>
-                        </div>
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
-                        </div>
-                      </div>
+                      </template>
+                    </div>
 
-                      <div class="btn-create">
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                    <div v-if="checkedSidebarMenu[0] == 'polygon'" class="flex flex-col gap-3 pb-[85px]">
+                      <p>Area List</p>
+                      <template v-for="(item, index) in areaPolygonList" :key="index">
+                        <div class="btn-create text-[11px]">
+                          <div class="flex-1">
+                            <h6>Display name: {{ item.displayname }}</h6>
+                            <p>Fiber Area: {{ item.area_name }}</p>
+                            <p>User: {{ item.user_name }}</p>
+                            <p>Note: {{ item.note }}</p>
+                          </div>
                         </div>
-                        <div class="flex-1">
-                          <h6>Untitled</h6>
-                          <p>Dec 16, 2023</p>
-                        </div>
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
-                        </div>
-                      </div>
+                      </template>
+                    </div>
 
-                      <div class="btn-create" v-for="(item, index) in array" :key="index">
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fab', 'google-drive']" />
+                    <div v-if="checkedSidebarMenu[0] == 'polyline_fiber_monitor'" class="flex flex-col gap-3 pb-[85px]">
+                      <p>Fiber Monitor List</p>
+                      <template v-for="(item, index) in fiberMonitorLineList" :key="index">
+                        <div class="btn-create text-[11px]">
+                          <div class="flex-1">
+                            <h6>Map Type: {{ item.map_type }}</h6>
+                            <p>Fiber Corep: {{ item.fibercorep }}</p>
+                            <p>User: {{ item.user }}</p>
+                            <p>Fibername: {{ item.fibername }}</p>
+                            <p>Fibercode: {{ item.fiber_code }}</p>
+                            <p>IP Address: {{ item.ipaddr }}</p>
+                            <p>Note: {{ item.note }}</p>
+                          </div>
                         </div>
-                        <div class="flex-1">
-                          <h6>Untitled</h6>
-                          <p>Dec 16, 2023</p>
-                        </div>
-                        <div class="flex-none p-3">
-                          <font-awesome-icon :icon="['fas', 'eye-slash']" />
-                        </div>
-                      </div>
-
+                      </template>
                     </div>
 
                   </div>
