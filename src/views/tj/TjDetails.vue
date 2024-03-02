@@ -57,6 +57,7 @@ const show = async (tjNumber) => {
     tjDetailItem.value = {}
     // tjDetailItem.value = JSON.parse(tjNumber)
     await getTjDetailsData(tjNumber)
+    await getTjVoiceAndImageData(tjNumber)
 
     TJDetailsModalRef.value.show()
 }
@@ -77,6 +78,28 @@ const getTjDetailsData = async (tjNumber) => {
         if (result.data) {
             tjDetailItem.value = result.data
             console.log('tjDetailItem', tjDetailItem.value)
+        }
+    } catch (error) {
+        console.log('error', error)
+    } finally {
+        loading.value = false
+    }
+}
+
+const tjVoiceAndImages = ref([])
+
+const getTjVoiceAndImageData = async (tjNumber) => {
+    loading.value = true
+    try {
+
+        tjVoiceAndImages.value = []
+        let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjNumber}`)
+
+        console.log('result.data', result.data)
+
+        if (result.data) {
+            tjVoiceAndImages.value = result.data
+            console.log('tjVoiceAndImages', tjVoiceAndImages.value)
         }
     } catch (error) {
         console.log('error', error)
@@ -212,10 +235,30 @@ const selectTab = (tabValue) => {
                     <p class="text-[12px] text-slate-300 font-semibold">{{ tjDetailItem.tj_description }}</p>
                 </div>
                 <div v-show="activeTab == 'voice'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Voice Missing</p>
+                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Voice Missing</p>
+                    <template v-for="(item, index) in tjVoiceAndImages" :key="index">
+                        <div class="flex justify-start items-center gap-4 w-full mb-4">
+                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
+                                <img :src="item.image" class="w-full h-auto" alt="Image">
+                            </div>
+                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
+                                <img :src="item.image" class="w-full h-auto" alt="Image">
+                            </div>
+                        </div>
+                    </template>
                 </div>
                 <div v-show="activeTab == 'image'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Image Missing</p>
+                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Image Missing</p>
+                    <template v-for="(item, index) in tjVoiceAndImages" :key="index">
+                        <div class="flex justify-start items-center gap-4 w-full mb-4">
+                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
+                                <img :src="item.image" class="w-full h-auto" alt="Image">
+                            </div>
+                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
+                                <img :src="item.image" class="w-full h-auto" alt="Image">
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
 
