@@ -5,7 +5,7 @@ import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
 import { Form, Field, ErrorMessage, useForm } from 'vee-validate';
 import * as yup from 'yup';
-import 'https://unpkg.com/@themesberg/flowbite@1.2.0/dist/flowbite.bundle.js';
+import { AVWaveform } from 'vue-audio-visual'
 
 const toast = useToast()
 
@@ -183,7 +183,10 @@ const selectTab = (tabValue) => {
                         </div>
                     </div>
 
-                    <h6 v-if="tjDetailItem.splitelist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Splite List: </h6>
+                    <h6 v-if="tjDetailItem.splitelist.length" class="my-4 text-slate-300 text-[15px] font-semibold">
+                        Splite List:
+                    </h6>
+
                     <template v-for="(item, index) in tjDetailItem.splitelist" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
@@ -199,7 +202,9 @@ const selectTab = (tabValue) => {
                         </div>
                     </template>
 
-                    <h6 v-if="tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">Disconnect Users: </h6>
+                    <h6 v-if="tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">
+                        Disconnect Users: </h6>
+
                     <template v-for="(item, index) in tjDetailItem.disconnectuser" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
@@ -215,7 +220,9 @@ const selectTab = (tabValue) => {
                         </div>
                     </template>
 
-                    <h6 v-if="tjDetailItem.ponlist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Pon List: </h6>
+                    <h6 v-if="tjDetailItem.ponlist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Pon
+                        List: </h6>
+
                     <template v-for="(item, index) in tjDetailItem.ponlist" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
@@ -231,24 +238,23 @@ const selectTab = (tabValue) => {
                         </div>
                     </template>
 
-                    <h6 v-if="tjDetailItem.tj_description" class="my-4 text-slate-300 text-[15px] font-semibold">Description: </h6>
+                    <h6 v-if="tjDetailItem.tj_description" class="my-4 text-slate-300 text-[15px] font-semibold">
+                        Description:
+                    </h6>
                     <p class="text-[12px] text-slate-300 font-semibold">{{ tjDetailItem.tj_description }}</p>
                 </div>
                 <div v-show="activeTab == 'voice'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Voice Missing</p>
-                    <template v-for="(item, index) in tjVoiceAndImages" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 flex flex-col min-w-[48%]">
-                                <img :src="item.image" class="w-full h-auto" alt="Image">
-                            </div>
-                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
-                                <img :src="item.image" class="w-full h-auto" alt="Image">
+                                <AVWaveform src="/src/assets/audio/file_example.ogg" />
                             </div>
                         </div>
-                    </template>
                 </div>
                 <div v-show="activeTab == 'image'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Image Missing</p>
+                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Image Missing
+                    </p>
+
                     <template v-for="(item, index) in tjVoiceAndImages" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 flex flex-col min-w-[48%]">
