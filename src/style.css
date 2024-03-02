@@ -89,6 +89,16 @@
 }
 
 @layer utilities {
+  
+  .tab-btn {
+    @apply
+    inline-flex items-center justify-center p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300
+  }
+
+  .active-tab-btn {
+    @apply
+    inline-flex items-center justify-center p-4 text-blue-600 border-b-2 border-blue-600 rounded-t-lg dark:text-blue-500
+  }
 }
 
 @layer components {

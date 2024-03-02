@@ -300,7 +300,8 @@ onUnmounted(() => clearInterval(intervalId))
 const tjDetailsRef = ref(false)
 
 const viewTjDetails = (item) => {
-  tjDetailsRef.value.show(JSON.stringify(item))
+  // tjDetailsRef.value.show(JSON.stringify(item))
+  tjDetailsRef.value.show(item.tj_number)
 }
 
 const checkedSidebarMenu = ref([])
@@ -1154,7 +1155,7 @@ const updateMapLayout = async (layoutMode) => {
                     <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
                       <p>User List</p>
                       <template v-for="(item, index) in userMarkerList" :key="index">
-                        <div class="btn-create text-[10px]">
+                        <button @click="viewTjDetails(item)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
                           </div>
@@ -1162,7 +1163,7 @@ const updateMapLayout = async (layoutMode) => {
                             <h6>Tj Number: {{ item.tj_number }}</h6>
                             <p>PPPOE ID: {{ item.pppoe_id }}</p>
                           </div>
-                        </div>
+                        </button>
                       </template>
 
                       <!--<div class="btn-create">
@@ -1189,8 +1190,6 @@ const updateMapLayout = async (layoutMode) => {
                           </div>
                           <div class="flex-1">
                             <h6>Tj Number: {{ item.tj_number }}</h6>
-                            <p>Tj Connect: {{ item.tj_connect }}</p>
-                            <p>Desc: {{ item.tj_description }}</p>
                             <p>Tj Area: {{ item.area_name }}</p>
                             <p>Tj Type: {{ item.tj_type_name }}</p>
                             <p>Splitter: {{ item.splitter_name }}</p>
