@@ -13,6 +13,7 @@ import AddFiberForm from '@/views/fiber/AddFiberForm.vue';
 import AddFiberMonitorForm from '@/views/fiber/AddFiberMonitorForm.vue';
 import AddUserForm from '@/views/user/AddUserForm.vue';
 import AddTjForm from '@/views/tj/AddTjForm.vue';
+import TjDetails from '@/views/tj/TjDetails.vue';
 import AddAreaForm from '@/views/area/AddAreaForm.vue';
 import debounce from 'lodash.debounce'
 import lodash from 'lodash'
@@ -296,6 +297,11 @@ onUnmounted(() => clearInterval(intervalId))
 // function checkInstance() {
 //   console.log("checkInstance")
 // }
+const tjDetailsRef = ref(false)
+
+const viewTjDetails = (item) => {
+  tjDetailsRef.value.show(JSON.stringify(item))
+}
 
 const checkedSidebarMenu = ref([])
 
@@ -1177,7 +1183,7 @@ const updateMapLayout = async (layoutMode) => {
                     <div v-if="checkedSidebarMenu[0] == 'tj'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Tj List</p>
                       <template v-for="(item, index) in tjMarkerList" :key="index">
-                        <div class="btn-create text-[10px]">
+                        <button @click="viewTjDetails(item)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[70px] h-[110px]" alt="Image">
                           </div>
@@ -1189,7 +1195,7 @@ const updateMapLayout = async (layoutMode) => {
                             <p>Tj Type: {{ item.tj_type_name }}</p>
                             <p>Splitter: {{ item.splitter_name }}</p>
                           </div>
-                        </div>
+                        </button>
                       </template>
                     </div>
 
@@ -1298,6 +1304,7 @@ const updateMapLayout = async (layoutMode) => {
 
     <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddTjForm ref="addTjFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
+    <TjDetails ref="tjDetailsRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddFiberForm ref="addFiberFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddAreaForm ref="addAreaFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddFiberMonitorForm ref="addFiberMonitorFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />

@@ -2,6 +2,7 @@ import './assets/main.css'
 import './style.css'
 
 import Modal from "@/components/Modal.vue";
+import ModalC from "@/components/ModalC.vue";
 import ModalR from "@/components/ModalR.vue";
 import Progressbar from "@/components/Progressbar.vue";
 
@@ -28,7 +29,7 @@ import router from './router'
 const app = createApp(App)
 
 app.component("font-awesome-icon", FontAwesomeIcon)
-app.component("ModalC", Modal)
+app.component("ModalC", ModalC)
 app.component("ModalR", ModalR)
 app.component('v-select', vSelect)
 app.component("ProgressBar", Progressbar)

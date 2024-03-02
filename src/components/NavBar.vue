@@ -56,16 +56,16 @@ onMounted(() => {
         <div class="flex">
           <div class="flex gap-4 pr-5" style="border-right: 2px solid rgb(60, 60, 60);">
             <button @click="activateMapDraw('marker')"
-              v-tippy="{ content: 'Map Location', placement: 'left', arrow: true, animation: 'fade', }"
+              v-tippy="{ content: 'Add User', placement: 'left', arrow: true, animation: 'fade', }"
               class="btn border-none bg-[#80808033]"><font-awesome-icon :icon="['fas', 'location-dot']" /></button>
-            <button @click="activateMapDraw('polyline')" content="Draw Map Line" v-tippy
+            <button @click="activateMapDraw('polyline')" content="Add Fiber" v-tippy
               class="btn border-none bg-[#80808033]">
               <font-awesome-icon :icon="['fas', 'draw-polygon']" />
             </button>
           </div>
 
           <div class="flex-initial pl-5">
-            <button @click="activateMapDraw('polygon')" v-tippy="'Map Measurement'"
+            <button @click="activateMapDraw('polygon')" v-tippy="'Add Area'"
               class="btn border-none bg-[#80808033]"><font-awesome-icon :icon="['fas', 'ruler-horizontal']" /></button>
             <button v-if="showMenubar" @click="toggleMenubar()" v-tippy="'Hide the menubar'"
               class="btn border-none hover:bg-[#80808033] ml-2 text-cyan-200 hover:text-cyan-400">
