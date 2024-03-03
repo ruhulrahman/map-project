@@ -278,7 +278,7 @@ onMounted(async () => {
 
   getIconData()
   getInitData()
-  getTjnuberInitData()
+  getTjNumberInitData()
   getUserMarkerConnection()
   // getMapPolygonConnection()
   // getTjMarkerConnection()
@@ -299,9 +299,9 @@ onUnmounted(() => clearInterval(intervalId))
 // }
 const tjDetailsRef = ref(false)
 
-const viewTjDetails = (item) => {
+const viewTjDetails = (tj_number) => {
   // tjDetailsRef.value.show(JSON.stringify(item))
-  tjDetailsRef.value.show(item.tj_number)
+  tjDetailsRef.value.show(tj_number)
 }
 
 const checkedSidebarMenu = ref([])
@@ -547,9 +547,13 @@ const userMapMarkerCall = (arrayItem) => {
     // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
   
     map.value.setView([lat.value, long.value], 15);
-    L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
-      .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-
+    var marker = L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
+      // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+      .bindPopup(item.tj_number);
+    marker.on('click', function(e) {
+      var tjNumber = e.target.getPopup().getContent();
+      viewTjDetails(tjNumber)
+    });
   })
 
   markerLoading.value = false
@@ -646,8 +650,13 @@ const tjMapMarkerCall = (arrayItem) => {
     // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
 
     map.value.setView([lat.value, long.value], 15);
-    L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
-      .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+    var marker = L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
+    // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+    .bindPopup(item.tj_number);
+    marker.on('click', function(e) {
+      var tjNumber = e.target.getPopup().getContent();
+      viewTjDetails(tjNumber)
+    });
 
   })
 
@@ -896,7 +905,7 @@ const getInitData = async () => {
   // console.log('dropdownList.value', dropdownList.value)
 }
 
-const getTjnuberInitData = async () => {
+const getTjNumberInitData = async () => {
   loading.value = true
   let result = await RestApi.get('/alltjlist/v1/')
   loading.value = false
@@ -1155,7 +1164,7 @@ const updateMapLayout = async (layoutMode) => {
                     <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
                       <p>User List</p>
                       <template v-for="(item, index) in userMarkerList" :key="index">
-                        <button @click="viewTjDetails(item)" class="btn-create text-[10px] btn-ring-with-bg">
+                        <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
                           </div>
@@ -1184,7 +1193,7 @@ const updateMapLayout = async (layoutMode) => {
                     <div v-if="checkedSidebarMenu[0] == 'tj'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Tj List</p>
                       <template v-for="(item, index) in tjMarkerList" :key="index">
-                        <button @click="viewTjDetails(item)" class="btn-create text-[10px] btn-ring-with-bg">
+                        <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[70px] h-[110px]" alt="Image">
                           </div>

@@ -58,7 +58,6 @@ const show = async (tjNumber) => {
     // tjDetailItem.value = JSON.parse(tjNumber)
     await getTjDetailsData(tjNumber)
     await getTjVoiceAndImageData(tjNumber)
-
     TJDetailsModalRef.value.show()
 }
 
