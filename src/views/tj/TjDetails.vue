@@ -91,9 +91,11 @@ const getTjVoiceAndImageData = async (tjNumber) => {
     loading.value = true
     try {
 
+        const tjCustomNumber = tjNumber.replace('TJ')
+
         tjVoiceList.value = []
         tjImageList.value = []
-        let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjNumber}`)
+        let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjCustomNumber}`)
 
         console.log('result.data', result.data)
 
