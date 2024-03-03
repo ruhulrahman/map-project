@@ -73,8 +73,6 @@ const getTjDetailsData = async (tjNumber) => {
         tjDetailItem.value = {}
         let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}`)
 
-        console.log('result.data', result.data)
-
         if (result.data) {
             tjDetailItem.value = result.data
             console.log('tjDetailItem', tjDetailItem.value)
@@ -86,20 +84,24 @@ const getTjDetailsData = async (tjNumber) => {
     }
 }
 
-const tjVoiceAndImages = ref([])
+const tjVoiceList = ref([])
+const tjImageList = ref([])
 
 const getTjVoiceAndImageData = async (tjNumber) => {
     loading.value = true
     try {
 
-        tjVoiceAndImages.value = []
+        tjVoiceList.value = []
+        tjImageList.value = []
         let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjNumber}`)
 
         console.log('result.data', result.data)
 
         if (result.data) {
-            tjVoiceAndImages.value = result.data
-            console.log('tjVoiceAndImages', tjVoiceAndImages.value)
+            tjImageList.value = result.data.filter(item => item.image != 'null')
+            tjVoiceList.value = result.data.filter(item => item.voice != 'null')
+            console.log('tjImageList', tjImageList.value)
+            console.log('tjVoiceList', tjVoiceList.value)
         }
     } catch (error) {
         console.log('error', error)
@@ -244,18 +246,18 @@ const selectTab = (tabValue) => {
                     <p class="text-[12px] text-slate-300 font-semibold">{{ tjDetailItem.tj_description }}</p>
                 </div>
                 <div v-show="activeTab == 'voice'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Voice Missing</p>
-                        <div class="flex justify-start items-center gap-4 w-full mb-4">
+                    <p v-if="!tjVoiceList.length" class="text-sm text-red-500">Voice Not Found!</p>
+                        <div v-for="(item, index) in tjVoiceList" :key="index" class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 flex flex-col min-w-[48%]">
-                                <AVWaveform src="/src/assets/audio/file_example.ogg" />
+                                <!--<AVWaveform src="/src/assets/audio/file_example.ogg" />-->
+                                <AVWaveform :src="item.voice" />
                             </div>
                         </div>
                 </div>
                 <div v-show="activeTab == 'image'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <p v-if="!tjVoiceAndImages.length" class="text-sm text-gray-500 dark:text-gray-400">Image Missing
-                    </p>
+                    <p v-if="!tjImageList.length" class="text-sm text-red-500">Image Not Found!</p>
 
-                    <template v-for="(item, index) in tjVoiceAndImages" :key="index">
+                    <template v-for="(item, index) in tjImageList" :key="index">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 flex flex-col min-w-[48%]">
                                 <img :src="item.image" class="w-full h-auto" alt="Image">
