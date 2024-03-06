@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useRouter } from "vue-router";
 
 const router = useRouter()
@@ -16,11 +16,17 @@ const authUser = computed(() => {
   return JSON.parse(localStorage.getItem('authUser'))
 })
 
-const emit = defineEmits(["activedMapDraw"])
+const emit = defineEmits(["activedMapDraw", "updateSearchValue"])
 
 const activateMapDraw = (drawTool) => {
   emit("activedMapDraw", drawTool);
 }
+
+const searchField = ref('')
+
+watch([searchField], ([new_search_field]) => {
+  emit("updateSearchValue", new_search_field);
+})
 
 const logout = () => {
   localStorage.setItem('token', '')
@@ -49,7 +55,7 @@ onMounted(() => {
 
       <div class="flex flex-row w-[280px] rounded-3xl bg-neutral-800 py-1 px-4 items-center">
         <font-awesome-icon icon="fa-magnifying-glass" />
-        <input type="text" class="ml-2 bg-[#262626] focus-within:outline-none" placeholder="Search for ...">
+        <input v-model="searchField" type="text" class="ml-2 bg-[#262626] focus-within:outline-none" placeholder="Search for ...">
       </div>
 
       <div class="flex flex-col justify-around w-full py-1 px-4">

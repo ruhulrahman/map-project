@@ -150,6 +150,8 @@ const userIcon = ref({})
 const tjIcon = ref({})
 
 onMounted(async () => {
+  console.log('%cStop! Don\'t try to find anything here', 'color: red; font-size: 36px; font-weight: bold; -webkit-text-stroke: 1px black;');
+
 
   await getMapLayoutData()
 
@@ -445,11 +447,145 @@ const markerLoadingShow = computed(() => {
   }
 })
 
+const searchField = ref('')
 const userMarkerList = ref([])
 const tjMarkerList = ref([])
 const fiberLineList = ref([])
 const areaPolygonList = ref([])
 const fiberMonitorLineList = ref([])
+
+const updateSearchFilterValue = (searchValue) => {
+  searchField.value = searchValue
+}
+
+const getUserMarkerFilterList = computed(() => {
+  if (checkedSidebarMenu.value[0] == 'marker') {
+    if (searchField.value) {
+      return userMarkerList.value.filter(item => {
+        const itemValue = item.pppoe_id.toLowerCase();
+        const searchValue = searchField.value.toLowerCase();
+
+        // Check if the item value contains the search value
+        return itemValue.includes(searchValue);
+      })
+    } else {
+      return userMarkerList.value
+    }
+  } else {
+    return []
+  }
+})
+
+const getTjMarkerFilterList = computed(() => {
+  if (checkedSidebarMenu.value[0] == 'tj') {
+    if (searchField.value) {
+      return tjMarkerList.value.filter(item => {
+        const itemValue = item.tj_number.toLowerCase();
+        const searchValue = searchField.value.toLowerCase();
+
+        // Check if the item value contains the search value
+        return itemValue.includes(searchValue);
+      })
+    } else {
+      return tjMarkerList.value
+    }
+  } else {
+    return []
+  }
+})
+
+const getFiberLineFilterList = computed(() => {
+  if (checkedSidebarMenu.value[0] == 'polyline') {
+    if (searchField.value) {
+      return fiberLineList.value.filter(item => {
+        const itemValue = item.fiber_code.toLowerCase();
+        const searchValue = searchField.value.toLowerCase();
+
+        // Check if the item value contains the search value
+        let result = itemValue.includes(searchValue);
+        if (!result) {
+          const itemValue = item.fiberarea_name.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.fibername.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        return result
+      })
+    } else {
+      return fiberLineList.value
+    }
+  } else {
+    return []
+  }
+})
+
+const getAreaPolygonFilterList = computed(() => {
+  if (checkedSidebarMenu.value[0] == 'polygon') {
+    if (searchField.value) {
+      return areaPolygonList.value.filter(item => {
+        const searchValue = searchField.value.toLowerCase();
+        const itemValue = item.displayname.toLowerCase();
+
+        // Check if the item value contains the search value
+        let result = itemValue.includes(searchValue);
+        if (!result) {
+          const itemValue = item.area_name.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.user_name.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        return result
+      })
+    } else {
+      return areaPolygonList.value
+    }
+  } else {
+    return []
+  }
+})
+
+const getFiberMonitorFilterList = computed(() => {
+  if (checkedSidebarMenu.value[0] == 'polyline_fiber_monitor') {
+    if (searchField.value) {
+      return fiberMonitorLineList.value.filter(item => {
+        const searchValue = searchField.value.toLowerCase();
+        const itemValue = item.map_type.toLowerCase();
+
+        // Check if the item value contains the search value
+        let result = itemValue.includes(searchValue);
+        if (!result) {
+          const itemValue = item.fibercorep.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.fibername.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.user.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.fiber_code.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        if (!result) {
+          const itemValue = item.ipaddr.toLowerCase();
+          result = itemValue.includes(searchValue);
+        }
+        return result
+      })
+    } else {
+      return fiberMonitorLineList.value
+    }
+  } else {
+    return []
+  }
+})
 
 const markerLoading = ref(false)
 let totalUserMarkerCount = ref(0)
@@ -1002,7 +1138,7 @@ const updateMapLayout = async (layoutMode) => {
         <div
           class="flex-1 bg-[#1F1F1F] bg-opacity-[0.8] hover:bg-[#1F1F1F] transition-all duration-400 text-white w-full z-[4]">
           <!-- Navbar content -->
-          <NavBar @activedMapDraw="activateMapDrawer" />
+          <NavBar @activedMapDraw="activateMapDrawer" @updateSearchValue="updateSearchFilterValue"/>
         </div>
 
         <div class="flex-col absolute top-0 left-0 text-white h-full z-[-1]">
@@ -1163,7 +1299,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
                       <p>User List</p>
-                      <template v-for="(item, index) in userMarkerList" :key="index">
+                      <template v-for="(item, index) in getUserMarkerFilterList" :key="index">
                         <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
@@ -1192,7 +1328,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'tj'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Tj List</p>
-                      <template v-for="(item, index) in tjMarkerList" :key="index">
+                      <template v-for="(item, index) in getTjMarkerFilterList" :key="index">
                         <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[70px] h-[110px]" alt="Image">
@@ -1209,7 +1345,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polyline'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Fiber List</p>
-                      <template v-for="(item, index) in fiberLineList" :key="index">
+                      <template v-for="(item, index) in getFiberLineFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
                             <h6>Area name: {{ item.fiberarea_name }}</h6>
@@ -1223,7 +1359,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polygon'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Area List</p>
-                      <template v-for="(item, index) in areaPolygonList" :key="index">
+                      <template v-for="(item, index) in getAreaPolygonFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
                             <h6>Display name: {{ item.displayname }}</h6>
@@ -1237,7 +1373,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polyline_fiber_monitor'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Fiber Monitor List</p>
-                      <template v-for="(item, index) in fiberMonitorLineList" :key="index">
+                      <template v-for="(item, index) in getFiberMonitorFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
                             <h6>Map Type: {{ item.map_type }}</h6>
