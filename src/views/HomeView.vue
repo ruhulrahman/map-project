@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watchEffect } from "vue";
 import RestApi from '@/libs/config'
-import mixin from '@/libs/mixin'
+// import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
 import Map from '@/components/Map.vue';
 import LeftSideBar from '../components/LeftSideBar.vue'
@@ -18,10 +18,23 @@ import AddAreaForm from '@/views/area/AddAreaForm.vue';
 import debounce from 'lodash.debounce'
 import lodash from 'lodash'
 import router from "@/router";
+import { useAuthStore } from '@/stores/user';
+import mixin from '@/libs/mixin'
 
 // import Modal from "@/components/ModalR.vue";
 
 const toast = useToast()
+
+const authStore = useAuthStore();
+
+// const userInfo = computed(() => {
+//   return authStore.user
+// })
+
+
+console.log('authStore.user', authStore.user)
+
+// console.log('userInfo', userInfo)
 
 const hideLeftSidebar = ref(true)
 
@@ -70,14 +83,6 @@ const toggleLeftSidebar = () => {
   hideLeftSidebar.value = !hideLeftSidebar.value
 }
 
-var greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
 
 
 const googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
@@ -145,9 +150,6 @@ const emptyMapCall = () => {
   var drawnFeatures = new L.FeatureGroup();
   map.value.addLayer(drawnFeatures);
 }
-
-const userIcon = ref({})
-const tjIcon = ref({})
 
 onMounted(async () => {
   console.log('%cStop! Don\'t try to find anything here', 'color: red; font-size: 36px; font-weight: bold; -webkit-text-stroke: 1px black;');
@@ -278,6 +280,7 @@ onMounted(async () => {
 
   });
 
+  getAuthUserInfo()
   getIconData()
   getInitData()
   getTjNumberInitData()
@@ -296,9 +299,14 @@ let intervalId;
 
 onUnmounted(() => clearInterval(intervalId))
 
-// function checkInstance() {
-//   console.log("checkInstance")
-// }
+
+const getAuthUserInfo = async () => {
+  let result = await RestApi.get('/api/v1/sg-5/get_auth_user_info/')
+  authStore.setAuthUser(result.data);
+  authStore.setUserRole(result.data.user_role);
+  authStore.setUserPermission(result.data.user_role.permissions);
+}
+
 const tjDetailsRef = ref(false)
 
 const viewTjDetails = (tj_number) => {
@@ -948,18 +956,47 @@ const getIpAddressStatus = () => {
 
 }
 
+const userIcon = ref({})
+const tjIcon = ref({})
+const activeIcon = ref({})
+
 const getIconData = async () => {
   loading.value = true
   let result = await RestApi.get('/api/v1/sg-5/get_iconncare_maps/')
   loading.value = false
+  
+  authStore.setIcons(result.data);
 
   if (result.data.length) {
-    userIcon.value = result.data[0]
-    tjIcon.value = result.data[1]
+    userIcon.value = result.data.find(item => item.iconname == 'usericon')
+    tjIcon.value = result.data.find(item => item.iconname == 'tjicon')
+    activeIcon.value = result.data.find(item => item.iconname == 'activeicon')
   }
-
   // console.log('dropdownList.value', dropdownList.value)
 }
+
+// var greenIcon = new L.Icon({
+//   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+//   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+//   shadowSize: [41, 41]
+// });
+
+
+// const userIcon = computed(() => {
+//   console.log('authStore.mapIcons', authStore.user)
+//   if (authStore.mapIcons.value) {
+//     return authStore.mapIcons.value.find(item => item.iconname == 'usericon')
+//   } else return ''
+// })
+
+// const tjIcon = computed(() => {
+//   if (authStore.mapIcons.value) {
+//     return authStore.mapIcons.value.find(item => item.iconname == 'tjicon')
+//   } else return ''
+// })
 
 const getInitData = async () => {
   loading.value = true
@@ -1059,6 +1096,7 @@ const getTjNumberInitData = async () => {
 const getMapLayoutData = async () => {
   const user_id = 20;
   loading.value = true
+  console.log('call me')
   let result = await RestApi.get(`/api/v1/sg-5/maptypestate/update/${user_id}/`)
   loading.value = false
 
@@ -1083,9 +1121,9 @@ const updateMapLayout = async (layoutMode) => {
   try {
     const params = { status: layoutMode, user_id: user_id }
     if (mapLayoutMode.value) {
-      result = await RestApi.put('api/v1/sg-5/maptypestate/update/20/', params)
+      result = await RestApi.put('/api/v1/sg-5/maptypestate/update/20/', params)
     } else {
-      result = await RestApi.post('api/v1/sg-5/maptypestate/create/', params)
+      result = await RestApi.post('/api/v1/sg-5/maptypestate/create/', params)
     }
 
     if (result.status == 200) {
@@ -1172,13 +1210,13 @@ const updateMapLayout = async (layoutMode) => {
                       </div>
 
                       <div class="flex flex-row justify-between">
-                        <button type="button" @click="activateMapDrawer('marker')"
+                        <button v-if="authStore.has_permission('add-user')" type="button" @click="activateMapDrawer('marker')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
                           <font-awesome-icon :icon="['fas', 'user-plus']" class="text-orange-500 mr-2" />
                           Add User
                         </button>
 
-                        <button type="button" @click="activateMapDrawer('tjmarker')"
+                        <button v-if="authStore.has_permission('addtj')" type="button" @click="activateMapDrawer('tjmarker')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'compass-drafting']" class="text-blue-500 mr-2" />
                           Add TJ
@@ -1186,13 +1224,13 @@ const updateMapLayout = async (layoutMode) => {
                       </div>
 
                       <div class="flex flex-row justify-between">
-                        <button type="button" @click="activateMapDrawer('polyline')"
+                        <button v-if="authStore.has_permission('add-fiber')" type="button" @click="activateMapDrawer('polyline')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 me-4 mb-2">
                           <font-awesome-icon :icon="['fas', 'network-wired']" class="text-yellow-500 mr-2" />
                           Add Fiber
                         </button>
 
-                        <button type="button" @click="activateMapDrawer('polygon')"
+                        <button v-if="authStore.has_permission('add-area')" type="button" @click="activateMapDrawer('polygon')"
                           class="text-gray-900 w-1/2 bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fas', 'map']" class="text-red-500 mr-2" />
                           Add Area
@@ -1200,7 +1238,7 @@ const updateMapLayout = async (layoutMode) => {
                       </div>
 
                       <div class="flex flex-row justify-between">
-                        <button type="button" @click="activateMapDrawer('fiber_monitor')"
+                        <button v-if="authStore.has_permission('add-fiber-monitor')" type="button" @click="activateMapDrawer('fiber_monitor')"
                           class="text-gray-900 w-full bg-white hover:bg-gray-100 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-gray-600 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 mb-2">
                           <font-awesome-icon :icon="['fab', 'watchman-monitoring']" class="text-green-500 mr-2" />
                           Add Fiber Monitor

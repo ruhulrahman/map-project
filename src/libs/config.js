@@ -2,7 +2,7 @@ import axios from 'axios'
 
 export const baseURL = 'https://mapproject.nvs.la'
 // export const baseURL = 'https://opentv.ncare.io/'
-const accessToken = localStorage.getItem('access_token')
+const accessToken = localStorage.getItem('token')
 
 const RestApi = axios.create({
   baseURL: baseURL,

@@ -126,7 +126,7 @@ const selectTab = (tabValue) => {
 </script>
 
 <template>
-    <ModalC ref="TJDetailsModalRef">
+    <ModalR ref="TJDetailsModalRef">
         <template #header>
             <h6>TJ Details</h6>
         </template>
@@ -164,8 +164,8 @@ const selectTab = (tabValue) => {
 
             <div>
                 <div v-show="activeTab == 'list'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
-                    <div class="flex justify-start items-center gap-4">
-                        <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[225px]">
+                    <div class="flex justify-start items-center gap-1 w-[100%]">
+                        <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[175px]">
                             <div class="flex flex-row items-center">
                                 <font-awesome-icon :icon="['far', 'calendar']"
                                     class="mr-2 p-2 bg-blue-950 text-slate-200 rounded-full" />
@@ -174,7 +174,7 @@ const selectTab = (tabValue) => {
                             <p class="mt-2 text-[12px] font-semibold">{{ mixin.dDate(tjDetailItem.update_date) }}</p>
                         </div>
                         <font-awesome-icon :icon="['fas', 'link']" class="text-yellow-500" />
-                        <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[225px]">
+                        <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[175px]">
                             <div class="flex flex-row items-center">
                                 <font-awesome-icon :icon="['far', 'calendar']"
                                     class="mr-2 p-2 bg-blue-950 text-slate-200 rounded-full" />
@@ -184,7 +184,7 @@ const selectTab = (tabValue) => {
                         </div>
                     </div>
 
-                    <h6 v-if="tjDetailItem.splitelist.length" class="my-4 text-slate-300 text-[15px] font-semibold">
+                    <h6 v-if="tjDetailItem.splitelist && tjDetailItem.splitelist.length" class="my-4 text-slate-300 text-[15px] font-semibold">
                         Splite List:
                     </h6>
 
@@ -203,7 +203,7 @@ const selectTab = (tabValue) => {
                         </div>
                     </template>
 
-                    <h6 v-if="tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">
+                    <h6 v-if="tjDetailItem.disconnectuser && tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">
                         Disconnect Users: </h6>
 
                     <template v-for="(item, index) in tjDetailItem.disconnectuser" :key="index">
@@ -221,7 +221,7 @@ const selectTab = (tabValue) => {
                         </div>
                     </template>
 
-                    <h6 v-if="tjDetailItem.ponlist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Pon
+                    <h6 v-if="tjDetailItem.ponlist && tjDetailItem.ponlist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Pon
                         List: </h6>
 
                     <template v-for="(item, index) in tjDetailItem.ponlist" :key="index">
@@ -275,7 +275,7 @@ const selectTab = (tabValue) => {
             </div>
 
         </div>
-    </ModalC>
+    </ModalR>
 </template>
 
 <style scoped>

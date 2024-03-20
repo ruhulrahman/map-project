@@ -1,6 +1,24 @@
 import { Notyf } from 'notyf'
 import Hashids from 'hashids'
 import moment from 'moment'
+// import { pinia } from '@/main';
+// import { createPinia } from 'pinia';
+// import { useAuthStore } from '@/stores/user';
+
+// import { store } from '@/stores/user';
+// import { useStore } from 'pinia';
+
+// const store = useStore();
+// const store = useAuthStore();
+
+// const authStore = useAuthStore();
+
+// console.log('authStore.user', authStore.user)
+
+// const pinia = createPinia();
+// pinia.use(useAuthStore);
+// const store = pinia.store.value;
+// const authStore = useAuthStore(store)
 
 export const pagination = {
   currentPage: 1,
@@ -24,6 +42,9 @@ export function cn(obj, input, if_false = '') {
   if (obj) return obj
   return if_false
 }
+
+
+// const authStore = useAuthStore();
 
 export default {
   loading: false,
@@ -177,5 +198,44 @@ export default {
           });
           return data.join("");
       }
+  },
+  has_permission: function (permit_code){
+
+    console.log('permit_code', permit_code)
+
+      // let permission_disable=this.$store.state.site.permission_disable;
+      let permission_disable = false
+
+      if(permission_disable){
+          return true;
+      }else if(permit_code){
+
+          if(permit_code == "permitted"){
+              return true;
+          }else{
+
+              // const authStore = useAuthStore();
+              
+              // const store = pinia.store;
+              // const authStore = useAuthStore(store);
+              // const permissions = authStore.permissions;
+              const permissions = []
+              // console.log('permissions', authStore)
+              // const permissions = []
+
+              if(permissions && permissions.length){
+
+                  const userPermission = permissions.find(
+                      (permission) => permission == permit_code
+                  );
+
+                  return userPermission == undefined ? false : true;
+
+              } else {
+                  return false;
+              }
+          }
+
+      }else return false;
   },
 }

@@ -2,8 +2,12 @@
 <script setup>
 import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/user';
+import mixin from '@/libs/mixin'
 
 const router = useRouter()
+
+const authStore = useAuthStore();
 
 const showMenubar = ref(true);
 const open = ref(false);
@@ -89,7 +93,7 @@ onMounted(() => {
       <div class="flex absolute right-0 top-1">
         <div x-data="{ open: false }" class=" w-64  shadow flex justify-end items-center pr-3">
           <div @click="open = !open" class="relative border-b-4 border-transparent"
-            :class="{ 'border-indigo-700 transform transition duration-300 ': open } && { 'py-3' : showMenubar }">
+            :class="{ 'border-indigo-700 transform transition duration-300 ': open } && { 'py-1' : showMenubar }">
             <div class="flex justify-end items-center space-x-3 cursor-pointer">
               <div class="w-[40px] h-[40px] rounded-full overflow-hidden border-2 dark:border-white border-gray-900">
                 <img
@@ -102,7 +106,12 @@ onMounted(() => {
                   alt="" class="w-full h-full object-cover">
               </div>
               <div class="font-semibold dark:text-white text-gray-900 text-lg">
-                <div class="cursor-pointer" v-if="authUser"><span class="uppercase text-[13px]">{{ authUser.user_name }}</span></div>
+                <div class="cursor-pointer p-0 m-0" v-if="authUser">
+                  <span class="uppercase text-[13px] text-right">{{ authUser.user_name }}</span><br/>
+                </div>
+                <div class="cursor-pointer p-0 m-0">
+                  <span class="uppercase text-[13px] text-cyan-400">{{ mixin.cn(authStore, 'user.user_role.name') }}</span><br/>
+                </div>
               </div>
             </div>
             <div v-show="open" class="absolute right-[-10px] w-56 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">

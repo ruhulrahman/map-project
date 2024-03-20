@@ -25,8 +25,11 @@ import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css';
 import App from './App.vue'
 import router from './router'
+// import mixin from '@/libs/mixin'
 
 const app = createApp(App)
+
+app.use(createPinia())
 
 app.component("font-awesome-icon", FontAwesomeIcon)
 app.component("ModalC", ModalC)
@@ -44,8 +47,8 @@ app.use(
 )
 
 app.use(Toast);
-
-app.use(createPinia())
 app.use(router)
+
+// app.config.globalProperties.$mixin = mixin;
 
 app.mount('#app')

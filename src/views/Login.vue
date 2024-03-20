@@ -1,15 +1,17 @@
 <script setup>
 import { ref, onMounted, computed, watchEffect } from "vue";
 import RestApi from '@/libs/config'
-import mixin from '@/libs/mixin'
+// import mixin from '@/libs/mixin'
 import { useToast } from 'vue-toastification'
 import { Form, Field, ErrorMessage, useForm } from 'vee-validate';
 import * as yup from 'yup';
 import { useRouter } from "vue-router";
+import { useAuthStore } from '@/stores/user';
 
 const router = useRouter()
 const toast = useToast()
 const loading = ref(false)
+const authStore = useAuthStore();
 
 const schema = yup.object({
     username: yup.string().required().label('Username'),
@@ -37,10 +39,16 @@ const onSubmit = handleSubmit(async (values, { resetForm }) => {
 
         if (result.status == 200) {
             // console.log('result', result.data)
+            console.log('result.data', result.data)
             localStorage.setItem('token', result.data.token)
             localStorage.setItem('authUser', JSON.stringify(result.data))
+            authStore.setAuthUser(result.data);
+            authStore.setUserRole(result.data.user_role);
+            authStore.setUserPermission(result.data.user_role.permissions);
+            // console.log('authStore.user', authStore.user)
             toast.success('You have successfully logged in')
             resetForm();
+            
             router.replace({ path: '/' })
         }
 

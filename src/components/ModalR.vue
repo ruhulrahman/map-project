@@ -21,7 +21,7 @@ defineExpose({
 </script>
 
 <template>
-    <div class="z-[9999999] absolute right-[15px] top-[90px] shadow-lg bg-[#1F1F1F] rounded-xl p-3 transition-all duration-1000 ease-in-out" :class="isModalVisible ? 'h-auto w-[350px]' : 'h-0 w-0'" v-show="isModalVisible">
+    <div class="z-[9999999] absolute right-[15px] top-[90px] shadow-lg bg-[#1F1F1F] rounded-xl p-3 transition-all duration-1000 ease-in-out" :class="isModalVisible ? 'h-auto w-[450px]' : 'h-0 w-0'" v-show="isModalVisible">
       <div class="flex justify-center items-center relative transition-all duration-1000 ease-in-out">
         <div class="w-full transition-all duration-1000 ease-in-out">
           <div class="flex justify-between border-b border-neutral-800">
