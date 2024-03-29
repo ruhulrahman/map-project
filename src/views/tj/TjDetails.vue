@@ -185,10 +185,18 @@ const selectTab = (tabValue) => {
                     </div>
 
                     <h6 v-if="tjDetailItem.splitelist && tjDetailItem.splitelist.length" class="my-4 text-slate-300 text-[15px] font-semibold">
-                        Splite List:
+                        Splite List: {{ tjDetailItem.splitelist.length }}
                     </h6>
 
-                    <template v-for="(item, index) in tjDetailItem.splitelist" :key="index">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div v-for="(item, splitIndex) in tjDetailItem.splitelist" :key="splitIndex" class="bg-gray-300 text-blue-950 rounded-lg px-5 py-2 ">
+                            <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
+                            <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
+                                    :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
+                        </div>
+                    </div>
+                    <!--
+                    <template v-for="(item, splitIndex) in tjDetailItem.splitelist" :key="splitIndex">
                         <div class="flex justify-start items-center gap-4 w-full mb-4">
                             <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
                                 <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
@@ -201,7 +209,7 @@ const selectTab = (tabValue) => {
                                         :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
                             </div>
                         </div>
-                    </template>
+                    </template>-->
 
                     <h6 v-if="tjDetailItem.disconnectuser && tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">
                         Disconnect Users: </h6>
