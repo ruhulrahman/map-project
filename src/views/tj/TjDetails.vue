@@ -70,7 +70,7 @@ const getTjDetailsData = async (tjNumber) => {
     try {
 
         tjDetailItem.value = {}
-        let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}`)
+        let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}/`)
 
         if (result.data) {
             tjDetailItem.value = result.data
@@ -94,7 +94,7 @@ const getTjVoiceAndImageData = async (tjNumber) => {
 
         tjVoiceList.value = []
         tjImageList.value = []
-        let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjCustomNumber}`)
+        let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjCustomNumber}/`)
 
         if (result.data) {
             tjImageList.value = result.data.filter(item => item.image != 'null')
