@@ -456,6 +456,7 @@ const markerLoadingShow = computed(() => {
 })
 
 const searchField = ref('')
+const searchValues = ref('')
 const userMarkerList = ref([])
 const tjMarkerList = ref([])
 const fiberLineList = ref([])
@@ -463,15 +464,42 @@ const areaPolygonList = ref([])
 const fiberMonitorLineList = ref([])
 
 const updateSearchFilterValue = (searchValue) => {
-  searchField.value = searchValue
+  console.log('searchField ==', searchValue.searchField)
+  console.log('searchType ==', searchValue.searchType)
+  if (searchValue.searchType == 'cordinate_search') {
+    const latlong = searchValue.searchField
+    const lat = latlong.split(',')[0]
+    const long = latlong.split(',')[1]
+    // L.setView([lat.value, long.value], 8);
+    // marker.setLatLng([lat.value, long.value])
+
+    
+    var greenIcon = new L.Icon({
+      // iconUrl: userIcon.value.iconurl,
+      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    });
+    console.log('lat', lat)
+    console.log('long', long)
+    map.value.setView([lat, long], 18);
+    L.marker([lat, long], { icon: greenIcon }).addTo(map.value)
+  } else {
+    searchField.value = searchValue
+    searchValues.value = searchValue
+  }
 }
 
 const getUserMarkerFilterList = computed(() => {
   if (checkedSidebarMenu.value[0] == 'marker') {
-    if (searchField.value) {
+    console.log('searchValues.value ======', searchValues.value)
+    if (searchValues.value.searchField) {
       return userMarkerList.value.filter(item => {
         const itemValue = item.pppoe_id.toLowerCase();
-        const searchValue = searchField.value.toLowerCase();
+        const searchValue = searchValues.value.searchField.toLowerCase();
 
         // Check if the item value contains the search value
         return itemValue.includes(searchValue);
@@ -486,10 +514,10 @@ const getUserMarkerFilterList = computed(() => {
 
 const getTjMarkerFilterList = computed(() => {
   if (checkedSidebarMenu.value[0] == 'tj') {
-    if (searchField.value) {
+    if (searchValues.value.searchField) {
       return tjMarkerList.value.filter(item => {
         const itemValue = item.tj_number.toLowerCase();
-        const searchValue = searchField.value.toLowerCase();
+        const searchValue = searchValues.value.searchField.toLowerCase();
 
         // Check if the item value contains the search value
         return itemValue.includes(searchValue);
@@ -504,10 +532,10 @@ const getTjMarkerFilterList = computed(() => {
 
 const getFiberLineFilterList = computed(() => {
   if (checkedSidebarMenu.value[0] == 'polyline') {
-    if (searchField.value) {
+    if (searchValues.value.searchField) {
       return fiberLineList.value.filter(item => {
         const itemValue = item.fiber_code.toLowerCase();
-        const searchValue = searchField.value.toLowerCase();
+        const searchValue = searchValues.value.searchField.toLowerCase();
 
         // Check if the item value contains the search value
         let result = itemValue.includes(searchValue);
@@ -531,9 +559,9 @@ const getFiberLineFilterList = computed(() => {
 
 const getAreaPolygonFilterList = computed(() => {
   if (checkedSidebarMenu.value[0] == 'polygon') {
-    if (searchField.value) {
+    if (searchValues.value.searchField) {
       return areaPolygonList.value.filter(item => {
-        const searchValue = searchField.value.toLowerCase();
+        const searchValue = searchValues.value.searchField.toLowerCase();
         const itemValue = item.displayname.toLowerCase();
 
         // Check if the item value contains the search value
@@ -558,9 +586,9 @@ const getAreaPolygonFilterList = computed(() => {
 
 const getFiberMonitorFilterList = computed(() => {
   if (checkedSidebarMenu.value[0] == 'polyline_fiber_monitor') {
-    if (searchField.value) {
+    if (searchValues.value.searchField) {
       return fiberMonitorLineList.value.filter(item => {
-        const searchValue = searchField.value.toLowerCase();
+        const searchValue = searchValues.value.searchField.toLowerCase();
         const itemValue = item.map_type.toLowerCase();
 
         // Check if the item value contains the search value
@@ -691,6 +719,9 @@ const userMapMarkerCall = (arrayItem) => {
     // var myIcon = L.divIcon({ className: '<div class="pin2"></div>' });
   
     map.value.setView([lat.value, long.value], 15);
+    
+    console.log('lat', lat)
+    console.log('long', long)
     var marker = L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
       // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
       .bindPopup(item.tj_number);
@@ -1107,6 +1138,9 @@ const getMapLayoutData = async () => {
 
 // watcher
 watchEffect(() => {
+  
+
+  // map.value = L.map(mapContainer.value).setView([lat.value, long.value], 15);
 })
 
 const showCreateMenus = ref(false)

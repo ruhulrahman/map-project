@@ -12,11 +12,15 @@ const RestApi = axios.create({
     Accept: 'application/json',
     // 'Content-Type': 'multipart/form-data'
     // accessMenuName: window.location.href,
+  },
+  Authorization: {
+    'token': 'token e6865b0c7034527cc56eb7a97007f4d18bbd1c9e'
   }
 });
 
 if (accessToken) {
   RestApi.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+  // RestApi.defaults.Authorization['token'] = `Bearer ${accessToken}`;
 }
 
 export default RestApi;

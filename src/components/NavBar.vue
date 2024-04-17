@@ -1,6 +1,6 @@
 
 <script setup>
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, reactive, ref, watch, watchEffect } from 'vue';
 import { useRouter } from "vue-router";
 import { useAuthStore } from '@/stores/user';
 import mixin from '@/libs/mixin'
@@ -28,9 +28,27 @@ const activateMapDraw = (drawTool) => {
 
 const searchField = ref('')
 
-watch([searchField], ([new_search_field]) => {
-  emit("updateSearchValue", new_search_field);
+const searchTypes = [
+  { value: 'map_search', label: 'Map Search' },
+  { value: 'cordinate_search', label: 'Cordinate Search' },
+]
+
+const searchItems = ref({
+  searchField: '',
+  searchType: 'map_search'
 })
+
+// watch([searchField], ([new_search_field]) => {
+//   emit("updateSearchValue", new_search_field);
+// })
+
+watchEffect(() => {
+  console.log('searchField', searchItems.value.searchField);
+  console.log('searchType', searchItems.value.searchType);
+  emit("updateSearchValue", searchItems.value);
+  // Code to be executed when there are reactive dependencies changes
+})
+
 
 const logout = () => {
   localStorage.setItem('token', '')
@@ -57,9 +75,22 @@ onMounted(() => {
 
     <div class="flex flex-row w-full shadow-xl px-3 py-2">
 
-      <div class="flex flex-row w-[280px] rounded-3xl bg-neutral-800 py-1 px-4 items-center">
+      <!--<div class="flex flex-row w-[480px] rounded-3xl bg-neutral-800 py-1 px-4 items-center">
         <font-awesome-icon icon="fa-magnifying-glass" />
         <input v-model="searchField" type="text" class="ml-2 bg-[#262626] focus-within:outline-none" placeholder="Search for ...">
+      </div>-->
+
+      <div class="flex flex-row w-auto rounded-3xl bg-neutral-800 py-1 px-4 items-center">
+        <font-awesome-icon icon="fa-magnifying-glass" />
+        <input v-model="searchItems.searchField" type="text" class="ml-2 bg-[#262626] focus-within:outline-none" placeholder="Search for ...">
+        <select v-model="searchItems.searchType" class="bg-[#52525B] text-gray-900 text-sm rounded-lg focus:border-none block w-[160px] p-1">
+          <option disabled>Search Type</option>
+          <option value="map_search">Map Search</option>
+          <option value="cordinate_search">Cordinate Search</option>
+        </select>
+        <!--
+        <v-select class="w-[200px] text-white" v-model="searchItems.searchType" :options="searchTypes" :reduce="item => item.value"
+                        id="searchType" placeholder="Search Type" />-->
       </div>
 
       <div class="flex flex-col justify-around w-full py-1 px-4">
