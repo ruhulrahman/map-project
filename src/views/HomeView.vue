@@ -32,8 +32,6 @@ const authStore = useAuthStore();
 // })
 
 
-console.log('authStore.user', authStore.user)
-
 // console.log('userInfo', userInfo)
 
 const hideLeftSidebar = ref(true)
@@ -320,7 +318,7 @@ const getTjDetailsData = async (tjNumber) => {
 
         if (result.data) {
             tjDetailItem.value = result.data
-            console.log('tjDetailItem', tjDetailItem.value)
+            // console.log('tjDetailItem', tjDetailItem.value)
         }
     } catch (error) {
         console.log('error', error)
@@ -375,7 +373,7 @@ const viewTjDetails = async (tj_number) => {
           const newArray = [item, [lat, long]]
           L.polyline(newArray, { color: 'red' }).addTo(map.value)
         })
-        console.log('newSplitList', newSplitList)
+        // console.log('newSplitList', newSplitList)
         // L.polyline(newSplitList, { color: 'green' }).addTo(map.value)
       }
     }
@@ -401,7 +399,7 @@ const getListDataByCheckedMenus = async () => {
       layer.remove();
     }
   });
-  console.log('checkedSidebarMenu', checkedSidebarMenu)
+  // console.log('checkedSidebarMenu', checkedSidebarMenu)
   if (checkedSidebarMenu.value.length) {
     checkedSidebarMenu.value.forEach((item, index) => {
       getListReload(item)
@@ -1191,7 +1189,6 @@ const getTjNumberInitData = async () => {
 const getMapLayoutData = async () => {
   const user_id = 20;
   loading.value = true
-  console.log('call me')
   let result = await RestApi.get(`/api/v1/sg-5/maptypestate/update/${user_id}/`)
   loading.value = false
 
@@ -1244,7 +1241,7 @@ const updateMapLayout = async (layoutMode) => {
         selectedLayout.value = googleTerrain
       }
 
-      console.log('selectedLayout.value', selectedLayout.value)
+      // console.log('selectedLayout.value', selectedLayout.value)
 
       selectedLayout.value.addTo(map.value);
     }

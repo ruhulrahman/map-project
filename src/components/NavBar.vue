@@ -43,8 +43,8 @@ const searchItems = ref({
 // })
 
 watchEffect(() => {
-  console.log('searchField', searchItems.value.searchField);
-  console.log('searchType', searchItems.value.searchType);
+  // console.log('searchField', searchItems.value.searchField);
+  // console.log('searchType', searchItems.value.searchType);
   emit("updateSearchValue", searchItems.value);
   // Code to be executed when there are reactive dependencies changes
 })
