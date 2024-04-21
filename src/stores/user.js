@@ -9,7 +9,6 @@ export const useAuthStore = defineStore('user', () => {
   const mapIcons = ref([])
 
   function setAuthUser (value) {
-    console.log('hit store', value)
     user.value = value
   }
 
@@ -23,14 +22,14 @@ export const useAuthStore = defineStore('user', () => {
 
   function setIcons (iconsValue) {
     mapIcons.value = iconsValue
-    console.log('iconsValue', iconsValue)
-    console.log('mapIcons.value', mapIcons.value)
+    // console.log('iconsValue', iconsValue)
+    // console.log('mapIcons.value', mapIcons.value)
   }
 
-  function has_permission (permit_code){
+  async function has_permission (permit_code){
 
-    console.log('permit_code', permit_code)
-    console.log('permissions.value', permissions.value)
+    // console.log('permit_code', permit_code)
+    // console.log('permissions.value', permissions.value)
 
       // let permission_disable=this.$store.state.site.permission_disable;
       let permission_disable = false
@@ -45,7 +44,7 @@ export const useAuthStore = defineStore('user', () => {
 
               if(permissions.value && permissions.value.length){
 
-                  const userPermission = permissions.value.find(
+                  const userPermission = await permissions.value.find(
                       (permission) => permission == permit_code
                   );
 
