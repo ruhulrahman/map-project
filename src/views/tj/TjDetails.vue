@@ -188,7 +188,7 @@ const selectTab = (tabValue) => {
                         Splite List: {{ tjDetailItem.splitelist.length }}
                     </h6>
 
-                    <div class="grid grid-cols-2 gap-4">
+                    <div v-if="tjDetailItem.splitelist" class="grid grid-cols-2 gap-4 mb-4">
                         <div v-for="(item, splitIndex) in tjDetailItem.splitelist" :key="splitIndex" class="bg-gray-300 text-blue-950 rounded-lg px-5 py-2 ">
                             <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
                             <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
@@ -214,44 +214,31 @@ const selectTab = (tabValue) => {
                     <h6 v-if="tjDetailItem.disconnectuser && tjDetailItem.disconnectuser.length" class="my-4 text-slate-300 text-[15px] font-semibold">
                         Disconnect Users: </h6>
 
-                    <template v-for="(item, index) in tjDetailItem.disconnectuser" :key="index">
-                        <div class="flex justify-start items-center gap-4 w-full mb-4">
-                            <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
-                                <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
-                                <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
-                                        :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
-                            </div>
-                            <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
-                                <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
-                                <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
-                                        :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
-                            </div>
+                    <div v-if="tjDetailItem.disconnectuser" class="grid grid-cols-2 gap-4 mb-4">
+                        <div v-for="(item, index) in tjDetailItem.disconnectuser" :key="index" class="bg-gray-300 text-blue-950 rounded-lg px-5 py-2 ">
+                            <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
+                            <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
+                                    :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
                         </div>
-                    </template>
+                    </div>
 
                     <h6 v-if="tjDetailItem.ponlist && tjDetailItem.ponlist.length" class="my-4 text-slate-300 text-[15px] font-semibold">Pon
                         List: </h6>
 
-                    <template v-for="(item, index) in tjDetailItem.ponlist" :key="index">
-                        <div class="flex justify-start items-center gap-4 w-full mb-4">
-                            <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
-                                <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
-                                <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
-                                        :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
-                            </div>
-                            <div class="px-5 py-2 bg-gray-300 text-blue-950 flex flex-col rounded-lg min-w-[48%]">
-                                <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
-                                <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
-                                        :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
-                            </div>
+                    <div v-if="tjDetailItem.ponlist" class="grid grid-cols-2 gap-4 mb-4">
+                        <div v-for="(item, splitIndex) in tjDetailItem.ponlist" :key="splitIndex" class="bg-gray-300 text-blue-950 rounded-lg px-5 py-2 ">
+                            <p class="mt-2 text-[12px] font-semibold">{{ item.userid }} | {{ item.lineby }}</p>
+                            <p class="mt-2 text-[12px] flex flex-row items-center font-semibold"><font-awesome-icon
+                                    :icon="['far', 'clock']" class="mr-1" /> {{ mixin.dDate(item.createdate) }}</p>
                         </div>
-                    </template>
+                    </div>
 
                     <h6 v-if="tjDetailItem.tj_description" class="my-4 text-slate-300 text-[15px] font-semibold">
                         Description:
                     </h6>
                     <p class="text-[12px] text-slate-300 font-semibold">{{ tjDetailItem.tj_description }}</p>
                 </div>
+
                 <div v-show="activeTab == 'voice'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <p v-if="!tjVoiceList.length" class="text-sm text-red-500">Voice Not Found!</p>
                         <div v-for="(item, index) in tjVoiceList" :key="index" class="flex justify-start items-center gap-4 w-full mb-4">
@@ -261,19 +248,15 @@ const selectTab = (tabValue) => {
                             </div>
                         </div>
                 </div>
+
                 <div v-show="activeTab == 'image'" class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
                     <p v-if="!tjImageList.length" class="text-sm text-red-500">Image Not Found!</p>
 
-                    <template v-for="(item, index) in tjImageList" :key="index">
-                        <div class="flex justify-start items-center gap-4 w-full mb-4">
-                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
-                                <img :src="item.image" class="w-full h-auto" alt="Image">
-                            </div>
-                            <div class="px-5 py-2 flex flex-col min-w-[48%]">
-                                <img :src="item.image" class="w-full h-auto" alt="Image">
-                            </div>
+                    <div v-if="tjImageList" class="grid grid-cols-2 gap-4 mb-4">
+                        <div v-for="(item, splitIndex) in tjImageList" :key="splitIndex" class="rounded-lg px-5 py-2 ">
+                            <img :src="item.image" class="w-full h-auto" alt="Image">
                         </div>
-                    </template>
+                    </div>
                 </div>
             </div>
 

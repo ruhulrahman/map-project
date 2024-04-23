@@ -194,10 +194,13 @@ onMounted(async () => {
       marker: false,
       circlemarker: false,
     },
-    edit: false
+    edit: false,
   });
 
   map.value.addControl(drawControl.value);
+
+  // var searchLayer = L.layerGroup().addTo(map.value);
+  // map.value.addControl( new L.Control.Search({layer: searchLayer}) );
 
   // var drawControl = new L.Control.Draw({
   //   position: "topright",
@@ -690,6 +693,7 @@ const markerLoading = ref(false)
 let totalUserMarkerCount = ref(0)
 let userMarkerLoadingCount = ref(0)
 
+
 const getUserMarkerConnection = async () => {
   markerLoading.value = true
   totalUserMarkerCount.value = 0
@@ -794,6 +798,8 @@ const userMapMarkerCall = (arrayItem) => {
 
   markerLoading.value = false
 }
+
+
 
 let totalTjMarkerCount = ref(0)
 let tjMarkerLoadingCount = ref(0)
