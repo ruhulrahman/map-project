@@ -133,7 +133,7 @@ const selectTab = (tabValue) => {
         <div class="flex-1 rounded-lg p-2 shadow-cyan-sm shadow-sm">
 
             <div class="mb-2 p-6 bg-[#0D2139] text-slate-200 rounded-xl">
-                <button class="btn btn-silver">Splitter | {{ tjDetailItem.spilitter }}</button>
+                <button class="btn btn-silver cursor-default hover:bg-slate-200">Splitter | {{ tjDetailItem.spilitter }}</button>
                 <button @click="viewLocation(tjDetailItem)" class="btn btn-silver ml-3">View Location <font-awesome-icon
                         class="text-green-600 ml-2" :icon="['fas', 'location-dot']" /></button>
                 <p class="mt-2">{{ tjDetailItem.tj_area_name }}</p>

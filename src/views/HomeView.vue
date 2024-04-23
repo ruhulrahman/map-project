@@ -1443,7 +1443,7 @@ const updateMapLayout = async (layoutMode) => {
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
                           </div>
-                          <div class="flex-1">
+                          <div class="flex-1 text-left">
                             <h6>Tj Number: {{ item.tj_number }}</h6>
                             <p>PPPOE ID: {{ item.pppoe_id }}</p>
                           </div>
@@ -1472,7 +1472,7 @@ const updateMapLayout = async (layoutMode) => {
                           <div class="flex-none p-3">
                             <img src="/src/assets/images/demo-img.jpg" class="w-[70px] h-[110px]" alt="Image">
                           </div>
-                          <div class="flex-1">
+                          <div class="flex-1 text-left">
                             <h6>Tj Number: {{ item.tj_number }}</h6>
                             <p>Tj Area: {{ item.area_name }}</p>
                             <p>Tj Type: {{ item.tj_type_name }}</p>
