@@ -97,8 +97,8 @@ const getTjVoiceAndImageData = async (tjNumber) => {
         let result = await RestApi.get(`/api/v1/sg-5/get-tjvoiceimage/${tjCustomNumber}/`)
 
         if (result.data) {
-            tjImageList.value = result.data.filter(item => item.image != 'null')
-            tjVoiceList.value = result.data.filter(item => item.voice != 'null')
+            tjImageList.value = result.data.filter(item => item.image)
+            tjVoiceList.value = result.data.filter(item => item.voice)
             console.log('tjImageList', tjImageList.value)
             console.log('tjVoiceList', tjVoiceList.value)
         }
