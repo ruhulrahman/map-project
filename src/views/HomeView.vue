@@ -1438,17 +1438,17 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
                       <p>User List</p>
-                      <template v-for="(item, index) in getUserMarkerFilterList" :key="index">
-                        <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
-                          <div class="flex-none p-3">
-                            <img src="/src/assets/images/demo-img.jpg" class="w-[60px] h-[60px]" alt="Image">
-                          </div>
-                          <div class="flex-1 text-left">
-                            <h6>Tj Number: {{ item.tj_number }}</h6>
-                            <p>PPPOE ID: {{ item.pppoe_id }}</p>
-                          </div>
-                        </button>
-                      </template>
+                        <div v-if="getUserMarkerFilterList" class="grid grid-cols-2 gap-4 mb-4">
+                          <button  v-for="(item, index) in getUserMarkerFilterList" :key="index" @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg flex-col">
+                            <div class="flex-row">
+                              <img src="/src/assets/images/demo-img.jpg" class="w-full h-auto" alt="Image">
+                            </div>
+                            <div class="flex-row text-left mt-2">
+                              <h6>Tj Number: {{ item.tj_number }}</h6>
+                              <p>PPPOE ID: {{ item.pppoe_id }}</p>
+                            </div>
+                          </button>
+                        </div>
 
                       <!--<div class="btn-create">
                         <div class="flex-none p-3">
