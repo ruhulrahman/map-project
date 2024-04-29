@@ -32,6 +32,8 @@ const resetFormData = () => {
     });
 }
 
+const resError = ref('')
+
 const onSubmit = handleSubmit(async (values, { resetForm }) => {
     loading.value = true
     try {
@@ -54,6 +56,8 @@ const onSubmit = handleSubmit(async (values, { resetForm }) => {
 
     } catch (error) {
         console.log('error', error)
+        resError.value = error.response.data.non_field_errors[0]
+
         // myForm.value.setErrors({ form: mixin.cn(error, 'response.data', null) });
     } finally {
         loading.value = false
@@ -116,6 +120,7 @@ watchEffect(() => {
                 <p class="text-gray-100">
                     or use email your account
                 </p>-->
+                <p class="text-red-500">{{ resError }}</p>
                 <Form ref="myForm" @submit="onSubmit" class="sm:w-2/3 w-full px-4 lg:px-0 mx-auto">
                  
                     <div class="pb-2 pt-4">
