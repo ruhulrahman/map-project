@@ -1220,12 +1220,17 @@ const toggleCreateMenus = () => {
 }
 
 const updateMapLayout = async (layoutMode) => {
+  
+  const authUserStr = localStorage.getItem('authUser')
+  const authUser = await JSON.parse(authUserStr)
+  const user_id = await authUser ? authUser.id : ''
   loading.value = true
   let result = ''
   try {
     const params = { status: layoutMode, user_id: user_id }
     if (mapLayoutMode.value) {
-      result = await RestApi.put('/api/v1/sg-5/maptypestate/update/20/', params)
+      result = await RestApi.put(`/api/v1/sg-5/maptypestate/update/${user_id}/`, params)
+      // result = await RestApi.put('/api/v1/sg-5/maptypestate/update/20/', params)
     } else {
       result = await RestApi.post('/api/v1/sg-5/maptypestate/create/', params)
     }
