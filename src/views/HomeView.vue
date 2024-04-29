@@ -1193,7 +1193,10 @@ const getTjNumberInitData = async () => {
 }
 
 const getMapLayoutData = async () => {
-  const user_id = 20;
+  
+  const authUserStr = localStorage.getItem('authUser')
+  const authUser = await JSON.parse(authUserStr)
+  const user_id = await authUser ? authUser.id : '';
   loading.value = true
   let result = await RestApi.get(`/api/v1/sg-5/maptypestate/update/${user_id}/`)
   loading.value = false
