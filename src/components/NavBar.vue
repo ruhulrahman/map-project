@@ -145,8 +145,8 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-            <div v-show="open" class="absolute right-[-10px] w-56 px-5 py-3 dark:bg-gray-800 bg-white rounded-lg shadow border dark:border-transparent mt-5">
-              <ul class="space-y-3 dark:text-white">
+            <div v-show="open" class="absolute right-[-10px] w-56 px-5 py-3 bg-gray-800 rounded-lg shadow border border-transparent mt-5">
+              <ul class="space-y-3 text-white">
                 <!--
                 <li class="font-medium">
                   <a href="#"

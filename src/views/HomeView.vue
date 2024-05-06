@@ -1446,6 +1446,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'marker'" class="flex flex-col gap-3 pb-[85px]">
                       <p>User List</p>
+                      <p v-if="!getUserMarkerFilterList" class="text-red-500">Data not found!</p>
                         <div v-if="getUserMarkerFilterList" class="grid grid-cols-2 gap-4 mb-4">
                           <button  v-for="(item, index) in getUserMarkerFilterList" :key="index" @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg flex-col">
                             <div class="flex-row">
@@ -1475,6 +1476,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'tj'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Tj List</p>
+                      <p v-if="!getTjMarkerFilterList" class="text-red-500">Data not found!</p>
                       <template v-for="(item, index) in getTjMarkerFilterList" :key="index">
                         <button @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg">
                           <div class="flex-none p-3">
@@ -1492,6 +1494,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polyline'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Fiber List</p>
+                      <p v-if="!getFiberLineFilterList" class="text-red-500">Data not found!</p>
                       <template v-for="(item, index) in getFiberLineFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
@@ -1506,6 +1509,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polygon'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Area List</p>
+                      <p v-if="!getAreaPolygonFilterList" class="text-red-500">Data not found!</p>
                       <template v-for="(item, index) in getAreaPolygonFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
@@ -1520,6 +1524,7 @@ const updateMapLayout = async (layoutMode) => {
 
                     <div v-if="checkedSidebarMenu[0] == 'polyline_fiber_monitor'" class="flex flex-col gap-3 pb-[85px]">
                       <p>Fiber Monitor List</p>
+                      <p v-if="!getFiberMonitorFilterList" class="text-red-500">Data not found!</p>
                       <template v-for="(item, index) in getFiberMonitorFilterList" :key="index">
                         <div class="btn-create text-[11px]">
                           <div class="flex-1">
