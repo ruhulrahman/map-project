@@ -38,7 +38,7 @@ const schema = yup.object({
     usertype: yup.string().required().label('User Type'),
     userlatlong: yup.string().required().label('User latlong'),
     tjnumber: yup.number().required().label('Tj Number'),
-    lineby: yup.string().required().min(2).label('Line By'),
+    lineby: yup.string().required().label('Line By'),
     userid: yup.string().required().min(2).label('User ID'),
     loginusername: yup.string().required().min(2).label('Username'),
 });

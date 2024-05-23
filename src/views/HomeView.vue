@@ -330,6 +330,25 @@ const getTjDetailsData = async (tjNumber) => {
     }
 }
 
+const getUserDetailsData = async (userId) => {
+    loading.value = true
+    try {
+
+        tjDetailItem.value = {}
+        // let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}/`)
+        let result = await RestApi.get(`/api/v1/sg-5/get-newconn-map/${userId}/`)
+
+        if (result.data) {
+            tjDetailItem.value = result.data
+            // console.log('tjDetailItem', tjDetailItem.value)
+        }
+    } catch (error) {
+        console.log('error', error)
+    } finally {
+        loading.value = false
+    }
+}
+
 const viewTjDetails = async (tj_number) => {
   // tjDetailsRef.value.show(JSON.stringify(item))
   await getTjDetailsData(tj_number)
@@ -788,17 +807,103 @@ const userMapMarkerCall = (arrayItem) => {
     map.value.setView([lat.value, long.value], 15);
     
     var marker = L.marker([lat.value, long.value], { icon: greenIcon }).addTo(map.value)
-      // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
-      .bindPopup(item.tj_number);
-    marker.on('click', function(e) {
-      var tjNumber = e.target.getPopup().getContent();
-      viewTjDetails(tjNumber)
+    .on("click", function(e) {
+      console.log('item.id', item.id)
+      console.log('item e', e)
+      viewUserDetails(item.id)
+      // circleClick(e, item.id, item.pppoe_id);
     });
+      // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
+      // .bindPopup(item.id.toString());
+      // marker.on('click', function(e) { 
+      //   var user = e.target.getPopup().getContent();
+      //   // var user = e.target.getPopup();
+      //   console.log('user', user)
+      //   // viewUserDetails(user)
+      // });
+      // marker.on('mouseover', function(e) {
+      //   e.target.getPopup().getContent();
+      // });
   })
 
   markerLoading.value = false
 }
 
+
+// Marker icon list
+const userIcon = ref({})
+const tjIcon = ref({})
+const activeIcon = ref({})
+const greenTjIcon = ref({})
+
+const getIconData = async () => {
+  loading.value = true
+  let result = await RestApi.get('/api/v1/sg-5/get_iconncare_maps/')
+  loading.value = false
+  
+  authStore.setIcons(result.data);
+
+  if (result.data.length) {
+    userIcon.value = result.data.find(item => item.iconname == 'usericon')
+    tjIcon.value = result.data.find(item => item.iconname == 'tjicon')
+    activeIcon.value = result.data.find(item => item.iconname == 'activeicon')
+    greenTjIcon.value = result.data.find(item => item.iconname == 'greenicon')
+  }
+  // console.log('dropdownList.value', dropdownList.value)
+}
+
+const viewUserDetails = async (userId) => {
+  // tjDetailsRef.value.show(JSON.stringify(item))
+  await getUserDetailsData(userId)
+  const latlong = tjDetailItem.value.tj_longlate
+  let splitlist = tjDetailItem.value.splitelist.filter(item => item.userlatlong && item.userlatlong != '0')
+  const newSplitList = splitlist.map(item => {
+    if (item.userlatlong) {
+      const lat = item.userlatlong.split(',')[0]
+      const long = item.userlatlong.split(',')[1]
+      const latLongArray = []
+      latLongArray.push(parseFloat(lat))
+      latLongArray.push(parseFloat(long))
+      return latLongArray
+    }
+  })
+
+
+    if (latlong) {
+      const lat = latlong.split(',')[0]
+      const long = latlong.split(',')[1]
+      
+      var greenIcon = new L.Icon({
+        iconUrl: greenTjIcon.value.iconurl,
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+      
+      var redMarkerIcon = new L.Icon({
+        iconUrl: activeIcon.value.iconurl,
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+      map.value.setView([lat, long], 18);
+      L.marker([lat, long], { icon: greenIcon }).addTo(map.value)
+      if (newSplitList.length) {
+        newSplitList.forEach(item => {
+          L.marker(item, { icon: redMarkerIcon }).addTo(map.value)
+          const newArray = [item, [lat, long]]
+          L.polyline(newArray, { color: 'red' }).addTo(map.value)
+        })
+        // console.log('newSplitList', newSplitList)
+        // L.polyline(newSplitList, { color: 'green' }).addTo(map.value)
+      }
+    }
+  tjDetailsRef.value.show(userId)
+}
 
 
 let totalTjMarkerCount = ref(0)
@@ -1051,27 +1156,6 @@ const getIpAddressStatus = () => {
 
   })
 
-}
-
-const userIcon = ref({})
-const tjIcon = ref({})
-const activeIcon = ref({})
-const greenTjIcon = ref({})
-
-const getIconData = async () => {
-  loading.value = true
-  let result = await RestApi.get('/api/v1/sg-5/get_iconncare_maps/')
-  loading.value = false
-  
-  authStore.setIcons(result.data);
-
-  if (result.data.length) {
-    userIcon.value = result.data.find(item => item.iconname == 'usericon')
-    tjIcon.value = result.data.find(item => item.iconname == 'tjicon')
-    activeIcon.value = result.data.find(item => item.iconname == 'activeicon')
-    greenTjIcon.value = result.data.find(item => item.iconname == 'greenicon')
-  }
-  // console.log('dropdownList.value', dropdownList.value)
 }
 
 // var greenIcon = new L.Icon({

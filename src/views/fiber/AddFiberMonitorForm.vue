@@ -61,7 +61,7 @@ const schema = yup.object({
     fiberarea: yup.string().required().label('Fiber Area'),
     map_type: yup.string().required().label('Map Type'),
     fibercorep: yup.string().required().label('Fibercorep'),
-    fibername: yup.string().required().label('Fibername'),
+    fibername: yup.string().required().max(10).label('Fibername'),
     fiber_code: yup.string().required().label('Fiber Code'),
     width_height: yup.number().required().min(1).max(7).label('Fiber Weight'),
     ipaddr: yup.string().ipv4().required().label('IP Address'),

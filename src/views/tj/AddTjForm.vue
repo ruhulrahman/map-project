@@ -161,6 +161,7 @@ onMounted(async () => {
                     <label for="tjnumber" class="input-label">Tj Number</label>
                     <input type="text" v-model="tjnumber" id="tjnumber" class="input-control"
                         placeholder="Enter tj number" />
+                    <p class="error-text">{{ errors.tjnumber }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">

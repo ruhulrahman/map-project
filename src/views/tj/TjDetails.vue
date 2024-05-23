@@ -86,6 +86,7 @@ const getTjDetailsData = async (tjNumber) => {
 const tjVoiceList = ref([])
 const tjImageList = ref([])
 
+
 const getTjVoiceAndImageData = async (tjNumber) => {
     loading.value = true
     try {
