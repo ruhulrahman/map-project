@@ -38,7 +38,7 @@ const schema = yup.object({
     spilitter: yup.string().required().label('Splitter'),
     tj_type: yup.string().required().label('Tj Type'),
     tj_longlate: yup.string().required().label('Tj latlong'),
-    tjnumber: yup.number().required().label('Tj Number'),
+    tjnumber: yup.string().required().label('Tj Number'),
     tj_connect: yup.string().required().min(2).label('Tj Connect'),
     tj_description: yup.string().required().min(2).label('Description'),
 });
