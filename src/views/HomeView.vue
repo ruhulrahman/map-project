@@ -20,6 +20,7 @@ import lodash from 'lodash'
 import router from "@/router";
 import { useAuthStore } from '@/stores/user';
 import mixin from '@/libs/mixin'
+import UserDetails from "./user/UserDetails.vue";
 
 // import Modal from "@/components/ModalR.vue";
 
@@ -310,6 +311,7 @@ const getAuthUserInfo = async () => {
 
 const tjDetailsRef = ref(false)
 const tjDetailItem = ref({})
+const userDetailsRef = ref({})
 
 
 const getTjDetailsData = async (tjNumber) => {
@@ -318,25 +320,6 @@ const getTjDetailsData = async (tjNumber) => {
 
         tjDetailItem.value = {}
         let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}/`)
-
-        if (result.data) {
-            tjDetailItem.value = result.data
-            // console.log('tjDetailItem', tjDetailItem.value)
-        }
-    } catch (error) {
-        console.log('error', error)
-    } finally {
-        loading.value = false
-    }
-}
-
-const getUserDetailsData = async (userId) => {
-    loading.value = true
-    try {
-
-        tjDetailItem.value = {}
-        // let result = await RestApi.get(`/api/v1/sg-5/get-tj-details-by-id/${tjNumber}/`)
-        let result = await RestApi.get(`/api/v1/sg-5/get-newconn-map/${userId}/`)
 
         if (result.data) {
             tjDetailItem.value = result.data
@@ -810,7 +793,7 @@ const userMapMarkerCall = (arrayItem) => {
     .on("click", function(e) {
       console.log('item.id', item.id)
       console.log('item e', e)
-      viewUserDetails(item.id)
+      viewUserDetails(item.pppoe_id)
       // circleClick(e, item.id, item.pppoe_id);
     });
       // .bindPopup(`Latidute: ${lat.value} and Longitude : ${long.value}, pppoe_id: ${item.pppoe_id}`)
@@ -852,57 +835,8 @@ const getIconData = async () => {
   // console.log('dropdownList.value', dropdownList.value)
 }
 
-const viewUserDetails = async (userId) => {
-  // tjDetailsRef.value.show(JSON.stringify(item))
-  await getUserDetailsData(userId)
-  const latlong = tjDetailItem.value.tj_longlate
-  let splitlist = tjDetailItem.value.splitelist.filter(item => item.userlatlong && item.userlatlong != '0')
-  const newSplitList = splitlist.map(item => {
-    if (item.userlatlong) {
-      const lat = item.userlatlong.split(',')[0]
-      const long = item.userlatlong.split(',')[1]
-      const latLongArray = []
-      latLongArray.push(parseFloat(lat))
-      latLongArray.push(parseFloat(long))
-      return latLongArray
-    }
-  })
-
-
-    if (latlong) {
-      const lat = latlong.split(',')[0]
-      const long = latlong.split(',')[1]
-      
-      var greenIcon = new L.Icon({
-        iconUrl: greenTjIcon.value.iconurl,
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-      
-      var redMarkerIcon = new L.Icon({
-        iconUrl: activeIcon.value.iconurl,
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-      map.value.setView([lat, long], 18);
-      L.marker([lat, long], { icon: greenIcon }).addTo(map.value)
-      if (newSplitList.length) {
-        newSplitList.forEach(item => {
-          L.marker(item, { icon: redMarkerIcon }).addTo(map.value)
-          const newArray = [item, [lat, long]]
-          L.polyline(newArray, { color: 'red' }).addTo(map.value)
-        })
-        // console.log('newSplitList', newSplitList)
-        // L.polyline(newSplitList, { color: 'green' }).addTo(map.value)
-      }
-    }
-  tjDetailsRef.value.show(userId)
+const viewUserDetails = async (pppoe_id) => {
+  userDetailsRef.value.show(pppoe_id)
 }
 
 
@@ -1532,7 +1466,7 @@ const updateMapLayout = async (layoutMode) => {
                       <p>User List</p>
                       <p v-if="!getUserMarkerFilterList" class="text-red-500">Data not found!</p>
                         <div v-if="getUserMarkerFilterList" class="grid grid-cols-2 gap-4 mb-4">
-                          <button  v-for="(item, index) in getUserMarkerFilterList" :key="index" @click="viewTjDetails(item.tj_number)" class="btn-create text-[10px] btn-ring-with-bg flex-col">
+                          <button  v-for="(item, index) in getUserMarkerFilterList" :key="index" @click="viewUserDetails(item.pppoe_id)" class="btn-create text-[10px] btn-ring-with-bg flex-col">
                             <div class="flex-row">
                               <img src="/src/assets/images/demo-img.jpg" class="w-full h-auto" alt="Image">
                             </div>
@@ -1685,6 +1619,7 @@ const updateMapLayout = async (layoutMode) => {
     <AddUserForm ref="addUserFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddTjForm ref="addTjFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <TjDetails ref="tjDetailsRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
+    <UserDetails ref="userDetailsRef" :dropdownList="dropdownList"/>
     <AddFiberForm ref="addFiberFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddAreaForm ref="addAreaFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
     <AddFiberMonitorForm ref="addFiberMonitorFormRef" :dropdownList="dropdownList" v-on:getListReload="getListReload" />
