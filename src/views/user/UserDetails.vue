@@ -295,7 +295,7 @@ const selectSubTab = (tabValue) => {
                                 <tr v-if="item.image">
                                     <th class="font-medium p-3">Image</th>
                                     <th>:</th>
-                                    <td>
+                                    <td class="pt-2">
                                         <img v-if="item.image" :src="item.image" class="w-[100px] h-auto" alt="Image" />
                                     </td>
                                 </tr>
@@ -318,7 +318,7 @@ const selectSubTab = (tabValue) => {
                                 <tr v-if="item.image">
                                     <th class="font-medium p-3">Image</th>
                                     <th>:</th>
-                                    <td>
+                                    <td class="pt-2">
                                         <img v-if="item.image" :src="item.image" class="w-[100px] h-auto" alt="Image" />
                                     </td>
                                 </tr>
