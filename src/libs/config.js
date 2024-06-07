@@ -2,6 +2,7 @@ import axios from 'axios'
 
 // export const baseURL = 'https://mapproject.nvs.la'
 export const baseURL = 'https://api-nuxtgen.nvs.la'
+// export const baseURL = 'https://api-adn-gmap.nuxtgen.com'
 // export const baseURL = 'https://opentv.ncare.io/'
 const accessToken = localStorage.getItem('token')
 

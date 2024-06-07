@@ -38,7 +38,7 @@ const schema = yup.object({
     spilitter: yup.string().required().label('Splitter'),
     tj_type: yup.string().required().label('Tj Type'),
     tj_longlate: yup.string().required().label('Tj latlong'),
-    tjnumber: yup.string().required().label('Tj Number'),
+    tj_number: yup.string().required().label('Tj Number'),
     tj_connect: yup.string().required().min(2).label('Tj Connect'),
     tj_description: yup.string().required().min(2).label('Description'),
 });
@@ -52,7 +52,7 @@ const [tj_area_name] = defineField('tj_area_name');
 const [spilitter] = defineField('spilitter');
 const [tj_type] = defineField('tj_type');
 const [tj_longlate] = defineField('tj_longlate');
-const [tjnumber] = defineField('tjnumber');
+const [tj_number] = defineField('tj_number');
 const [tj_connect] = defineField('tj_connect');
 const [tj_description] = defineField('tj_description');
 
@@ -62,7 +62,7 @@ const resetFormData = () => {
         spilitter: '',
         tj_type: '',
         tj_longlate: '',
-        tjnumber: '',
+        tj_number: '',
         tj_connect: '',
         tj_description: '',
     });
@@ -74,6 +74,7 @@ const onSubmit = handleSubmit(async (values, { resetForm }) => {
     loading.value = true
     let result = ''
     try {
+        console.log('values', values)
         if (values.id) {
             result = await RestApi.post('api/v1/sg-5/create_tj_numbers/', values)
         } else {
@@ -158,10 +159,10 @@ onMounted(async () => {
                 </div>
 
                 <div class="mb-2 pb-4">
-                    <label for="tjnumber" class="input-label">Tj Number</label>
-                    <input type="text" v-model="tjnumber" id="tjnumber" class="input-control"
+                    <label for="tj_number" class="input-label">Tj Number</label>
+                    <input type="text" v-model="tj_number" id="tj_number" class="input-control"
                         placeholder="Enter tj number" />
-                    <p class="error-text">{{ errors.tjnumber }}</p>
+                    <p class="error-text">{{ errors.tj_number }}</p>
                 </div>
 
                 <div class="mb-2 pb-4">
