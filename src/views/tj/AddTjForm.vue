@@ -39,7 +39,7 @@ const schema = yup.object({
     tj_type: yup.string().required().label('Tj Type'),
     tj_longlate: yup.string().required().label('Tj latlong'),
     tj_number: yup.string().required().label('Tj Number'),
-    tj_connect: yup.string().required().min(2).label('Tj Connect'),
+    tj_connect: yup.string().required().label('Tj Connect'),
     tj_description: yup.string().required().min(2).label('Description'),
 });
 
